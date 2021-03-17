@@ -16,6 +16,7 @@ import { getProduct } from './actions'
 
 // import pages
 import Product from './pages/products'
+import ProductDetail from './pages/productDetail'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -31,7 +32,8 @@ const App = () => {
                 <Route path='/' component={Home} exact />
                 <Route path='/register' component={SignUp} />
                 <Route path='/verification' component={Verify} />
-                <Route path="/product" component={Product}/>
+                <Route path='/product' component={Product}/>
+                <Route path='/detail' component={ProductDetail}/>
                 <Route path='*' component={NotFound} />
             </Switch>
         </div>
