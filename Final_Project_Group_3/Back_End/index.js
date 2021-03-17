@@ -16,6 +16,10 @@ const connection = require('./database')
 app.use(cors())
 app.use(bodyParser.json())
 
+// NOTE import router
+let {userRouter} = require('./routers')
+app.use('/user' ,userRouter)
+app.use(express.static('./public'))
 
 
 // NOTE connect database
