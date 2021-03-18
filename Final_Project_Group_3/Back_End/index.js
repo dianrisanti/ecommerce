@@ -33,9 +33,10 @@ app.get('/', (req, res) => {
     res.status(200).send(`<h1>This is Home</h1>`)
 })
 
-const { productRouter, orderRouter } = require('./routers')
+const { productRouter, orderRouter, profileRouter } = require('./routers')
 app.use('/products', productRouter)
 app.use('/cart', orderRouter)
+app.use('/profile', profileRouter)
 
 let PORT = 2000
 app.listen(PORT, () => console.log(`Connected to PORT: ${PORT}`))

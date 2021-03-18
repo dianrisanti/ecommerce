@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux'
 const Product = () => {
     const { products } = useSelector((state) => {
         return{
-            products: state.productReducer.products
+            products: state.product.products
         }
     })
 
@@ -135,7 +135,7 @@ const Product = () => {
                                             IDR {item.price.toLocaleString()}
                                         </Card.Text>
                                         <Button style={{margin: "20px 10px", backgroundColor: '#118ab2'}} as={Link} to={`/detail?id=${item.id}`}>
-                                            <i class="fas fa-shopping-cart"></i> Buy</Button>
+                                            <i className="fas fa-shopping-cart"></i> Buy</Button>
                                     </Card.Body>
                                 </Card>
                             )

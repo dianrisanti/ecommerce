@@ -1,11 +1,11 @@
 let userRouter = require('./userRouter')
-// let profileRouter = require('./profileRouter')
+let profileRouter = require('./profileRouter')
 const productRouter = require('./productRouter')
 const orderRouter = require('./orderRouter')
 
 module.exports = {
     userRouter,
-    // profileRouter,
+    profileRouter,
     productRouter,
     orderRouter
 }
