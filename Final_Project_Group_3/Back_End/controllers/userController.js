@@ -97,7 +97,7 @@ module.exports = {
             // send email notification to user
             const option = {
                 from: `admin <cusunliem@gmail.com>`,
-                to: 'cusunliem1@gmail.com', // NOTE nanti ganti dengan email sesuai register
+                to: `finalprojectwarehouse3@gmail.com`, // NOTE nanti ganti dengan email sesuai register
                 subject: 'EMAIL VERIFICATION',
                 text: '',
             }

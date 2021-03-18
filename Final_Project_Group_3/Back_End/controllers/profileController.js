@@ -37,5 +37,19 @@ module.exports = {
             console.log(err)
             res.status(400).send(err)
         }
+    },
+
+    getProfile: async(req, res) => {
+        try{
+            const profileQuery = `SELECT u.id, u.username, u.email, p.location, p.address FROM users u 
+            JOIN profile p ON u.id = p.id_user WHERE u.id = ${req.body.id}`
+            const result = await asyncQuery(profileQuery)
+
+            res.status(200).send(result[0])
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
     }
 }

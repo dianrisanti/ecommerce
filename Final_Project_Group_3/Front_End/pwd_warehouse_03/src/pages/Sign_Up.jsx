@@ -48,7 +48,7 @@ function RegisterPage() {
             })
             .catch(err => {
                 console.log(err)
-                setRegError([true, err.response.data])
+                setRegError([true, "gagal regis"])
             })
     }
 
