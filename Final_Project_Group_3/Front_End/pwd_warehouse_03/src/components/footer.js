@@ -30,13 +30,13 @@ const Footer = () => {
                     <h5>DOWNLOAD APLIKASI</h5>
                     <Image
                         src="https://www.freepnglogos.com/uploads/app-store-logo-png/apple-app-store-travel-awards-globestamp-7.png"
-                        style={{width: '230px', height: '200px'}}
+                        style={{width: '250px', height: '180px'}}
                     />
                 </div>
             </div>
 
             <div>
-                <p style={{color: '#6c757d'}}><i class="far fa-copyright"></i> Electronics Shop 2021. Hak Cipta Dilindungi</p>
+                <p style={{color: '#6c757d'}}><i class="far fa-copyright"></i> Electronic Shop 2021. Hak Cipta Dilindungi</p>
             </div>
 
         </div>
