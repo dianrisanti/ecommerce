@@ -15,3 +15,19 @@ export const getProduct = () => {
         }
     }
 }
+
+export const getCarousel = () => {
+    return async (dispatch) => {
+        try {
+            const res = await Axios.get('http://localhost:2000/products/carousel')
+
+            dispatch({
+                type: 'GET_CAROUSEL',
+                payload: res.data
+            })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+}
