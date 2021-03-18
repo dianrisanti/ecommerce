@@ -48,7 +48,7 @@ const editPassValidation = [
 
 // NOTE create router
 router.get('/getUser', userController.getAllUser)
-// router.post('/login', userController.login)
+router.post('/login', userController.login)
 router.post('/register', regValidator , userController.register) // NOTE bisa pake put juga
 // router.post('/edit/:index', userController.edit) // NOTE bisa pake patch juga
 // router.post('/edit_password/:id', editPassValidation, userController.editPass)
