@@ -33,9 +33,9 @@ module.exports = {
         // hashing password
         const hashpass = cryptojs.HmacMD5(password, SECRET_KEY)
 
-        const loginQuery = `SELECT * FROM users
-                            LEFT JOIN profile
-                            USING(id)
+        const loginQuery = `SELECT * FROM users c1
+                            LEFT JOIN profile c2
+                            ON (c2.id_user = c1.id)
                             WHERE ` + QUERY +
                             `AND password=${db.escape(hashpass.toString())}`
         // console.log(loginQuery)
@@ -50,7 +50,7 @@ module.exports = {
             if (result.length === 0) return res.status(400).send('Username or Password is wrong')
 
             // create token
-            let token = createToken({ id: result[0].id, username: result[0].username })
+            let token = createToken({ id: result[0].id_user, username: result[0].username })
 
             // console.log(result[0])
 
@@ -88,8 +88,8 @@ module.exports = {
                               VALUES (${db.escape(username)}, ${db.escape(hashpass.toString())}, ${db.escape(email)})`
             const resRegister = await asyncQuery(regQuery)
 
-            // const profileQuery = `INSERT INTO profile (id_users) values (${resRegister.insertId})`
-            // const resProfile = await asyncQuery(profileQuery)
+            const profileQuery = `INSERT INTO profile (id_user) values (${resRegister.insertId})`
+            const resProfile = await asyncQuery(profileQuery)
 
             // create token
             const token = createToken({ id: resRegister.insertId, username: username })
@@ -122,40 +122,40 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-    // edit: (req, res) => {
-    //     const id = parseInt(req.params.id)
+    edit: (req, res) => {
+        const id = parseInt(req.params.id)
 
-    //     // validation input from user
-    //     const errors = validationResult(req)
-    //     console.log(errors.errors)
+        // validation input from user
+        const errors = validationResult(req)
+        console.log(errors.errors)
 
-    //     const errUsername = errors.errors.filter(item => item.param === 'username' && item.value !== undefined)
-    //     console.log(errUsername)
-    //     if (errUsername.length !== 0) return res.status(400).send(errUsername[0].msg)
+        const errUsername = errors.errors.filter(item => item.param === 'username' && item.value !== undefined)
+        console.log(errUsername)
+        if (errUsername.length !== 0) return res.status(400).send(errUsername[0].msg)
 
-    //     const errEmail = errors.errors.filter(item => item.param === 'email' && item.value !== undefined)
-    //     console.log(errEmail)
-    //     if (errEmail.length !== 0) return res.status(400).send(errEmail[0].msg)
+        const errEmail = errors.errors.filter(item => item.param === 'email' && item.value !== undefined)
+        console.log(errEmail)
+        if (errEmail.length !== 0) return res.status(400).send(errEmail[0].msg)
 
 
-    //     const checkUser = `SELECT * FROM users WHERE id=${db.escape(id)}`
-    //     // console.log(checkUser)
+        const checkUser = `SELECT * FROM users WHERE id=${db.escape(id)}`
+        // console.log(checkUser)
 
-    //     db.query(checkUser, (err, result) => {
-    //         if (err) return res.status(500).send(err)
+        db.query(checkUser, (err, result) => {
+            if (err) return res.status(500).send(err)
 
-    //         // if id not found
-    //         if (result.length === 0) return res.status(200).send(`User with id : ${id} is not found`)
+            // if id not found
+            if (result.length === 0) return res.status(200).send(`User with id : ${id} is not found`)
 
-    //         const editUser = `UPDATE users SET${generateQuery(req.body)} WHERE id=${id}`
-    //         // console.log(editUser)
-    //         db.query(editUser, (err2, result2) => {
-    //             if (err2) return res.status(500).send(err2)
+            const editUser = `UPDATE users SET${generateQuery(req.body)} WHERE id=${id}`
+            // console.log(editUser)
+            db.query(editUser, (err2, result2) => {
+                if (err2) return res.status(500).send(err2)
 
-    //             res.status(200).send(result2)
-    //         })
-    //     })
-    // },
+                res.status(200).send(result2)
+            })
+        })
+    },
     // editPass: (req, res) => {
     //     const id = parseInt(req.params.id)
 
@@ -216,6 +216,27 @@ module.exports = {
             console.log(result)
 
             res.status(200).send('Email has been verified')
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    keepLogin: async (req, res) => {
+        console.log(req.user)
+        console.log('keep login')
+
+        try {
+            // query to get data from database
+            const getUser = `SELECT * FROM users c1
+            LEFT JOIN profile c2
+            ON (c2.id_user = c1.id)
+            WHERE username='${req.user.username}'`
+
+            const result = await asyncQuery(getUser)
+            // console.log('result dari query', result[0])
+
+            res.status(200).send(result[0])
         }
         catch (err) {
             console.log(err)
