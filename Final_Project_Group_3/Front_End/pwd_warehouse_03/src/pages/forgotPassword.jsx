@@ -1,0 +1,152 @@
+import React from 'react'
+import Axios from 'axios'
+import { Redirect } from 'react-router-dom'
+import {
+    Button,
+    InputGroup,
+    Form,
+    FormControl,
+    Modal
+} from 'react-bootstrap'
+
+function RegisterPage() {
+
+    let [visible1, setVisible1] = React.useState(false)
+    let [visible2, setVisible2] = React.useState(false)
+    let [passValidErr, setPassValidErr] = React.useState([false, ""])
+    let [regError, setRegError] = React.useState([false, ""])
+    let [toLogin, setToLogin] = React.useState(false)
+
+
+    let passwordRef = React.useRef('')
+    let confpassRef = React.useRef('')
+
+
+    function handleRegister() {
+        let password = passwordRef.current.value
+        let confpass = confpassRef.current.value
+
+        if (confpass !== password) return setRegError([true, "Password doesn't match with Confirm Password"])
+
+        if (passValidErr[0]) return setRegError([true, "Make sure there is no error in validation"])
+
+        // axios post untuk mengirim data ke api
+        Axios.post(`http://localhost:2000/user/edit_password/`, {password})
+            .then((res) => {
+                setRegError([false, ''])
+                setToLogin(true)
+            })
+            .catch(err => {
+                console.log(err)
+                setRegError([true, err.response.data])
+            })
+    }
+
+    function passValid(e) {
+        // char min 6
+        // ada symbol
+        // ada angka
+        let pass = e.target.value
+        // console.log(pass)
+        let symb = /[!@#$%^&*:]/
+        let numb = /[0-9]/
+        // let upper = /[A-Z]/
+
+        if (!symb.test(pass) || !numb.test(pass) || pass.length < 6) return setPassValidErr([true, "*Must include symbol, number, min 6 char"])
+
+        setPassValidErr([false, ""])
+    }
+
+    if (toLogin) return <Redirect to='/login' />
+
+    return (
+        <div style={styles.container}>
+            <div style={styles.center}>
+                <div>
+                    <h1>Forgot Password</h1>
+                </div>
+                <div style={{ ...styles.item, textAlign: 'center' }}>
+                    <InputGroup>
+                        <InputGroup.Prepend style={{ cursor: 'pointer' }}
+                            onClick={() => setVisible1(!visible1)}>
+                            <InputGroup.Text id="basic-addon1" style={{ width: "45px", display: 'flex', justifyContent: 'center' }}>
+                                <i className={visible1 ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                            </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <FormControl
+                            placeholder="New Password"
+                            aria-label="Password"
+                            aria-describedby="basic-addon1"
+                            style={{ height: "45px" }}
+                            type={visible1 ? "text" : "password"}
+                            ref={passwordRef}
+                            onChange={(e) => passValid(e)}
+                        />
+                    </InputGroup>
+                    <Form.Text className="mb-3" style={{ textAlign: "left", color: "red", fontSize: '10px' }}>
+                        {passValidErr[1]}
+                    </Form.Text>
+                    <InputGroup className="mb-3">
+                        <InputGroup.Prepend style={{ cursor: 'pointer' }}
+                            onClick={() => setVisible2(!visible2)}>
+                            <InputGroup.Text id="basic-addon1" style={{ width: "45px", display: 'flex', justifyContent: 'center' }}>
+                                <i className={visible2 ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                            </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <FormControl
+                            placeholder="Confirm New Password"
+                            aria-label="Password"
+                            aria-describedby="basic-addon1"
+                            style={{ height: "45px" }}
+                            type={visible2 ? "text" : "password"}
+                            ref={confpassRef}
+                        />
+                    </InputGroup>
+                    <Button onClick={handleRegister}>
+                        Confirm
+                    </Button>
+                </div>
+                <Modal show={regError[0]} onHide={() => setRegError([false, ""])}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Error</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{regError[1]}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setRegError([false, ""])}>
+                            Okay
+                            </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
+        </div>
+    )
+}
+
+const styles = {
+    container: {
+        background: "url(https://images.unsplash.com/photo-1506544777-64cfbe1142df?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80) no-repeat center",
+        backgroundSize: "cover",
+        display: "flex",
+        justifyContent: "center",
+        height: "100vh",
+    },
+    center: {
+        marginTop: 100,
+        padding: "10px 30px",
+        width: 350,
+        height: "68vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        border: "1px solid gray",
+        borderRadius: "30px",
+        backgroundColor: "rgba(255, 255, 255, .7)"
+    },
+    item: {
+        width: "100%",
+        height: "auto",
+        marginBottom: 15,
+    }
+}
+
+export default RegisterPage

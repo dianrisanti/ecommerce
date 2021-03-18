@@ -8,6 +8,7 @@ import Footer from './components/footer'
 // import pages
 import Home from './pages/home'
 import SignUp from './pages/Sign_Up'
+import ForgotPassword from './pages/forgotPassword'
 import Verify from './pages/verification'
 import ProductDetail from './pages/productDetail'
 import NotFound from './pages/404_page'
@@ -19,17 +20,16 @@ import { getProduct, getCarousel } from './actions'
 
 // import actions
 import { keepLogin } from './actions'
-import { connect } from 'react-redux'
 
 
-const App = (props) => {
+function App() {
   const dispatch = useDispatch()
 
   React.useEffect(() => {
     dispatch(getProduct())
     dispatch(getCarousel())
-    props.keepLogin()
-  }, [props])
+    dispatch(keepLogin())
+  }, [])
   
   return (
         <div>
@@ -37,6 +37,7 @@ const App = (props) => {
             <Switch>
                 <Route path='/' component={Home} exact />
                 <Route path='/register' component={SignUp} />
+                <Route path='/forgot_password' component={ForgotPassword} />
                 <Route path='/verification' component={Verify} />
                 <Route path='/login' component={Login} />
                 <Route path='/detail' component={ProductDetail}/>
@@ -47,4 +48,4 @@ const App = (props) => {
   )
 }
 
-export default connect(null, { keepLogin })(App)
+export default App

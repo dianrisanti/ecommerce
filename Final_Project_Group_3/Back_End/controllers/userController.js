@@ -122,6 +122,45 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+    forgotPassword: async (req, res) => {
+        const { email } = req.body
+
+        try {
+            // NOTE kalau tidak ada error, proses pengiriman request new password akan berjalan
+            const checkUser = `SELECT * FROM users 
+                              WHERE email=${db.escape(email)}`
+            const resCheck = await asyncQuery(checkUser)
+
+            if (resCheck.length === 0) return res.status(400).send('Email not yet registered')
+
+            // send email notification to user
+            const option = {
+                from: `admin <cusunliem@gmail.com>`,
+                to: 'cusunliem1@gmail.com', // NOTE nanti ganti dengan email sesuai register
+                subject: 'NEW PASSWORD REQUEST',
+                text: '',
+            }
+
+            //set up handlebars
+            const emailFile = fs.readFileSync('./email/index.html').toString()
+            // console.log(email)
+
+            // compile data email
+            const template = handlebars.compile(emailFile)
+
+            // menambah properti html di dalam option 
+            option.html = template({ token: token, name: username })
+
+            // send email
+            const info = await transporter.sendMail(option)
+
+            res.status(200).send(info.response)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
     edit: (req, res) => {
         const id = parseInt(req.params.id)
 
@@ -156,35 +195,37 @@ module.exports = {
             })
         })
     },
-    // editPass: (req, res) => {
-    //     const id = parseInt(req.params.id)
+    editPass: (req, res) => {
+        const id = parseInt(req.params.id)
 
-    //     // validation input from user
-    //     const errors = validationResult(req)
-    //     if (!errors.isEmpty()) return res.status(400).send(errors.array()[0].msg)
+        // validation input from user
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) return res.status(400).send(errors.array()[0].msg)
 
-    //     const checkUser = `SELECT * FROM users WHERE id=${db.escape(id)}`
-    //     // console.log(checkUser)
+        const checkUser = `SELECT * FROM users WHERE id=${db.escape(id)}`
+        // console.log(checkUser)
 
-    //     db.query(checkUser, (err, result) => {
-    //         if (err) return res.status(500).send(err)
+        db.query(checkUser, (err, result) => {
+            console.log("status = ",parseInt(result[0].status))
+            if (err) return res.status(500).send(err)
 
-    //         // if id not found
-    //         if (result.length === 0) return res.status(200).send(`User with id : ${id} is not found`)
+            // if id not found
+            if (result.length === 0) return res.status(200).send(`User with id : ${id} is not found`)
+            if (parseInt(result[0].status) === 0) return res.status(200).send(`Your account has not been verified`)
 
-    //         const hashpass = cryptojs.HmacMD5(req.body.password, SECRET_KEY)
+            const hashpass = cryptojs.HmacMD5(req.body.password, SECRET_KEY)
 
-    //         // query change password
-    //         const editPassword = `UPDATE users SET password=${db.escape(hashpass.toString())} WHERE id=${id}`
-    //         // console.log(editPassword)
+            // query change password
+            const editPassword = `UPDATE users SET password=${db.escape(hashpass.toString())} WHERE id=${id}`
+            // console.log(editPassword)
 
-    //         db.query(editPassword, (err2, result2) => {
-    //             if (err2) return res.status(500).send(err2)
+            db.query(editPassword, (err2, result2) => {
+                if (err2) return res.status(500).send(err2)
 
-    //             res.status(200).send(result2)
-    //         })
-    //     })
-    // },
+                res.status(200).send(result2)
+            })
+        })
+    },
     // delete: (req, res) => {
     //     const checkUser = `SELECT * FROM users WHERE id=${db.escape(parseInt(req.params.id))}`
 
