@@ -12,10 +12,15 @@ import {
     LOGO
 } from '../assets'
 
+// NOTE import connect redux
+import { connect } from "react-redux"
+
+//NOTE import action log out
+import { logout } from "../actions"
 
 
 
-function Navigation() {
+function Navigation(props) {
     return (
         <Navbar fixed='top' style={{ background: 'rgba(82, 192, 192, 0.7)' }} expand="lg">
             <Navbar>
@@ -39,9 +44,21 @@ function Navigation() {
                 </Nav>
 
                 <Dropdown>
-                    <DropdownButton title='Username' variant='primary'>
-                        <Dropdown.Item as={Link} to='/login' >Login</Dropdown.Item>
-                        <Dropdown.Item as={Link} to='/sign-up'>Sign Up</Dropdown.Item>
+                <DropdownButton title={!props.username ? 'Username' : props.username}
+                        variant={props.username ? 'primary' : 'success'} id="dropdown-button-drop-left" >
+                        {props.username
+                            ?
+                            <>
+                            <Dropdown.Item onClick={props.logout}>Log out</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/verification'>Verification</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
+                            </>
+                            :
+                            <>
+                                <Dropdown.Item as={Link} to='/login' >Login</Dropdown.Item>
+                                <Dropdown.Item as={Link} to='/register'>Sign Up</Dropdown.Item>
+                            </>
+                        }
                     </DropdownButton>
                 </Dropdown>
             </Navbar.Collapse >
@@ -51,4 +68,11 @@ function Navigation() {
 
 
 
-export default Navigation
+let mapStateToProps = (state) => {
+    return {
+        username: state.user.username
+    }
+}
+
+
+export default connect(mapStateToProps, { logout })(Navigation)
