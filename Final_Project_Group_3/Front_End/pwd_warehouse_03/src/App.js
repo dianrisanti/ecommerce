@@ -17,14 +17,19 @@ import { useDispatch } from 'react-redux'
 
 import { getProduct, getCarousel } from './actions'
 
+// import actions
+import { keepLogin } from './actions'
+import { connect } from 'react-redux'
 
-const App = () => {
+
+const App = (props) => {
   const dispatch = useDispatch()
 
   React.useEffect(() => {
     dispatch(getProduct())
     dispatch(getCarousel())
-  }, [])
+    props.keepLogin()
+  }, [props])
   
   return (
         <div>
@@ -42,4 +47,4 @@ const App = () => {
   )
 }
 
-export default App
+export default connect(null, { keepLogin })(App)

@@ -35,3 +35,26 @@ export const verification = () => {
         type: 'VERIFICATION'
     }
 }
+
+export const keepLogin = () => {
+    return async (dispatch) => {
+        try {
+            // console.log('keep login')
+            // get token from local storage
+            const token = localStorage.getItem('token')
+            // console.log(token)
+
+            // get user data from token
+            const res = await Axios.post('http://localhost:2000/user/keepLogin', { token })
+            // console.log('hasil dari api', res.data)
+
+            dispatch({ type: 'LOG_IN', payload: res.data })
+        }
+        catch (err) {
+            console.log(err)
+            localStorage.removeItem('id')
+            localStorage.removeItem('token')
+            dispatch({ type: 'LOG_OUT' })
+        }
+    }
+}
