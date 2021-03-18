@@ -99,7 +99,7 @@ const ProductDetail = (props) => {
                         <p style={{fontSize: "20px"}}>Kategori: {product.category}</p>
                         <p style={{fontSize: "15px"}}>Deskripsi: {product.description}</p>
                     </div>
-                    <Button variant="primary" style={styles.checkout} onClick={addToCartHandler}>
+                    <Button style={styles.checkout} onClick={addToCartHandler}>
                         <i className="fas fa-plus"></i> Keranjang
                     </Button>
                 </div>
@@ -122,7 +122,7 @@ const ProductDetail = (props) => {
 
 const styles = {
     container: {
-        marginTop: "60px", 
+        marginTop: "100px", 
         padding: "0 20px",
         fontFamily: "PT Serif",
         paddingBottom: '30px'
@@ -164,6 +164,8 @@ const styles = {
     checkout: {
         width: "20%",
         height: "8%",
+        backgroundColor: "#118ab2",
+        marginLeft: 550    
     }
 }
 

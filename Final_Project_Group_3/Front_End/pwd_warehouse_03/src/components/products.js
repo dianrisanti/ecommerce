@@ -80,12 +80,12 @@ const Product = () => {
     }
 
     return (
-        <div style={{padding: 10, margin: 25, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '100px'}}>
-            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+        <div style={{padding: 10, margin: 25, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '60px'}}>
+            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', marginBottom: '40px'}}>
                 <div style={{display: 'flex', flexDirection: 'row', width: 300}}>
                     <h3 style={{marginRight: 10}}>Kategori</h3>
                     <Dropdown style={{}}>
-                            <Dropdown.Toggle style={{backgroundColor: "#2b2d42", fontFamily: "Dosis", width: '170px'}} id="dropdown-basic">
+                            <Dropdown.Toggle style={{backgroundColor: "transparent", fontFamily: "Dosis", width: '170px', color: 'black'}} id="dropdown-basic">
                                 {selectedCate ? selectedCate  : "Berdasarkan"}
                             </Dropdown.Toggle>
 
@@ -102,7 +102,7 @@ const Product = () => {
                 <div style={{display: 'flex', flexDirection: 'row'}}>
                     <h3 style={{marginRight: 10}}>Urutkan</h3>
                     <Dropdown style={{marginRight: "4%"}}>
-                            <Dropdown.Toggle style={{backgroundColor: "#2b2d42", fontFamily: "Dosis"}} id="dropdown-basic">
+                            <Dropdown.Toggle style={{backgroundColor: "transparent", fontFamily: "Dosis", color: 'black'}} id="dropdown-basic">
                                 {selectedOption ? selectedOption  : "Berdasarkan"}
                             </Dropdown.Toggle>
 
@@ -134,7 +134,8 @@ const Product = () => {
                                         <Card.Text style={{height: "4rem", fontSize: "20px"}}>
                                             IDR {item.price.toLocaleString()}
                                         </Card.Text>
-                                        <Button style={{margin: "20px 10px"}} as={Link} to={`/detail?id=${item.id}`}>Buy</Button>
+                                        <Button style={{margin: "20px 10px", backgroundColor: '#118ab2'}} as={Link} to={`/detail?id=${item.id}`}>
+                                            <i class="fas fa-shopping-cart"></i> Buy</Button>
                                     </Card.Body>
                                 </Card>
                             )
@@ -152,7 +153,8 @@ const Product = () => {
                                         <Card.Text style={{height: "4rem", fontSize: "20px"}}>
                                             IDR {item.price.toLocaleString()}
                                         </Card.Text>
-                                        <Button style={{margin: "20px 10px"}} as={Link} to={`/detail?id=${item.id}`}>Buy</Button>
+                                        <Button style={{margin: "20px 10px", backgroundColor: '#118ab2'}} as={Link} to={`/detail?id=${item.id}`}>
+                                        <i class="fas fa-shopping-cart"></i> Buy</Button>
                                     </Card.Body>
                                 </Card>
                             )
