@@ -41,7 +41,7 @@ function Navigation() {
                 <Dropdown>
                     <DropdownButton title='Username' variant='primary'>
                         <Dropdown.Item as={Link} to='/login' >Login</Dropdown.Item>
-                        <Dropdown.Item as={Link} to='/sign-up'>Sign Up</Dropdown.Item>
+                        <Dropdown.Item as={Link} to='/register'>Sign Up</Dropdown.Item>
                     </DropdownButton>
                 </Dropdown>
             </Navbar.Collapse >

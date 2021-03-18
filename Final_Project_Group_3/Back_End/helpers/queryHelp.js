@@ -11,16 +11,5 @@ module.exports = {
         }
         return result.slice(0, -1)
     },
-    // generateQuery: (input) => {
-    //     let result = ''
-    //     for(let key in input){
-    //         if(key === 'password') {
-    //             result += ` ${key} = '${cryptojs.HmacMD5(input[key], SECRET_KEY).toString()}',`
-    //         } else {
-    //             result += ` ${key} = ${database.escape(input[key])},`
-    //         }
-    //     }
-    //     return result.slice(0, -1)
-    // },
     asyncQuery: util.promisify(database.query).bind(database)
 }
