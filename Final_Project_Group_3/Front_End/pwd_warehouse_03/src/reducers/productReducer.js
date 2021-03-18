@@ -1,5 +1,6 @@
 const INITIAL_STATE = {
-    products: []
+    products: [],
+    carousel: []
 }
 
 const productReducer = (state = INITIAL_STATE, action) => {
@@ -8,6 +9,11 @@ const productReducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 products: action.payload
+            }
+        case 'GET_CAROUSEL' :
+            return {
+                ...state,
+                carousel: action.payload
             }
         default:
             return state

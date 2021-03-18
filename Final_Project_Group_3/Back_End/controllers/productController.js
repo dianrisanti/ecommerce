@@ -18,5 +18,18 @@ module.exports = {
             console.log(err)
             res.status(400).send(err)
         }
+    },
+
+    getCarousel: async(req, res) => {
+        try{
+            const queryCarousel = `SELECT * FROM carousel`
+            const result = await asyncQuery(queryCarousel)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
     }
 }
