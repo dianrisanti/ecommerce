@@ -4,7 +4,8 @@ import {
     Button
 } from 'react-bootstrap'
 import {
-    Link
+    Link,
+    Redirect
 } from 'react-router-dom'
 
 import { verification } from '../actions'
@@ -30,13 +31,15 @@ function Verification(props) {
         fetchData()
     }, [])
 
-    const { status } = useSelector((state) => {
+    const { status, id } = useSelector((state) => {
         return {
-            status: state.user.regStatus
+            status: state.user.regStatus,
+            id: state.user.id_user
         }
     })
 
     console.log(status)
+    if (!id) return <Redirect to='/' />
     return (
         <div style={styles.container}>
             <div style={styles.center}>
