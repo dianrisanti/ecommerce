@@ -33,7 +33,7 @@ module.exports = {
         // hashing password
         const hashpass = cryptojs.HmacMD5(password, SECRET_KEY)
 
-        const loginQuery = `SELECT u.id, u.username, u.email, p.location, p.address FROM users u 
+        const loginQuery = `SELECT u.id, u.username, u.email, u.status, p.location, p.address FROM users u 
         JOIN profile p ON u.id = p.id_user WHERE ` + QUERY +
         `AND u.password=${db.escape(hashpass.toString())}`
         // console.log(loginQuery)
@@ -272,7 +272,7 @@ module.exports = {
 
         try {
             // query to get data from database
-            const getUser = `SELECT u.id, u.username, u.email, p.location, p.address FROM users u 
+            const getUser = `SELECT u.id, u.username, u.email, u.status, p.location, p.address FROM users u 
             JOIN profile p ON u.id = p.id_user
             WHERE u.username='${req.user.username}'`
 
