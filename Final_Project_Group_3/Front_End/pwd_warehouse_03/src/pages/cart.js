@@ -18,7 +18,7 @@ const CartPage = () => {
         Axios.get(`http://localhost:2000/cart/get/${id}`)
             .then(res => (setData(res.data)))
             .catch(err => console.log(err))
-    }, [])
+    }, [id])
 
     const renderTable = () => {
         return data.map((item, index) => {
