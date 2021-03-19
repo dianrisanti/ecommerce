@@ -13,6 +13,7 @@ import Verify from './pages/verification'
 import ProductDetail from './pages/productDetail'
 import NotFound from './pages/404_page'
 import Login from './pages/login'
+import CartPage from './pages/cart'
 
 import { useDispatch } from 'react-redux'
 
@@ -41,6 +42,7 @@ function App() {
                 <Route path='/verification' component={Verify} />
                 <Route path='/login' component={Login} />
                 <Route path='/detail' component={ProductDetail}/>
+                <Route path='/cart' component={CartPage}/>
                 <Route path='*' component={NotFound} />
             </Switch>
             <Footer/>
