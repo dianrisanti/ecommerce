@@ -37,7 +37,6 @@ const ProductDetail = (props) => {
     })
 
     const addToCartHandler = () => {
-        console.log('add to cart')
         if(qty <= 0) return setQtyErr([true, "Minimal pembelian produk ini adalah 1 barang"])
         const addToCart = {
             order_number: Date.now(),
