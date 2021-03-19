@@ -6,7 +6,7 @@ let INITIAL_STATE = {
     location: '',
     address: '',
     regStatus: null,
-    errLogin: ''
+    cart: []
     
 }
 
@@ -22,6 +22,7 @@ export const userReducer = (state = INITIAL_STATE, action) => {
                 location: action.payload.location,
                 address: action.payload.address,
                 regStatus: action.payload.status
+                cart: action.payload.cart
             }
         case 'LOG_OUT':
             return INITIAL_STATE
