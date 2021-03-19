@@ -1,4 +1,5 @@
 import React from 'react'
+import Axios from 'axios'
 import { Link } from 'react-router-dom'
 import { 
     Carousel,
@@ -22,18 +23,36 @@ const ProductDetail = (props) => {
     
     const selected = products.filter(item => item.id === id)
     const product = selected[0]
-    console.log(product.description)
+    // console.log(product.description)
 
     const [qty, setQty] = React.useState(0)
     const [cartErr, setCartErr] = React.useState(false)
     const [cartSuccess, setCartSuccess] = React.useState(false)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
 
+    const { idUser } = useSelector((state) => {
+        return {
+            idUser: state.user.id_user
+        }
+    })
+
     const addToCartHandler = () => {
-        console.log('add to cart')
         if(qty <= 0) return setQtyErr([true, "Minimal pembelian produk ini adalah 1 barang"])
-        setCartSuccess(true)
-        setQtyErr([false, ""])
+        const addToCart = {
+            order_number: Date.now(),
+            id_user: idUser,
+            id_product: product.id,
+            qty,
+            total: qty * product.price
+        }
+        console.log(addToCart)
+        Axios.post('http://localhost:2000/cart/add', addToCart)
+            .then(res => {
+                console.log(res.data)
+                setCartSuccess(true)
+                setQtyErr([false, ""])
+            })
+            .catch(err => console.log(err))
     }
 
     const changeQty = (e) => {
