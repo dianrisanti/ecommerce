@@ -48,7 +48,7 @@ module.exports = {
             if (result.length === 0) return res.status(400).send('Username or Password is wrong')
 
             // create token
-            let token = createToken({ id: result[0].id_user, username: result[0].username })
+            let token = createToken({ id: result[0].id, username: result[0].username })
 
             // console.log(result[0])
 
@@ -272,10 +272,9 @@ module.exports = {
 
         try {
             // query to get data from database
-            const getUser = `SELECT * FROM users c1
-            LEFT JOIN profile c2
-            ON (c2.id_user = c1.id)
-            WHERE username='${req.user.username}'`
+            const getUser = `SELECT u.id, u.username, u.email, p.location, p.address FROM users u 
+            JOIN profile p ON u.id = p.id_user
+            WHERE u.username='${req.user.username}'`
 
             const result = await asyncQuery(getUser)
             // console.log('result dari query', result[0])

@@ -7,7 +7,6 @@ import { Table, Button, Form, Modal, Image } from 'react-bootstrap'
 
 const CartPage = () => {
     const [data, setData] = React.useState([])
-
     const { id } = useSelector((state) => {
         return {
             id: state.user.id_user
@@ -15,7 +14,7 @@ const CartPage = () => {
     })
 
     React.useEffect(() => {
-        Axios.get(`http://localhost:2000/cart/get/${id}`)
+        Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
             .then(res => (setData(res.data)))
             .catch(err => console.log(err))
     }, [id])
@@ -41,7 +40,7 @@ const CartPage = () => {
         })
     }
 
-
+    if (!id) return <Redirect to='/' />
     return (
         <div style={{ marginTop: "100px" }}>
             <Table striped bordered hover variant="dark">

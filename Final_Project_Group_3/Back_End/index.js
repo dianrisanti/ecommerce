@@ -17,8 +17,6 @@ app.use(cors())
 app.use(bodyParser.json())
 
 // NOTE import router
-let {userRouter} = require('./routers')
-app.use('/user' ,userRouter)
 app.use(express.static('./public'))
 
 
@@ -33,7 +31,8 @@ app.get('/', (req, res) => {
     res.status(200).send(`<h1>This is Home</h1>`)
 })
 
-const { productRouter, orderRouter, profileRouter } = require('./routers')
+const { userRouter, productRouter, orderRouter, profileRouter } = require('./routers')
+app.use('/user' ,userRouter)
 app.use('/products', productRouter)
 app.use('/cart', orderRouter)
 app.use('/profile', profileRouter)
