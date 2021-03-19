@@ -65,7 +65,6 @@ const ProductDetail = (props) => {
         setQtyErr([false, ""])
     }
 
-
     return(
         <div style={styles.container}>
             <Alert show={cartSuccess} variant="success" onClose={() => setCartSuccess(false)} dismissible>

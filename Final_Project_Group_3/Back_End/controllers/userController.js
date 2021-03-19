@@ -28,16 +28,14 @@ module.exports = {
     login: (req, res) => {
         const { username, password, email } = req.body
 
-        const QUERY = email ? `email = '${email}'` : `username = '${username}'`
+        const QUERY = email ? `u.email = '${email}'` : `u.username = '${username}'`
 
         // hashing password
         const hashpass = cryptojs.HmacMD5(password, SECRET_KEY)
 
-        const loginQuery = `SELECT * FROM users c1
-                            LEFT JOIN profile c2
-                            ON (c2.id_user = c1.id)
-                            WHERE ` + QUERY +
-                            `AND password=${db.escape(hashpass.toString())}`
+        const loginQuery = `SELECT u.id, u.username, u.email, p.location, p.address FROM users u 
+        JOIN profile p ON u.id = p.id_user WHERE ` + QUERY +
+        `AND u.password=${db.escape(hashpass.toString())}`
         // console.log(loginQuery)
 
         db.query(loginQuery, (err, result) => {
