@@ -128,7 +128,7 @@ const Product = () => {
                         .map((item, index) => {
                             return(
                                 <Card style={styles.card} key={index} onClick={() => goToDetail(item.id)}>
-                                    <Card.Img variant="top" src={item.images[0]} />
+                                    <Card.Img variant="top" src={item.images} />
                                     <Card.Body style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text style={{height: "4rem", fontSize: "20px"}}>
@@ -147,7 +147,7 @@ const Product = () => {
                         .map((item, index) => {
                             return(
                                 <Card style={styles.card} key={index}>
-                                    <Card.Img variant="top" src={item.images[1]} />
+                                    <Card.Img variant="top" src={item.images} />
                                     <Card.Body style={{display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text style={{height: "4rem", fontSize: "20px"}}>

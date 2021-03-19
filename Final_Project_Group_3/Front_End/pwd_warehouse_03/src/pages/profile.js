@@ -1,39 +1,49 @@
 import React from 'react'
-import Axios from 'axios'
 import {
     Image,
     Button,
     Form,
     FormControl
 } from 'react-bootstrap'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { editProfile } from '../actions'
 
 const Profile = () => {
-    const [profile, setProfile] = React.useState({})
-    const [edit, setEdit] = React.useState(false)
-    const [input, setInput] = React.useState({
-        location: "",
-        address: ""
+    const { id_user, username, email, location, address } = useSelector((state) => {
+        return{
+            id_user: state.user.id_user,
+            username: state.user.username,
+            email: state.user.email,
+            location: state.user.location,
+            address: state.user.address
+        }
     })
+    const dispatch = useDispatch()
 
-    console.log(input)
+    const [edit, setEdit] = React.useState(false)
+    const [loc, setLoc] = React.useState(location)
+    const [addressInput, setAddressInput] = React.useState(address)
 
     const changeLoc = (e) => {
-        const idLoc = e.target.value
-
-        if(+idLoc === 1) return setInput({...input, location: "Jakarta"})
-        if(+idLoc === 2) return setInput({...input, location: "Bandung"})
-        if(+idLoc === 3) return setInput({...input, location: "Surabaya"})
+        const input = e.target.value
+        setLoc(input)
     }
     
     const changeAddress = (e) => {
-        const address = e.target.value
-
-        setInput({...input, address})
+        console.log(e.target.value)
+        setAddressInput(e.target.value)
     }
 
-    React.useEffect(() => {
-        
-    }, [])
+    const saveHandler = () => {
+        const data = {
+            location: loc,
+            address: addressInput
+        }
+
+        dispatch(editProfile(data, +id_user))
+        setEdit(false)
+    }
 
     return(
         <div style={styles.container}>
@@ -48,21 +58,21 @@ const Profile = () => {
                 <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '70vw', marginLeft: '25px'}}>
                     <div>
                         <h4>Profile</h4>
-                        <p>Username: </p>
-                        <p>Email: </p>
+                        <p>Username: {username}</p>
+                        <p>Email: {email}</p>
                         <p>Kota: 
-                            <Form.Control as="select" onChange={(e) => changeLoc(e)}>
-                                <option value="1">Jakarta</option>
-                                <option value="2">Bandung</option>
-                                <option value="3">Surabaya</option>
+                            <Form.Control as="select" value={loc} onChange={(e) => changeLoc(e)}>
+                                <option value="Jakarta">Jakarta</option>
+                                <option value="Bandung">Bandung</option>
+                                <option value="Surabaya">Surabaya</option>
                             </Form.Control>
                         </p>
                         <p>Alamat: 
-                            <FormControl value={input.address} onChange={(e) => changeAddress(e)}/>
+                            <FormControl onChange={(e) => changeAddress(e)} value={addressInput}/>
                         </p>
                     </div>
                     <div>
-                        <Button variant="success" style={{width: '40px', height: '35px', marginRight: '10px'}}><i className="far fa-check-square"></i></Button>
+                        <Button variant="success" style={{width: '40px', height: '35px', marginRight: '10px'}} onClick={saveHandler}><i className="far fa-check-square"></i></Button>
                         <Button variant="danger" style={{width: '40px', height: '35px'}} onClick={() => setEdit(false)}><i className="far fa-window-close"></i></Button>
                     </div>
                 </div>
@@ -70,10 +80,10 @@ const Profile = () => {
                 <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '70vw', marginLeft: '25px'}}>
                     <div>
                         <h4>Profile</h4>
-                        <p>Username: </p>
-                        <p>Email: </p>
-                        <p>Kota: {input.location} </p>
-                        <p>Alamat: {input.address} </p>
+                        <p>Username: {username}</p>
+                        <p>Email: {email}</p>
+                        <p>Kota: {loc}</p>
+                        <p>Alamat: {addressInput}</p>
                     </div>
                     <Button style={styles.button} onClick={() => setEdit(true)}><i className="fas fa-edit"></i></Button>
                 </div>

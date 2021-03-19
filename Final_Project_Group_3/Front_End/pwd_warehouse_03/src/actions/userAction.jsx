@@ -58,3 +58,20 @@ export const keepLogin = () => {
         }
     }
 }
+
+export const editProfile = (data, id) => {
+    return async(dispatch) => {
+        try{
+            const res = await Axios.post(`http://localhost:2000/profile/edit/${id}`, data)
+            console.log('hasil respon: ', res.data)
+
+            const token = localStorage.getItem('token')
+
+            const res2 = await Axios.post('http://localhost:2000/user/keeplogin', {token})
+            dispatch({ type: 'LOG_IN', payload: res2.data})
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+}

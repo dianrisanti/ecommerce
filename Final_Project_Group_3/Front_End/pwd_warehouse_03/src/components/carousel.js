@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 const Slider = () => {
     const { carousel } = useSelector((state) => {
         return{
-            carousel: state.productReducer.carousel
+            carousel: state.product.carousel
         }
     })
 

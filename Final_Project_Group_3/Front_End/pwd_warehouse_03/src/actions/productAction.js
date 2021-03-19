@@ -31,3 +31,20 @@ export const getCarousel = () => {
         }
     }
 }
+
+export const getProductDetail = (id) => {
+    return async(dispatch) => {
+        try{
+            console.log('get product detail id', id)
+            const res = await Axios.get(`http://localhost:2000/products/detail/${id}`)
+
+            dispatch({
+                type: 'GET_PRODUCT_DETAIL',
+                payload: res.data
+            })
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+}

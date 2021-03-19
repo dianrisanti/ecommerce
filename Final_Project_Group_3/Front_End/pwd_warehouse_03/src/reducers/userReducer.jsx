@@ -1,12 +1,10 @@
 let INITIAL_STATE = {
-    id_users: null,
+    id_user: null,
     username: '',
     password: '',
     email: '',
-    gender: '',
-    kota: '',
-    umur: null,
-    profile_pic: '',
+    location: '',
+    address: '',
     regStatus: null,
     errLogin: ''
     
@@ -17,15 +15,13 @@ export const userReducer = (state = INITIAL_STATE, action) => {
         case 'LOG_IN':
             return {
                 ...state,
-                id_users: action.payload.id_users,
+                id_user: action.payload.id_user,
                 username: action.payload.username,
                 password: action.payload.password,
                 email: action.payload.email,
-                regStatus: action.payload.status,
-                gender: action.payload.gender,
-                kota: action.payload.kota,
-                umur: action.payload.umur,
-                profile_pic: action.payload.profile_pic,
+                location: action.payload.location,
+                address: action.payload.address,
+                regStatus: action.payload.status
             }
         case 'LOG_OUT':
             return INITIAL_STATE
