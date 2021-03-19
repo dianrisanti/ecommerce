@@ -83,7 +83,7 @@ function Login(props) {
                     <Button onClick={handleLogin} variant='primary' style={{ marginTop: "10px", }}>Login</Button>
                 </div>
                     <p style={{ marginTop: "10px"}}>Do you have an account? <Link to='/register'>Register Here</Link></p>
-                    <p>Forgot password ? <Link to='/forgot_password'>Click Here</Link></p>
+                    <p>Forgot password ? <Link to='/requestNewPassword'>Click Here</Link></p>
                 <Modal show={Boolean(props.msgError)} onHide={props.logout}>
                     <Modal.Header closeButton>
                         <Modal.Title>Error</Modal.Title>
