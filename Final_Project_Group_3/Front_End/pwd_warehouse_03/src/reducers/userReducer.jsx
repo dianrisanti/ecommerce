@@ -21,7 +21,7 @@ export const userReducer = (state = INITIAL_STATE, action) => {
                 email: action.payload.email,
                 location: action.payload.location,
                 address: action.payload.address,
-                regStatus: action.payload.status
+                regStatus: action.payload.status,
                 cart: action.payload.cart
             }
         case 'LOG_OUT':
