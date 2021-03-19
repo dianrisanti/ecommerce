@@ -5,5 +5,3 @@ export const URL = 'http://localhost:2000'
 export const LOG_IN = 'LOG_IN'
 export const LOG_OUT = 'LOG_OUT'
 
-
-export const GET_CART_USER = 'GET_CART_USER'

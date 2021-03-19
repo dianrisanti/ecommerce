@@ -42,7 +42,7 @@ function Navigation(props) {
                         <strong>HOME</strong>
                     </NavLink>
                 </Nav>
-
+                <Link to='/cart' style={{fontSize:'30px', marginRight:'10px', marginBottom:'10px', textDecoration:'none'}}> 🛒 </Link>
                 <Dropdown>
                 <DropdownButton title={!props.username ? 'Username' : props.username}
                         variant={props.username ? 'primary' : 'success'} id="dropdown-button-drop-left" >

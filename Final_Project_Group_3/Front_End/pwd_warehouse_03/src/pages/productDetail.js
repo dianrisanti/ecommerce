@@ -42,6 +42,7 @@ const ProductDetail = (props) => {
             order_number: Date.now(),
             id_user: idUser,
             id_product: product.id,
+            harga: product.price,
             qty,
             total: qty * product.price
         }
