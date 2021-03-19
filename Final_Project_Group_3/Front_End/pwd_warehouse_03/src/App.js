@@ -9,6 +9,7 @@ import Footer from './components/footer'
 import Home from './pages/home'
 import SignUp from './pages/Sign_Up'
 import ForgotPassword from './pages/forgotPassword'
+import RequestNewPassword from './pages/requestNewPassword'
 import Verify from './pages/verification'
 import ProductDetail from './pages/productDetail'
 import NotFound from './pages/404_page'
@@ -40,6 +41,7 @@ function App() {
                 <Route path='/' component={Home} exact />
                 <Route path='/register' component={SignUp} />
                 <Route path='/forgot_password' component={ForgotPassword} />
+                <Route path='/requestNewPassword' component={RequestNewPassword} />
                 <Route path='/verification' component={Verify} />
                 <Route path='/login' component={Login} />
                 <Route path='/detail' component={ProductDetail}/>

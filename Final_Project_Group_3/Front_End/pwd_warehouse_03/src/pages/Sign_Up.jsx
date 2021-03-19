@@ -47,8 +47,9 @@ function RegisterPage() {
                 setToLogin(true)
             })
             .catch(err => {
-                console.log(err)
-                setRegError([true, "gagal regis"])
+                console.log(err.response.data)
+                const errMsg = err.response.data
+                setRegError([true, errMsg])
             })
     }
 

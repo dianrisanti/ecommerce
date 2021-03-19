@@ -128,8 +128,13 @@ module.exports = {
             const checkUser = `SELECT * FROM users 
                               WHERE email=${db.escape(email)}`
             const resCheck = await asyncQuery(checkUser)
+            console.log(resCheck[0])
 
             if (resCheck.length === 0) return res.status(400).send('Email not yet registered')
+            if (parseInt(resCheck[0].status) === 0) return res.status(400).send(`Account with username ${resCheck[0].username} has not been verified, please check your email. Request new password can not be proceed until the account verified`)
+
+            // create token
+            const token = createToken({ id: resCheck[0].id, username: resCheck[0].username })
 
             // send email notification to user
             const option = {
@@ -140,14 +145,14 @@ module.exports = {
             }
 
             //set up handlebars
-            const emailFile = fs.readFileSync('./email/index.html').toString()
+            const emailFile = fs.readFileSync('./email/forgotPassword.html').toString()
             // console.log(email)
 
             // compile data email
             const template = handlebars.compile(emailFile)
 
             // menambah properti html di dalam option 
-            option.html = template({ token: token, name: username })
+            option.html = template({ token: token, name: resCheck[0].username, id: resCheck[0].id })
 
             // send email
             const info = await transporter.sendMail(option)
@@ -254,7 +259,7 @@ module.exports = {
             const result = await asyncQuery(verify)
             console.log(result)
 
-            res.status(200).send('Email has been verified')
+            res.status(200).send('Email has been verified', result)
         }
         catch (err) {
             console.log(err)
