@@ -50,7 +50,7 @@ module.exports = {
             JOIN products p ON od.id_product = p.id
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
-            WHERE o.status = 1 AND o.id_user = ${req.params.id}
+            WHERE o.status = 1 AND o.id_user = ${parseInt(req.params.id)}
             GROUP BY od.id_product`
 
             const result = await asyncQuery(getCart)

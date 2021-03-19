@@ -17,13 +17,9 @@ import Login from './pages/login'
 import CartPage from './pages/cart'
 import Profile from './pages/profile'
 
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { getProduct, getCarousel } from './actions'
-
-// import actions
-import { keepLogin } from './actions'
-
+import { getProduct, getCarousel, getCart, keepLogin } from './actions'
 
 function App() {
   const dispatch = useDispatch()

@@ -52,9 +52,9 @@ export const keepLogin = () => {
         }
         catch (err) {
             console.log(err)
+            dispatch({ type: 'LOG_OUT' })
             localStorage.removeItem('id')
             localStorage.removeItem('token')
-            dispatch({ type: 'LOG_OUT' })
         }
     }
 }
@@ -62,7 +62,7 @@ export const keepLogin = () => {
 export const editProfile = (data, id) => {
     return async(dispatch) => {
         try{
-            const res = await Axios.post(`http://localhost:2000/profile/edit/${id}`, data)
+            const res = await Axios.post(`http://localhost:2000/profile/edit/${parseInt(id)}`, data)
             console.log('hasil respon: ', res.data)
 
             const token = localStorage.getItem('token')
