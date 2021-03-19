@@ -3,10 +3,12 @@ import { combineReducers } from 'redux'
 import { userReducer } from './userReducer'
 import productReducer from './productReducer'
 import cartReducer from './cartReducer'
+import profileReducer from './profileReducer'
 
 const allReducers = combineReducers({
     user: userReducer,
-    productReducer,
+    product: productReducer,
+    profile: profileReducer,
     cartReducer
 })
 

@@ -17,7 +17,7 @@ const ProductDetail = (props) => {
 
     const { products } = useSelector((state) => {
         return{
-            products: state.productReducer.products
+            products: state.product.products
         }
     })
     
