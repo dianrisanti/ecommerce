@@ -50,7 +50,7 @@ module.exports = {
             JOIN products p ON od.id_product = p.id
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
-            WHERE o.status = 1 AND o.id_user = ${parseInt(req.params.id)}
+            WHERE o.status = 1 AND o.id_user = ${db.escape(req.params.id)}
             GROUP BY od.id_product`
 
             const result = await asyncQuery(getCart)
@@ -64,11 +64,11 @@ module.exports = {
     },
 
     editCart: async (req, res) => {
-        const { id_product, order_number, ...input } = req.body
+        const { id_product, order_number, quantity } = req.body
 
         try {
-            const editQty = `UPDATE order_details SET${generateQuery(input)}
-            WHERE id_product = ${+id_product} AND order_number = ${+order_number}`
+            const editQty = `UPDATE order_details SET quantity = ${db.escape(quantity)}
+            WHERE id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(editQty)
 
             res.status(200).send(`edit cart for id_product ${+id_product} success`)
@@ -84,7 +84,7 @@ module.exports = {
 
         try {
             const deleteItem = `DELETE FROM order_details WHERE 
-            id_product = ${+id_product} AND order_number = ${+order_number}`
+            id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(deleteItem)
 
             res.status(200).send(`delete cart for id_product ${id_product} success`)
