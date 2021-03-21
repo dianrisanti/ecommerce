@@ -15,7 +15,7 @@ module.exports = {
 
             if(checkResult.length === 0) {
                 const addOrders = `INSERT INTO orders (date, order_number, id_user)
-                VALUES ('${date.toLocaleDateString()}' '${order_number}', ${db.escape(id_user)})`
+                VALUES ('${date.toLocaleDateString()}', '${order_number}', ${db.escape(id_user)})`
                 await asyncQuery(addOrders)
             }
 

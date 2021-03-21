@@ -13,15 +13,18 @@ import {
 
 const CartPage = () => {
     const [data, setData] = React.useState([])
-    const [checkout, setCheckout] = React.useState(false)
+    const [loc, setLoc] = React.useState(false)
+    const [noLoc, setNoLoc] = React.useState(false)
     const [editIndex, setEditIndex] = React.useState(null)
     const [qty, setQty] = React.useState(0)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
 
 
-    const { id } = useSelector((state) => {
+    const { id, location, address } = useSelector((state) => {
         return {
-            id: state.user.id_user
+            id: state.user.id_user,
+            location: state.user.location,
+            address: state.user.address
         }
     })
 
@@ -70,6 +73,12 @@ const CartPage = () => {
 
         setQty(+input)
         setQtyErr([false, ""])
+    }
+
+    const checkoutHandler = () => {
+        console.log('checkout clicked')
+        if(!location || !address) return setNoLoc(true)
+        if(location) return setLoc(true)
     }
 
     const renderTable = () => {
@@ -123,11 +132,13 @@ const CartPage = () => {
     }
 
     if (!id) return <Redirect to='/' />
+    if(loc) return <Redirect to="/checkout"/>
     return (
         <div style={{ marginTop: "100px" }}>
-            <Alert show={checkout} variant="success" onClose={() => setCheckout(false)} dismissible>
-                Berhasil
-                <Alert.Link as={Link} to='./checkout'> checkout! </Alert.Link>
+            <Alert show={noLoc} variant="danger" onClose={() => setNoLoc(false)} dismissible>
+                Mohon lengkapi lokasi dan alamat pada 
+                <Alert.Link as={Link} to='./profile'> profile Anda </Alert.Link>
+                sebelum membuat pesanan
             </Alert>
 
             <Table striped bordered hover variant="dark">
@@ -143,7 +154,7 @@ const CartPage = () => {
                 </thead>
                 <tbody>{renderTable()}</tbody>
             </Table>
-            <Button style={styles.checkout} onClick={() => setCheckout(true)}>
+            <Button style={styles.checkout} onClick={checkoutHandler}>
                 <i className="fas fa-plus"></i> Checkout
             </Button>
         </div>
