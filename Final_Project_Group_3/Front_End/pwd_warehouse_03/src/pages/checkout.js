@@ -33,6 +33,9 @@ const Checkout = () => {
 
     const handleSubmit = e => {
         e.preventDefault()
+        Axios.post(`http://localhost:2000/cart/invoice/${parseInt(id)}`)
+            .then(res => console.log(res))
+            .catch(err => console.log(err))
     }
 
     return(
@@ -101,7 +104,7 @@ const Checkout = () => {
                     </div>
                 </Form.Group>
 
-                <Button variant="primary" type="submit" >
+                <Button variant="primary" type="submit" onClick={handleSubmit} >
                     Place Order
                 </Button>
             </div>

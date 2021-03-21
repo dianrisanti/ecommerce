@@ -8,5 +8,6 @@ router.patch('/edit', orderController.editCart)
 router.post('/delete', orderController.deleteCart)
 router.get('/history/:id', orderController.getHistory)
 router.get('/summary/:id', orderController.getSummary)
+router.post('/invoice/:id', orderController.getInvoice)
 
 module.exports = router
