@@ -97,7 +97,7 @@ const styles = {
         display: 'flex', 
         flexDirection: 'row', 
         marginLeft: '60px',
-        marginTop: '120px'
+        marginTop: '160px'
     },
 
     button: {

@@ -1,5 +1,5 @@
 // import Axios from 'axios' // NOTE ga pake axios lagi karna udah ada keep login
-import React, { useState, useRef} from 'react'
+import React, { useState, useRef } from 'react'
 // import Axios from 'axios'
 import {
     Button,
@@ -82,8 +82,8 @@ function Login(props) {
                 <div style={{ display: "flex", justifyContent: "center", }}>
                     <Button onClick={handleLogin} variant='primary' style={{ marginTop: "10px", }}>Login</Button>
                 </div>
-                    <p style={{ marginTop: "10px"}}>Do you have an account? <Link to='/register'>Register Here</Link></p>
-                    <p>Forgot password ? <Link to='/requestNewPassword'>Click Here</Link></p>
+                <p style={{ marginTop: "10px" }}>Do you have an account? <Link to='/register'>Register Here</Link></p>
+                <p>Forgot password ? <Link to='/requestNewPassword'>Click Here</Link></p>
                 <Modal show={Boolean(props.msgError)} onHide={props.logout}>
                     <Modal.Header closeButton>
                         <Modal.Title>Error</Modal.Title>
@@ -120,8 +120,9 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         height: '100vh',
-        background: "url(https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1350&q=80) no-repeat center",
-        backgroundSize: '100vw 100vh'
+        background: "url(https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1934&q=80) no-repeat center",
+        backgroundSize: '100vw 100vh',
+        marginTop: '138px'
     }
 }
 

@@ -62,11 +62,12 @@ function Verification(props) {
 
 const styles = {
     container: {
-        background: "url(https://images.unsplash.com/photo-1506544777-64cfbe1142df?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80) no-repeat center",
+        background: "url(https://images.unsplash.com/photo-1608560610603-c7ebd7b0fc05?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80) no-repeat center",
         backgroundSize: "cover",
         display: "flex",
         justifyContent: "center",
         height: "100vh",
+        marginTop: "138px"
     },
     center: {
         marginTop: 300,

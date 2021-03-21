@@ -4,7 +4,8 @@ import {
     Nav,
     NavLink,
     Dropdown,
-    DropdownButton
+    DropdownButton,
+    Image
 } from 'react-bootstrap'
 import { Redirect, Link } from 'react-router-dom'
 
@@ -35,13 +36,13 @@ function Navigation() {
         <Navbar fixed='top' style={{ background: 'rgba(82, 192, 192, 0.7)' }} expand="lg">
             <Navbar>
                 <Navbar.Brand as={Link} to='/'>
-                    <img
-                        alt=""
-                        src={LOGO.default}
-                        width="80"
-                        height="50"
-                        style={{ borderRadius: '15px', margin: "0px" }}
-                    />{' '} <strong>Electronic Shop</strong>
+                    <Image
+                        alt="Electronic-Shop"
+                        src="http://www.kniwwelino.lu/fileadmin/logos/electronic-shop.png"
+                        width="250px"
+                        height="50px"
+                        fluid
+                    />
                 </Navbar.Brand>
             </Navbar>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
