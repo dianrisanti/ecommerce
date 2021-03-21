@@ -16,10 +16,12 @@ import NotFound from './pages/404_page'
 import Login from './pages/login'
 import CartPage from './pages/cart'
 import Profile from './pages/profile'
+import History from './pages/history'
+import Checkout from './pages/checkout'
 
 import { useDispatch, useSelector } from 'react-redux'
 
-import { getProduct, getCarousel, getCart, keepLogin } from './actions'
+import { getProduct, getCarousel, keepLogin } from './actions'
 
 function App() {
   const dispatch = useDispatch()
@@ -43,6 +45,8 @@ function App() {
                 <Route path='/detail' component={ProductDetail}/>
                 <Route path='/cart' component={CartPage}/>
                 <Route path='/profile' component={Profile}/>
+                <Route path='/history' component={History}/>
+                <Route path='/checkout' component={Checkout}/>
                 <Route path='*' component={NotFound} />
             </Switch>
             <Footer/>

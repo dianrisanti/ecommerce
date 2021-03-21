@@ -6,21 +6,31 @@ import {
     Dropdown,
     DropdownButton
 } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 
 import {
     LOGO
 } from '../assets'
 
-// NOTE import connect redux
-import { connect } from "react-redux"
+import { useSelector, useDispatch } from 'react-redux'
 
 //NOTE import action log out
 import { logout } from "../actions"
 
+function Navigation() {
+    const { username } = useSelector((state) => {
+        return {
+            username: state.user.username
+        }
+    })
 
+    const dispatch = useDispatch()
+    const logoutHandler = () => {
+        dispatch(logout())
 
-function Navigation(props) {
+        return <Redirect to='/'/>
+    }
+
     return (
         <Navbar fixed='top' style={{ background: 'rgba(82, 192, 192, 0.7)' }} expand="lg">
             <Navbar>
@@ -44,14 +54,15 @@ function Navigation(props) {
                 </Nav>
                 <Link to='/cart' style={{fontSize:'30px', marginRight:'10px', marginBottom:'10px', textDecoration:'none'}}> 🛒 </Link>
                 <Dropdown>
-                <DropdownButton title={!props.username ? 'Username' : props.username}
-                        variant={props.username ? 'primary' : 'success'} id="dropdown-button-drop-left" >
-                        {props.username
+                <DropdownButton title={!username ? 'Username' : username}
+                        variant={username ? 'primary' : 'success'} id="dropdown-button-drop-left" >
+                        {username
                             ?
                             <>
-                            <Dropdown.Item onClick={props.logout}>Log out</Dropdown.Item>
+                            <Dropdown.Item onClick={logoutHandler}>Log out</Dropdown.Item>
                             <Dropdown.Item as={Link} to='/verification'>Verification</Dropdown.Item>
                             <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/history'>History</Dropdown.Item>
                             </>
                             :
                             <>
@@ -67,12 +78,4 @@ function Navigation(props) {
 }
 
 
-
-let mapStateToProps = (state) => {
-    return {
-        username: state.user.username
-    }
-}
-
-
-export default connect(mapStateToProps, { logout })(Navigation)
+export default Navigation
