@@ -1,6 +1,13 @@
+// NOTE import helpers
+const transporter = require('../helpers/nodemailer')
 const { asyncQuery, generateQuery } = require('../helpers/queryHelp')
 
 const db = require('../database')
+
+// NOTE import module
+const handlebars = require('handlebars')
+const fs = require('fs')
+
 
 module.exports = {
     addCart: async(req, res) => {
@@ -168,6 +175,67 @@ module.exports = {
             const summary = await asyncQuery(query)
 
             res.status(200).send(summary)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+        
+    },
+    getInvoice: async(req, res) => {
+        try{
+            const id_user = req.params.id ? +req.params.id  : 0
+            const query = `SELECT o.order_number, o.payment_method, sum(od.total) total, p.address, x.username
+            FROM orders o
+            JOIN order_details od ON o.order_number = od.order_number
+            JOIN profile p ON o.id_user = p.id_user
+            JOIN users x ON x.id = p.id_user
+            WHERE o.status = 1 AND o.id_user = ${id_user}
+            GROUP BY od.order_number`
+            const summary = await asyncQuery(query)
+            const date = new Date().toDateString()
+            summary[0].date = date
+            const currencyFractionDigits = new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'IDR',
+            }).resolvedOptions().maximumFractionDigits;
+            
+            var value = summary[0].total.toLocaleString('de-DE', { maximumFractionDigits: currencyFractionDigits });
+            
+            console.log(value);
+            summary[0].total_IDR = ("IDR " + value)
+
+
+            console.log(summary[0])
+
+            // send email notification to user
+            const option = {
+                from: `admin <cusunliem@gmail.com>`,
+                to: 'finalprojectwarehouse3@gmail.com', // NOTE nanti ganti dengan email sesuai register
+                subject: 'YOUR INVOICE',
+                text: '',
+            }
+
+            //set up handlebars
+            const emailFile = fs.readFileSync('./email/invoice.html').toString()
+            // console.log(email)
+
+            // compile data email
+            const template = handlebars.compile(emailFile)
+
+            // menambah properti html di dalam option 
+            option.html = template({ 
+                name: summary[0].username, 
+                order_number: summary[0].order_number, 
+                date: summary[0].date, 
+                payment_method: summary[0].payment_method,
+                total: summary[0].total_IDR
+            })
+
+            // send email
+            const info = await transporter.sendMail(option)
+
+            res.status(200).send(info.response)
         }
         catch(err){
             console.log(err)
