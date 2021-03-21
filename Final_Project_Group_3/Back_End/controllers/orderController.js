@@ -66,11 +66,11 @@ module.exports = {
     },
 
     editCart: async (req, res) => {
-        const { id_product, order_number, ...input } = req.body
+        const { id_product, order_number, quantity } = req.body
 
         try {
-            const editQty = `UPDATE order_details SET${generateQuery(input)}
-            WHERE id_product = ${+id_product} AND order_number = ${+order_number}`
+            const editQty = `UPDATE order_details SET quantity = ${db.escape(quantity)}
+            WHERE id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(editQty)
 
             res.status(200).send(`edit cart for id_product ${+id_product} success`)
@@ -86,7 +86,7 @@ module.exports = {
 
         try {
             const deleteItem = `DELETE FROM order_details WHERE 
-            id_product = ${+id_product} AND order_number = ${+order_number}`
+            id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(deleteItem)
 
             res.status(200).send(`delete cart for id_product ${id_product} success`)

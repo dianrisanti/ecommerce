@@ -2,17 +2,36 @@ import React from 'react'
 import Axios from 'axios'
 import { Redirect, Link } from 'react-router-dom'
 
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
+import {
+    GetCartAction,
+    EditCartQtyAction,
+    DeleteCartItemAction,
+    ChekOutAction,
+} from '../actions';
 
 const CartPage = () => {
     const [data, setData] = React.useState([])
     const [checkout, setCheckout] = React.useState(false)
+    const [editIndex, setEditIndex] = React.useState(null)
+    const [qty, setQty] = React.useState(0)
+    const [qtyErr, setQtyErr] = React.useState([false, ""])
+
+
     const { id } = useSelector((state) => {
         return {
             id: state.user.id_user
         }
     })
+
+    const { products } = useSelector((state) => {
+        return {
+            products: state.product.products
+        }
+    })
+
+    const dispatch = useDispatch();
 
     React.useEffect(() => {
         Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
@@ -20,23 +39,85 @@ const CartPage = () => {
             .catch(err => console.log(err))
     }, [id])
 
+    const deleteHandler = (itemId) => {
+        const num = data[0].order_number
+        const input = {
+            id_product: itemId,
+            order_number: num
+        }
+        dispatch(DeleteCartItemAction(input, id))
+        console.log(input)
+    }
+
+    const saveHandler = (itemId) => {
+        const num = data[0].order_number
+        const input = {
+            id_product: itemId,
+            order_number: num,
+            quantity: qty
+            
+        }
+        dispatch(EditCartQtyAction(input, id))
+        console.log(input)
+    }
+
+
+    const changeQty = (e) => {
+        const input = e.target.value
+
+        if (isNaN(+input)) return setQty(0)
+        if (+input > products.total_stock) return setQtyErr([true, `Maks. pembelian barang ini ${products.total_stock} item`])
+
+        setQty(+input)
+        setQtyErr([false, ""])
+    }
+
     const renderTable = () => {
         return data.map((item, index) => {
             return (
-                <tr key={index}>
-                    <td style={{ textAlign: 'center' }}>{index + 1}</td>
-                    <td>
-                        <Image style={{ width: 60, height: 60, marginRight: "15px" }} src={item.image} rounded />
-                        {item.name}
-                    </td>
-                    <td style={{ textAlign: 'right' }}>{item.price}</td>
-                    <td style={{ textAlign: 'center' }}>{item.quantity}</td>
-                    <td style={{ textAlign: 'right' }}>{item.total}</td>
-                    <td style={{ textAlign: 'center' }}>
-                        <Button style={{ marginRight: '5px' }}> Edit </Button>
-                        <Button variant="danger" style={{ marginLeft: '5px' }}> Delete </Button>
-                    </td>
-                </tr>
+                index === editIndex
+                    ?
+                    <tr key={index}>
+                        <td style={{ textAlign: 'center' }}>{index + 1}</td>
+                        <td>
+                            <Image style={{ width: 60, height: 60, marginRight: "15px" }} src={item.image} rounded />
+                            {item.name}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>{item.price}</td>
+                        <td style={{ textAlign: 'center' }}>
+                            <button
+                                disabled={qty <= 0 ? true : false}
+                                onClick={() => setQty(qty - 1)}
+                                style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
+                            ><i className="fas fa-minus"></i></button>
+                            <Form.Control style={{ width: '90px', fontSize: '20px' }} onChange={(e) => changeQty(e)} value={qty} min={0} />
+                            <button
+                                disabled={qty >= products.total_stock ? true : false}
+                                onClick={() => setQty(qty + 1)}
+                                style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
+                            ><i className="fas fa-plus"></i></button>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>{item.price * qty}</td>
+                        <td style={{ textAlign: 'center' }}>
+                            <Button style={{ marginRight: '5px' }} onClick={() => saveHandler(item.id_product)}> Save </Button>
+                            <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => setEditIndex(null)}> Cancel </Button>
+                        </td>
+                    </tr>
+                    :
+                    <tr key={index}>
+                        <td style={{ textAlign: 'center' }}>{index + 1}</td>
+                        <td>
+                            <Image style={{ width: 60, height: 60, marginRight: "15px" }} src={item.image} rounded />
+                            {item.name}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>{item.price}</td>
+                        <td style={{ textAlign: 'center' }}>{item.quantity}</td>
+                        <td style={{ textAlign: 'right' }}>{item.total}</td>
+                        <td style={{ textAlign: 'center' }}>
+                            <Button style={{ marginRight: '5px' }} onClick={() => setEditIndex(index)}> Edit </Button>
+                            <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => deleteHandler(item.id_product)}> Delete </Button>
+                        </td>
+                    </tr>
             )
         })
     }
@@ -45,7 +126,7 @@ const CartPage = () => {
     return (
         <div style={{ marginTop: "100px" }}>
             <Alert show={checkout} variant="success" onClose={() => setCheckout(false)} dismissible>
-                Berhasil 
+                Berhasil
                 <Alert.Link as={Link} to='./checkout'> checkout! </Alert.Link>
             </Alert>
 
@@ -71,31 +152,31 @@ const CartPage = () => {
 
 const styles = {
     container: {
-        marginTop: "100px", 
+        marginTop: "100px",
         padding: "0 20px",
         fontFamily: "PT Serif",
         paddingBottom: '30px'
     },
     content: {
-        display: "flex",  
+        display: "flex",
         height: "80vh"
     },
     left: {
-        display: "flex", 
-        flexBasis: "40%", 
+        display: "flex",
+        flexBasis: "40%",
         justifyContent: "center",
         alignItems: "center",
     },
     right: {
         display: "flex",
-        flexDirection: "column", 
+        flexDirection: "column",
         flexBasis: "60%",
         justifyContent: "space-between",
-        padding: "0 20px" 
+        padding: "0 20px"
     },
     description: {
         fontSize: "13px",
-        fontWeight: "350", 
+        fontWeight: "350",
     },
     size: {
         display: "flex",
@@ -114,7 +195,7 @@ const styles = {
         width: "20%",
         height: "8%",
         backgroundColor: "#118ab2",
-        marginLeft: 550    
+        marginLeft: 550
     }
 }
 
