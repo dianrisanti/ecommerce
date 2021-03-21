@@ -46,7 +46,7 @@ const CartPage = () => {
             order_number: num
         }
         dispatch(DeleteCartItemAction(input, id))
-
+        console.log(input)
     }
 
     const saveHandler = (itemId) => {
@@ -58,6 +58,7 @@ const CartPage = () => {
             
         }
         dispatch(EditCartQtyAction(input, id))
+        console.log(input)
     }
 
 
