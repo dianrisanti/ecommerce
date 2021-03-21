@@ -6,7 +6,7 @@ import Product from '../components/products'
 
 const Home = () => {
     return(
-        <div style={{marginTop: '92px'}}>
+        <div style={{marginTop: '138px'}}>
             <Carousel/>
             <Product/>
         </div>

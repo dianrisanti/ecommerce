@@ -134,7 +134,7 @@ const CartPage = () => {
     if (!id) return <Redirect to='/' />
     if(loc) return <Redirect to="/checkout"/>
     return (
-        <div style={{ marginTop: "100px" }}>
+        <div style={{ marginTop: "138px" }}>
             <Alert show={noLoc} variant="danger" onClose={() => setNoLoc(false)} dismissible>
                 Mohon lengkapi lokasi dan alamat pada 
                 <Alert.Link as={Link} to='./profile'> profile Anda </Alert.Link>
@@ -163,7 +163,7 @@ const CartPage = () => {
 
 const styles = {
     container: {
-        marginTop: "100px",
+        marginTop: "138px",
         padding: "0 20px",
         fontFamily: "PT Serif",
         paddingBottom: '30px'
