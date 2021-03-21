@@ -9,20 +9,20 @@ import {
 
 const Checkout = () => {
     const [selected, setSelected] = React.useState("")
-    const [data, setData] = React.useState({})
+    const [data, setData] = React.useState([])
     const { id } = useSelector((state) => {
         return {
             id: state.user.id_user
         }
     })
 
+    console.log('data payment', data)
+
     React.useEffect(() => {
         Axios.get(`http://localhost:2000/cart/summary/${parseInt(id)}`)
-            .then(res => (setData(res.data[0])))
+            .then(res => (setData(res.data)))
             .catch(err => console.log(err))
     }, [id])
-
-    console.log('data payment ', data)
 
     const handleChange = e => {
         e.persist()
@@ -107,15 +107,15 @@ const Checkout = () => {
             </div>
 
             {
-                data
+                data.length !== 0
                 ?
                 <div style={{width: '20vw'}}>
                     <h4>Order Summary</h4>
                     <p style={{fontSize: '20', fontWeight: 'bold'}}>Shipping</p>
-                    <p style={{marginTop: '-10px'}}>{data.address}</p>
+                    <p style={{marginTop: '-10px'}}>{data[0].address}</p>
                     <div style={{display: 'flex', justifyContent: 'space-between'}}>
                         <h5>Order Total: </h5>
-                        <p>IDR {data.total.toLocaleString()}</p>
+                        <p>IDR {data[0].total.toLocaleString()}</p>
                     </div>
                 </div>
                 :
