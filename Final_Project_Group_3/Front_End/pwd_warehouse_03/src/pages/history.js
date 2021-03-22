@@ -78,7 +78,7 @@ const HistoryPage = () => {
     }
 
     return(
-        <div style={{marginTop: "70px", padding: "0 20px"}}>
+        <div style={{marginTop: "150px", padding: "0 20px"}}>
             <h1>Order History</h1>
             <Table striped bordered hover style={{textAlign: "center"}}>
                 {renderTbody()}

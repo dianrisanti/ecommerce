@@ -19,17 +19,11 @@ const CartPage = () => {
     const [qty, setQty] = React.useState(0)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
 
-
-    const { id, location, address } = useSelector((state) => {
+    const { id, location, address, products } = useSelector((state) => {
         return {
             id: state.user.id_user,
             location: state.user.location,
-            address: state.user.address
-        }
-    })
-
-    const { products } = useSelector((state) => {
-        return {
+            address: state.user.address,
             products: state.product.products
         }
     })
@@ -40,7 +34,7 @@ const CartPage = () => {
         Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
             .then(res => (setData(res.data)))
             .catch(err => console.log(err))
-    }, [id])
+    }, [id, data])
 
     const deleteHandler = (itemId) => {
         const num = data[0].order_number
@@ -77,6 +71,7 @@ const CartPage = () => {
 
     const checkoutHandler = () => {
         console.log('checkout clicked')
+
         if(!location || !address) return setNoLoc(true)
         if(location) return setLoc(true)
     }
