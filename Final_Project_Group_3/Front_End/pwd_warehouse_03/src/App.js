@@ -18,6 +18,7 @@ import CartPage from './pages/cart'
 import Profile from './pages/profile'
 import History from './pages/history'
 import Checkout from './pages/checkout'
+import PaymentConfirmation from './pages/UploadPayment'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -47,6 +48,7 @@ function App() {
                 <Route path='/profile' component={Profile}/>
                 <Route path='/history' component={History}/>
                 <Route path='/checkout' component={Checkout}/>
+                <Route path='/upload_payment' component={PaymentConfirmation}/>
                 <Route path='*' component={NotFound} />
             </Switch>
             <Footer/>
