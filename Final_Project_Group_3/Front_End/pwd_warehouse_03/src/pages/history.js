@@ -1,26 +1,37 @@
 import React from 'react'
 import Axios from 'axios'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import {
     Accordion,
     Card,
     Table,
-    Image
+    Image,
+    Button
 } from 'react-bootstrap'
+import { paymentConf } from '../actions'
 
 const HistoryPage = () => {
     const [data, setData] = React.useState([])
-    const { id } = useSelector((state) => {
+    const { id, order_number } = useSelector((state) => {
         return {
-            id: state.user.id_user
+            id: state.user.id_user,
+            order_number: state.user.order_number
         }
     })
+    const dispatch = useDispatch()
+
 
     React.useEffect(() => {
         Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
             .then(res => (setData(res.data)))
             .catch(err => console.log(err))
     }, [id])
+
+    function handlePaymentCon(e) {
+        console.log(e)
+        dispatch(paymentConf(e))
+
+    }
 
     const renderTbody = () => {
         return(
@@ -32,11 +43,12 @@ const HistoryPage = () => {
                                 <Accordion.Toggle as={Card.Header} variant="link" eventKey={index + 1} style={{backgroundColor: "#cbc0d3"}}>
                                     <span style={{display: "flex", justifyContent: "space-between"}}>
                                         <span>{index + 1}</span>
-                                        <span>Invoice: {item.order_number}</span>
+                                        <span><p onClick={(e) => {handlePaymentCon(e)}}>Invoice: {item.order_number}</p></span>
                                         <span>Date: {item.date}</span>
                                         <span>Payment Method: {item.payment_method}</span>
                                         <span>Status: {item.status}</span>
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
+                                    <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
                                     </span>
                                 </Accordion.Toggle>
                             </Card.Header>

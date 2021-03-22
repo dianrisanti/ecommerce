@@ -12,6 +12,7 @@ import { verification } from '../actions'
 import { useSelector, useDispatch } from 'react-redux'
 
 function Verification(props) {
+    console.log(props)
     const dispatch = useDispatch()
     useEffect(() => {
         async function fetchData() {

@@ -4,7 +4,8 @@ let INITIAL_STATE = {
     email: '',
     location: '',
     address: '',
-    regStatus: null
+    regStatus: null,
+    order_number: ''
 }
 
 export const userReducer = (state = INITIAL_STATE, action) => {
@@ -17,12 +18,13 @@ export const userReducer = (state = INITIAL_STATE, action) => {
                 email: action.payload.email,
                 location: action.payload.location,
                 address: action.payload.address,
-                regStatus: action.payload.status
+                regStatus: action.payload.status,
+                order_number: action.payload.order_number
             }
         case 'LOG_OUT':
             return INITIAL_STATE
         case 'VERIFICATION':
-            return{
+            return {
                 ...state,
                 regStatus: 1
             }
@@ -30,6 +32,11 @@ export const userReducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 errLogin: action.payload
+            }
+        case 'PAYMENTCONFIRMATION':
+            return {
+                ...state,
+                order_number: action.payload
             }
         default:
             return state

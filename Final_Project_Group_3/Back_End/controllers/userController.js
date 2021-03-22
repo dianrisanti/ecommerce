@@ -33,6 +33,7 @@ module.exports = {
         // hashing password
         const hashpass = cryptojs.HmacMD5(password, SECRET_KEY)
 
+
         const loginQuery = `SELECT u.id, u.username, u.email, u.status, ul.province_name location, p.address FROM users u 
         JOIN profile p ON u.id = p.id_user
         LEFT JOIN user_location ul ON p.location_id = ul.id WHERE ` + QUERY +
@@ -282,6 +283,38 @@ module.exports = {
             // console.log('result dari query', result[0])
 
             res.status(200).send(result[0])
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    uploadPayment: async (req, res) => {
+        const order_number = req.params.order_number
+
+        console.log('req file', req.file)
+
+        if (!req.file) return res.status(400).send('NO IMAGE')
+
+        try {
+            const updatePict = `UPDATE orders SET payment_confirmation = 'images/${req.file.filename}' 
+                                WHERE order_number = ${db.escape(order_number)}`
+            const result = await asyncQuery(updatePict)
+
+            res.status(200).send(result)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    getPaymentConfirmation: async (req, res) => {
+        const order_number = req.params.order_number
+        try {
+            const queryPaymentConf = `SELECT * FROM orders WHERE order_number=${db.escape(order_number)}`
+            const result = await asyncQuery(queryPaymentConf)
+
+            res.status(200).send(result)
         }
         catch (err) {
             console.log(err)

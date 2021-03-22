@@ -1,4 +1,6 @@
 let router = require('express').Router()
+let { upload } = require('../helpers/multer')
+let uploader = upload()
 
 
 // NOTE use body for express validator
@@ -56,6 +58,8 @@ router.post('/edit_password/:id', editPassValidation, userController.editPass)
 // router.delete('/delete/:index', userController.delete)
 router.post('/keeplogin', verifyToken, userController.keepLogin)
 router.post('/verification', verifyToken, userController.emailVerification)
+router.post('/upload_payment/:order_number', uploader, userController.uploadPayment)
+router.get('/getpayment/:order_number', uploader, userController.getPaymentConfirmation)
 
 // NOTE export router
 module.exports = router
