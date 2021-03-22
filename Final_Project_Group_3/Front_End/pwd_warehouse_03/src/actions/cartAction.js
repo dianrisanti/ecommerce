@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { GET_CART, CHECK_OUT } from './helper';
+import { GET_CART} from './helper';
 
 // edit qty in user's cart
 export const EditCartQtyAction = (input, id) => {
@@ -36,23 +36,3 @@ export const DeleteCartItemAction = (input, id) => {
         }
     };
 };
-
-// checkout
-export const ChekOutAction = (user_id, order_number) => {
-    return async (dispatch) => {
-        try {
-
-            // request API : check out
-            const res = await Axios.get(
-                URL + '/api/order/checkout/' + order_number,
-            );
-            console.log(res.data);
-
-            // request api get cart data
-            const cart = await Axios.get(URL + '/api/order/cart/' + user_id);
-            dispatch({ type: CHECK_OUT, payload: cart.data });
-        } catch (err) {
-            console.log(err.response ? err.response.data : err);
-        }
-    };
-}

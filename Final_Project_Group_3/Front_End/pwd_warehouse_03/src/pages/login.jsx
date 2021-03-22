@@ -67,7 +67,7 @@ function Login(props) {
                     <InputGroup.Prepend style={{ cursor: 'pointer', width: '40px' }}
                         onClick={() => setVisible(!visible)}>
                         <InputGroup.Text id="basic-addon1">
-                            <i className={visible ? "fas fa-eye-slash" : "fas fa-eye"}></i>
+                            <i className={visible ? "fas fa-eye" : "fas fa-eye-slash" }></i>
                             {/* {visible ? <i class="fas fa-eye"></i> : <i class="fas fa-eye-slash"></i>} */}
                         </InputGroup.Text>
                     </InputGroup.Prepend>

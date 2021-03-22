@@ -1,6 +1,7 @@
 // NOTE import helpers
 const transporter = require('../helpers/nodemailer')
 const { asyncQuery, generateQuery } = require('../helpers/queryHelp')
+const geolib = require('geolib')
 
 const db = require('../database')
 
@@ -37,8 +38,8 @@ module.exports = {
             } 
 
             if(cartResult.length === 0){
-                const addOrderDetail = `INSERT INTO order_details (order_number, id_product, quantity, total)
-                VALUES ('${order_number}', ${+id_product}, ${+qty}, ${+total})`
+                const addOrderDetail = `INSERT INTO order_details (order_number, id_product, quantity, price, total)
+                VALUES ('${order_number}', ${+id_product}, ${+qty}, ${+harga}, ${+total})`
                 await asyncQuery(addOrderDetail)
             }
 
@@ -73,10 +74,10 @@ module.exports = {
     },
 
     editCart: async (req, res) => {
-        const { id_product, order_number, quantity } = req.body
+        const { id_product, order_number, qty } = req.body
 
         try {
-            const editQty = `UPDATE order_details SET quantity = ${db.escape(quantity)}
+            const editQty = `UPDATE order_details SET quantity = ${db.escape(qty)}, total = (${db.escape(qty)}*price)
             WHERE id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(editQty)
 
@@ -104,9 +105,63 @@ module.exports = {
         }
     },
 
-    checkout: async(req, res) => {
+    updateStock: async(req, res) => {
+        const { lat, lng, id_product, quantity } = req.body
         try{
+            const queryWarehouseLoc = `SELECT w.id_warehouse, w.product_id, w.stock, wl.lat, wl.lng, w.location location_id 
+            FROM warehouse w 
+            JOIN warehouse_loc wl ON w.location = wl.id_warehouse
+            WHERE w.product_id = ${+id_product}`
+            const warehouseLoc = await asyncQuery(queryWarehouseLoc)
 
+            let distance = []
+            warehouseLoc.map(item => {
+                const temp = {
+                    id_warehouse: item.id_warehouse,
+                    distance: geolib.getDistance(
+                        {latitude: item.lat, longitude: item.lng},
+                        {latitude: lat, longitude: lng}
+                    ),
+                    stock: item.stock,
+                    location: item.location_id
+                }
+                distance.push(temp)
+            })
+
+            const sorted = distance.sort((a, b) => a.distance - b.distance)
+            // console.log('sorted ', sorted)
+
+            const warehouseId = sorted.findIndex(item => item.stock !== 0)
+            // console.log('fix warehouse ', warehouseId)
+
+            let temp = quantity
+            for(let i = warehouseId ; i < sorted.length; i++){
+                if(sorted[i].stock >= temp) {
+                    sorted[i].stock -= temp
+                    break
+                }
+                    
+                if(sorted[i].stock < temp) { 
+                    temp -= sorted[i].stock
+                    sorted[i].stock = 0
+                }
+            }
+
+            // console.log('sorted after ', sorted)
+
+            let queries = []
+            sorted.map(item => {
+                const queryUpdate = `UPDATE warehouse SET stock = ${item.stock} 
+                WHERE product_id = ${+id_product} AND id_warehouse = ${+item.id_warehouse} AND location = ${+item.location}`
+                queries.push(queryUpdate)
+            })
+            await asyncQuery(queries[0])
+            await asyncQuery(queries[1])
+            await asyncQuery(queries[2])
+
+            // console.log(queries)
+
+            res.status(200).send("update berhasil")
         }
         catch(err){
             console.log(err)
