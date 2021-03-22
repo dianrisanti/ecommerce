@@ -37,8 +37,8 @@ module.exports = {
             } 
 
             if(cartResult.length === 0){
-                const addOrderDetail = `INSERT INTO order_details (order_number, id_product, quantity, total)
-                VALUES ('${order_number}', ${+id_product}, ${+qty}, ${+total})`
+                const addOrderDetail = `INSERT INTO order_details (order_number, id_product, quantity, price, total)
+                VALUES ('${order_number}', ${+id_product}, ${+qty}, ${+harga}, ${+total})`
                 await asyncQuery(addOrderDetail)
             }
 
@@ -73,10 +73,10 @@ module.exports = {
     },
 
     editCart: async (req, res) => {
-        const { id_product, order_number, quantity } = req.body
+        const { id_product, order_number, qty } = req.body
 
         try {
-            const editQty = `UPDATE order_details SET quantity = ${db.escape(quantity)}
+            const editQty = `UPDATE order_details SET quantity = ${db.escape(qty)}, total = (${db.escape(qty)}*price)
             WHERE id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(editQty)
 

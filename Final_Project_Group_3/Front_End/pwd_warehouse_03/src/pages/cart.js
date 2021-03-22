@@ -5,10 +5,8 @@ import { Redirect, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
 import {
-    GetCartAction,
     EditCartQtyAction,
-    DeleteCartItemAction,
-    ChekOutAction,
+    DeleteCartItemAction
 } from '../actions';
 
 const CartPage = () => {
@@ -19,12 +17,13 @@ const CartPage = () => {
     const [qty, setQty] = React.useState(0)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
 
-    const { id, location, address, products } = useSelector((state) => {
+    const { id, location, address, products, cart } = useSelector((state) => {
         return {
             id: state.user.id_user,
             location: state.user.location,
             address: state.user.address,
-            products: state.product.products
+            products: state.product.products,
+            cart: state.product.cart
         }
     })
 
@@ -34,7 +33,7 @@ const CartPage = () => {
         Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
             .then(res => (setData(res.data)))
             .catch(err => console.log(err))
-    }, [id, data])
+    }, [id, data, qty])
 
     const deleteHandler = (itemId) => {
         const num = data[0].order_number
@@ -51,10 +50,10 @@ const CartPage = () => {
         const input = {
             id_product: itemId,
             order_number: num,
-            quantity: qty
-            
+            qty
         }
         dispatch(EditCartQtyAction(input, id))
+        setEditIndex(null)
         console.log(input)
     }
 
@@ -63,7 +62,7 @@ const CartPage = () => {
         const input = e.target.value
 
         if (isNaN(+input)) return setQty(0)
-        if (+input > products.total_stock) return setQtyErr([true, `Maks. pembelian barang ini ${products.total_stock} item`])
+        if (+input > products[0].total_stock) return setQtyErr([true, `Maks. pembelian barang ini ${products[0].total_stock} item`])
 
         setQty(+input)
         setQtyErr([false, ""])
@@ -72,8 +71,8 @@ const CartPage = () => {
     const checkoutHandler = () => {
         console.log('checkout clicked')
 
-        if(!location || !address) return setNoLoc(true)
-        if(location) return setLoc(true)
+        if (!location || !address) return setNoLoc(true)
+        if (location) return setLoc(true)
     }
 
     const renderTable = () => {
@@ -114,9 +113,9 @@ const CartPage = () => {
                             <Image style={{ width: 60, height: 60, marginRight: "15px" }} src={item.image} rounded />
                             {item.name}
                         </td>
-                        <td style={{ textAlign: 'right' }}>{item.price}</td>
-                        <td style={{ textAlign: 'center' }}>{item.quantity}</td>
-                        <td style={{ textAlign: 'right' }}>{item.total}</td>
+                        <td style={{ textAlign: 'right' }}>IDR {item.price.toLocaleString()}</td>
+                        <td style={{ textAlign: 'center' }}>{item.quantity} pcs</td>
+                        <td style={{ textAlign: 'right' }}>IDR {item.total.toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
                             <Button style={{ marginRight: '5px' }} onClick={() => setEditIndex(index)}> Edit </Button>
                             <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => deleteHandler(item.id_product)}> Delete </Button>
@@ -127,15 +126,15 @@ const CartPage = () => {
     }
 
     if (!id) return <Redirect to='/' />
-    if(loc) return <Redirect to="/checkout"/>
+    if (loc) return <Redirect to="/checkout" />
     return (
         <div style={{ marginTop: "138px" }}>
             <Alert show={noLoc} variant="danger" onClose={() => setNoLoc(false)} dismissible>
-                Mohon lengkapi lokasi dan alamat pada 
+                Mohon lengkapi lokasi dan alamat pada
                 <Alert.Link as={Link} to='./profile'> profile Anda </Alert.Link>
                 sebelum membuat pesanan
             </Alert>
-
+            
             <Table striped bordered hover variant="dark">
                 <thead style={{ backgroundColor: '#2f3640', textAlign: 'center' }}>
                     <tr>

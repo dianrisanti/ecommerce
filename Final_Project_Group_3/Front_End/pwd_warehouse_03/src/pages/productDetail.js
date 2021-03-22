@@ -15,10 +15,11 @@ const ProductDetail = (props) => {
     const id = parseInt(input.slice(4, input.length))
     // console.log(id)
 
-    const { products, id_user } = useSelector((state) => {
+    const { products, id_user, username } = useSelector((state) => {
         return{
             products: state.product.products,
-            id_user: state.user.id_user
+            id_user: state.user.id_user,
+            username: state.user.username
         }
     })
     
@@ -70,12 +71,25 @@ const ProductDetail = (props) => {
         setQtyErr([false, ""])
     }
 
+    const handleClose = () => setCartSuccess(false)
+
     return(
         <div style={styles.container}>
-            <Alert show={cartSuccess} variant="success" onClose={() => setCartSuccess(false)} dismissible>
-                Berhasil menambahkan {product.name} ke
-                <Alert.Link as={Link} to='./cart'> keranjang belanjamu!</Alert.Link>
-            </Alert>
+
+            <Modal show={cartSuccess} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Hi, {username}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Berhasil menambahkan {product.name} ke dalam keranjang</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" as={Link} to='./'>
+                        Produk Lain
+                    </Button>
+                    <Button variant="primary" as={Link} to='./cart'>
+                        Keranjang
+                </Button>
+                </Modal.Footer>
+            </Modal>
         
             <div style={styles.content}>
                 <div style={styles.left}>
@@ -145,8 +159,8 @@ const ProductDetail = (props) => {
                     </Modal.Header>
                     <Modal.Body>{checkoutError[1]}</Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setCheckError([false, ""])}>
-                            Close
+                        <Button variant="success" as={Link} to='./login'>
+                            Login
                         </Button>
                     </Modal.Footer>
                 </Modal>
