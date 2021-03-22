@@ -38,8 +38,8 @@ module.exports = {
             } 
 
             if(cartResult.length === 0){
-                const addOrderDetail = `INSERT INTO order_details (order_number, id_product, quantity, price, total)
-                VALUES ('${order_number}', ${+id_product}, ${+qty}, ${+harga}, ${+total})`
+                const addOrderDetail = `INSERT INTO order_details (order_number, id_product, quantity, total)
+                VALUES ('${order_number}', ${+id_product}, ${+qty}, ${+total})`
                 await asyncQuery(addOrderDetail)
             }
 
@@ -172,7 +172,7 @@ module.exports = {
     getHistory: async(req, res) => {
         try{
             const id_user = req.params.id ? +req.params.id  : 0
-            const history = `SELECT o.date , o.order_number, od.id_product, p.name, od.quantity, 
+            const history = `SELECT o.date , o.order_number, od.id_product, IF(LEFT(o.payment_confirmation, 1) = 'i', true, false) AS payment, p.name, od.quantity, 
             p.price, od.total,  pi.image, os.status, o.payment_method
             FROM orders o
             JOIN order_details od ON o.order_number = od.order_number
@@ -182,12 +182,13 @@ module.exports = {
             WHERE (o.status = 2 OR o.status = 3 OR o.status = 4 OR o.status = 5 OR o.status = 6) AND o.id_user = ${id_user}
             GROUP BY od.id_product, o.order_number`
             const historyResult = await asyncQuery(history)
-
+            console.log(historyResult)
             let output = []
             historyResult.forEach(item => {
                 let temp = {
                     order_number: item.order_number,
                     date: item.date,
+                    payment_confrimation: item.payment,
                     payment_method: item.payment_method,
                     status: item.status,
                     products: [{
@@ -201,6 +202,7 @@ module.exports = {
                 }
                 output.push(temp)
             })
+            console.log(output)
 
             let out = []
             for(entry of output){
