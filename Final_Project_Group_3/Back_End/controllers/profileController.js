@@ -3,7 +3,7 @@ const { asyncQuery, generateQuery } = require('../helpers/queryHelp')
 
 module.exports = {
     editProfile: async (req, res) => {
-        const { location, address } = req.body
+        const { location_id, address } = req.body
         // console.log(req.body)
 
         const editQuery = `UPDATE profile SET${generateQuery(req.body)} WHERE id_user = ${parseInt(req.params.id)}`
@@ -59,4 +59,17 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+
+    getUserLocation: async(req, res) => {
+        try{
+            const query = `SELECT * FROM user_location`
+            const result = await asyncQuery(query)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    }
 }

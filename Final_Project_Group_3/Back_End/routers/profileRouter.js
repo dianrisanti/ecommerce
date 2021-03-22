@@ -6,5 +6,6 @@ const uploader = upload()
 
 router.post('/edit/:id', profileController.editProfile)
 router.post('/upload/:id', uploader, profileController.uploadFile)
+router.get('/user_location', profileController.getUserLocation)
 
 module.exports = router
