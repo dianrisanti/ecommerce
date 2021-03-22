@@ -311,8 +311,22 @@ module.exports = {
     getPaymentConfirmation: async (req, res) => {
         const order_number = req.params.order_number
         try {
-            const queryPaymentConf = `SELECT * FROM orders WHERE order_number=${db.escape(order_number)}`
+            const queryPaymentConf = `SELECT o.* , x.total FROM orders o 
+                                    JOIN order_details x ON o.order_number = x.order_number
+                                    WHERE o.order_number=${db.escape(order_number)}`
             const result = await asyncQuery(queryPaymentConf)
+            
+            const currencyFractionDigits = new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'IDR',
+            }).resolvedOptions().maximumFractionDigits;
+            
+            var value = result[0].total.toLocaleString('de-DE', { maximumFractionDigits: currencyFractionDigits });
+            
+            console.log(value);
+            const total_IDR = ("IDR " + value)
+            result[0].total_IDR = total_IDR
+            console.log(result)
 
             res.status(200).send(result)
         }
