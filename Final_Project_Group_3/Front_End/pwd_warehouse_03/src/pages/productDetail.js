@@ -15,9 +15,10 @@ const ProductDetail = (props) => {
     const id = parseInt(input.slice(4, input.length))
     // console.log(id)
 
-    const { products } = useSelector((state) => {
+    const { products, id_user } = useSelector((state) => {
         return{
-            products: state.product.products
+            products: state.product.products,
+            id_user: state.user.id_user
         }
     })
     
@@ -29,6 +30,7 @@ const ProductDetail = (props) => {
     const [cartErr, setCartErr] = React.useState(false)
     const [cartSuccess, setCartSuccess] = React.useState(false)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
+    let [checkoutError, setCheckError] = React.useState([false, ""])
 
     const { idUser } = useSelector((state) => {
         return {
@@ -37,7 +39,9 @@ const ProductDetail = (props) => {
     })
 
     const addToCartHandler = () => {
+        if(!id_user) return setCheckError([true, "Silahkan login terlebih dahulu"])
         if(qty <= 0) return setQtyErr([true, "Minimal pembelian produk ini adalah 1 barang"])
+
         const addToCart = {
             order_number: Date.now(),
             id_user: idUser,
@@ -134,6 +138,18 @@ const ProductDetail = (props) => {
                     </Button>
                     </Modal.Footer>
                 </Modal>
+
+                <Modal show={checkoutError[0]} onHide={() => setCheckError([false, ""])}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Error</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{checkoutError[1]}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setCheckError([false, ""])}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </div>
     )
@@ -141,7 +157,7 @@ const ProductDetail = (props) => {
 
 const styles = {
     container: {
-        marginTop: "100px", 
+        marginTop: "150px", 
         padding: "0 20px",
         fontFamily: "PT Serif",
         paddingBottom: '30px'
