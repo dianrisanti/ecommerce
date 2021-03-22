@@ -34,6 +34,7 @@ const HistoryPage = () => {
                                         <span>{index + 1}</span>
                                         <span>Invoice: {item.order_number}</span>
                                         <span>Date: {item.date}</span>
+                                        <span>Payment Method: {item.payment_method}</span>
                                         <span>Status: {item.status}</span>
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
                                     </span>

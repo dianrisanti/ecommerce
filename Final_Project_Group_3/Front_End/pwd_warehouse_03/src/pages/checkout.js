@@ -1,5 +1,6 @@
 import React from 'react'
 import Axios from 'axios'
+import { Redirect } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import {
     Image,
@@ -12,6 +13,7 @@ const Checkout = () => {
     const [selected, setSelected] = React.useState("")
     let [confirmEmail, setConfirmEmail] = React.useState([false, ""])
     let [regError, setRegError] = React.useState([false, ""])
+    const [toHome, setToHome] = React.useState(false)
     const [data, setData] = React.useState([])
     const { id } = useSelector((state) => {
         return {
@@ -19,6 +21,7 @@ const Checkout = () => {
         }
     })
 
+    console.log('id user ', id)
     console.log('data payment', data)
 
     React.useEffect(() => {
@@ -37,21 +40,28 @@ const Checkout = () => {
     const handleSubmit = e => {
         e.preventDefault()
         async function fetchData() {
-
+            
             try {
-                let res = await Axios.post(`http://localhost:2000/cart/invoice/${parseInt(id)}`)
+                const order_number = data[0].order_number
+                const payment_method = selected
+                let res = await Axios.post(`http://localhost:2000/cart/invoice/${parseInt(id)}`, {order_number, payment_method})
                 console.log(res)
                 setConfirmEmail([true, "Invoice has been sent to your email"])
             }
             catch (err) {
                 console.log(err.response.data)
-                const errMsg = err.response.data
-                setRegError([true, errMsg])
+                setRegError([true, "ERROR"])
             }
         }
         fetchData()
     }
 
+    const handleOk = () => {
+        setConfirmEmail([false, ""])
+        setToHome(true)
+    }
+
+    if(toHome) return <Redirect to="/"/>
     return (
         <div style={styles.container}>
             <div>
@@ -127,9 +137,9 @@ const Checkout = () => {
                     </Modal.Header>
                     <Modal.Body>{confirmEmail[1]}</Modal.Body>
                     <Modal.Footer>
-                        <Button variant="success" onClick={() => setConfirmEmail([false, ""])}>
+                        <Button variant="success" onClick={handleOk}>
                             Okay
-                            </Button>
+                        </Button>
                     </Modal.Footer>
                 </Modal>
                 <Modal show={regError[0]} onHide={() => setRegError([false, ""])}>
