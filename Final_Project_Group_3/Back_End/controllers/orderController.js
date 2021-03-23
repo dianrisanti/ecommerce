@@ -74,10 +74,10 @@ module.exports = {
     },
 
     editCart: async (req, res) => {
-        const { id_product, order_number, qty } = req.body
+        const { id_product, order_number, qty, total } = req.body
 
         try {
-            const editQty = `UPDATE order_details SET quantity = ${db.escape(qty)}, total = (${db.escape(qty)}*price)
+            const editQty = `UPDATE order_details SET quantity = ${db.escape(qty)}, total = (${db.escape(total)})
             WHERE id_product = ${parseInt(id_product)} AND order_number = '${order_number}'`
             await asyncQuery(editQty)
 
