@@ -47,10 +47,12 @@ const CartPage = () => {
 
     const saveHandler = (itemId) => {
         const num = data[0].order_number
+        const price = data[editIndex].price
         const input = {
             id_product: itemId,
             order_number: num,
-            qty
+            qty,
+            total: price * qty
         }
         dispatch(EditCartQtyAction(input, id))
         setEditIndex(null)
