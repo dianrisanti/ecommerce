@@ -11,5 +11,14 @@ module.exports = {
         }
         return result.slice(0, -1)
     },
+
+    generateWhereQuery: (input) => {
+        let result = ''
+        for(let key of input){
+            result += ` ${key} = ${database.escape(input[key])} OR`
+        }
+        return result.slice(0, -3)
+    },
+
     asyncQuery: util.promisify(database.query).bind(database)
 }

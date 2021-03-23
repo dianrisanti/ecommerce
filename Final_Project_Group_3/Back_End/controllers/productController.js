@@ -11,8 +11,10 @@ module.exports = {
             GROUP BY od.id_product`
             const paidResult = await asyncQuery(queryPaid)
 
-            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.*, SUM(w.stock) total_stock FROM products p 
-            JOIN warehouse w ON p.id = w.product_id  GROUP BY p.id) main 
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            JOIN product_category pc ON p.category_id = pc.id
+            JOIN warehouse w ON p.id = w.product_id  
+            GROUP BY p.id) main 
             JOIN product_img pi ON main.id = pi.product_id 
             GROUP BY main.id`
             const productResult = await asyncQuery(queryProduct)
