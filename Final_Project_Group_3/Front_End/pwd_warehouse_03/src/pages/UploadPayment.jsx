@@ -78,7 +78,7 @@ function PaymentConfirmation() {
                     ?
                     <Button as={Link} to='/' style={{ marginLeft: '5px', height: "40px", marginTop: "15px" }}> Go to HOME </Button>
                     :
-                    <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
+                    ""
                 }
                 </div>
                 <div

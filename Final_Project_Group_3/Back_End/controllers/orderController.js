@@ -188,7 +188,7 @@ module.exports = {
                 let temp = {
                     order_number: item.order_number,
                     date: item.date,
-                    payment_confrimation: item.payment,
+                    payment_confirmation: item.payment,
                     payment_method: item.payment_method,
                     status: item.status,
                     products: [{

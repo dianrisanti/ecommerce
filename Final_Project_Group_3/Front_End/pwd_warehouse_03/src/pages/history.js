@@ -47,11 +47,11 @@ const HistoryPage = () => {
                                         <span>Payment Method: {item.payment_method}</span>
                                         <span>Status: {item.status}</span>
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
-                                        {!item.payment_confirmation
+                                        {item.payment_confirmation === 1
                                             ?
-                                            <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                            :
                                             <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
+                                            :
+                                            <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
                                         }
                                     </span>
                                 </Accordion.Toggle>
