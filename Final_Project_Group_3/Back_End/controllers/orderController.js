@@ -106,60 +106,84 @@ module.exports = {
     },
 
     updateStock: async(req, res) => {
-        const { lat, lng, id_product, quantity } = req.body
+        const { lat, lng, order_number, id_product, quantity } = req.body
         try{
-            const queryWarehouseLoc = `SELECT w.id_warehouse, w.product_id, w.stock, wl.lat, wl.lng, w.location location_id 
+            const queryUserOrder = `SELECT order_number, id_product, quantity FROM order_details WHERE order_number = '${order_number}'`
+            const userOrder = await asyncQuery(queryUserOrder)
+
+            let userProducts = []
+            userOrder.map(item => {
+                const temp = {
+                    id_product: item.id_product,
+                    quantity: item.quantity,
+                    warehouse: []
+                }
+                userProducts.push(temp)
+            })
+            const queryWarehouse = `SELECT w.id_warehouse, w.product_id, w.stock, wl.lat, wl.lng, w.location location_id 
             FROM warehouse w 
             JOIN warehouse_loc wl ON w.location = wl.id_warehouse
-            WHERE w.product_id = ${+id_product}`
-            const warehouseLoc = await asyncQuery(queryWarehouseLoc)
+            WHERE w.product_id IN (${userProducts.map(i => i.id_product)})
+            ORDER BY w.product_id`
+            const warehouse = await asyncQuery(queryWarehouse)
+
+            const warehouseAvailableStock = warehouse.filter(i => i.stock !== 0)
 
             let distance = []
-            warehouseLoc.map(item => {
+            warehouseAvailableStock.map(item => {
                 const temp = {
-                    id_warehouse: item.id_warehouse,
-                    distance: geolib.getDistance(
-                        {latitude: item.lat, longitude: item.lng},
-                        {latitude: lat, longitude: lng}
-                    ),
-                    stock: item.stock,
-                    location: item.location_id
+                    id_product: item.product_id,
+                    warehouse: [
+                        {id_warehouse: item.id_warehouse,
+                        distance: geolib.getDistance(
+                            {latitude: item.lat, longitude: item.lng},
+                            {latitude: lat, longitude: lng}
+                        ),
+                        stock: item.stock,
+                        location: item.location_id}
+                    ]
                 }
                 distance.push(temp)
             })
 
-            const sorted = distance.sort((a, b) => a.distance - b.distance)
-            // console.log('sorted ', sorted)
-
-            const warehouseId = sorted.findIndex(item => item.stock !== 0)
-            // console.log('fix warehouse ', warehouseId)
-
-            let temp = quantity
-            for(let i = warehouseId ; i < sorted.length; i++){
-                if(sorted[i].stock >= temp) {
-                    sorted[i].stock -= temp
-                    break
-                }
-                    
-                if(sorted[i].stock < temp) { 
-                    temp -= sorted[i].stock
-                    sorted[i].stock = 0
+            let groupedWarehouse = []
+            for(entry of distance){
+                const existingEntry = groupedWarehouse.find(i => i.id_product === entry.id_product)
+                if(existingEntry){
+                    existingEntry.warehouse = existingEntry.warehouse.concat(entry.warehouse)
+                } else {
+                    groupedWarehouse.push(entry)
                 }
             }
 
-            // console.log('sorted after ', sorted)
+            groupedWarehouse.map(i => i.warehouse.sort((a, b) => a.distance - b.distance))
 
-            let queries = []
-            sorted.map(item => {
-                const queryUpdate = `UPDATE warehouse SET stock = ${item.stock} 
-                WHERE product_id = ${+id_product} AND id_warehouse = ${+item.id_warehouse} AND location = ${+item.location}`
-                queries.push(queryUpdate)
-            })
-            await asyncQuery(queries[0])
-            await asyncQuery(queries[1])
-            await asyncQuery(queries[2])
+            for(user of userProducts){
+                for(item of groupedWarehouse){
+                    if(user.id_product === item.id_product) {
+                        let temp = user.quantity
+                        for(update of item.warehouse){
+                            if(update.stock >= temp) {
+                                update.stock -= temp
+                                break
+                            }
+                                
+                            if(update.stock < temp) { 
+                                temp -= update.stock
+                                update.stock = 0
+                            }
+                        }
+                    }
+                }
+            }
 
-            // console.log(queries)
+            for(item of groupedWarehouse){
+                for await (i of item.warehouse){
+                    const queryUpdate = `UPDATE warehouse SET stock = ${i.stock} 
+                    WHERE product_id = ${+item.id_product} AND id_warehouse = ${+i.id_warehouse} AND location = ${+i.location}`
+                    await asyncQuery(queryUpdate)
+                }
+            }
 
             res.status(200).send("update berhasil")
         }

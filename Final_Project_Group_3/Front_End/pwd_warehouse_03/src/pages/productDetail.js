@@ -25,7 +25,7 @@ const ProductDetail = (props) => {
     
     const selected = products.filter(item => item.id === id)
     const product = selected[0]
-    // console.log(product.description)
+    console.log(product)
 
     const [qty, setQty] = React.useState(0)
     const [cartErr, setCartErr] = React.useState(false)
