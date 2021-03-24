@@ -5,8 +5,8 @@ import { Redirect, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
 import {
-    EditCartQtyAction,
-    DeleteCartItemAction
+    EditCart,
+    DeleteCart
 } from '../actions';
 
 const CartPage = () => {
@@ -41,7 +41,7 @@ const CartPage = () => {
             id_product: itemId,
             order_number: num
         }
-        dispatch(DeleteCartItemAction(input, id))
+        dispatch(DeleteCart(input, id))
         console.log(input)
     }
 
@@ -54,7 +54,7 @@ const CartPage = () => {
             qty,
             total: price * qty
         }
-        dispatch(EditCartQtyAction(input, id))
+        dispatch(EditCart(input, id))
         setEditIndex(null)
         console.log(input)
     }
