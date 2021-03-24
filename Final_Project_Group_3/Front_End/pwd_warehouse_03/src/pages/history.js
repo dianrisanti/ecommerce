@@ -8,7 +8,7 @@ import {
     Image,
     Button
 } from 'react-bootstrap'
-import { paymentConf } from '../actions'
+import { CancelOrder, paymentConf } from '../actions'
 import { Link } from 'react-router-dom'
 
 const HistoryPage = () => {
@@ -31,6 +31,12 @@ const HistoryPage = () => {
         console.log(e)
         dispatch(paymentConf(e))
     }
+
+    const cancelOrder = (e) => {
+        dispatch(CancelOrder(e))
+        console.log(e)
+    }
+
     console.log(data)
     const renderTbody = () => {
         return (
@@ -57,34 +63,39 @@ const HistoryPage = () => {
                                 </Accordion.Toggle>
                             </Card.Header>
                             <Accordion.Collapse eventKey={index + 1}>
-                                <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Image</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {item.products.map((item2, index2) => {
-                                            return (
-                                                <tr>
-                                                    <td>{index2 + 1}</td>
-                                                    <td>{item2.name}</td>
-                                                    <td>
-                                                        <Image src={item2.image} style={{ height: 100, width: 100 }} rounded />
-                                                    </td>
-                                                    <td>{item2.quantity}</td>
-                                                    <td>IDR {item2.price.toLocaleString()}</td>
-                                                    <td>IDR {item2.total.toLocaleString()}</td>
-                                                </tr>
-                                            )
-                                        })}
-                                    </tbody>
-                                </Table>
+                                <div>
+                                    <Table striped bordered hover>
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Image</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {item.products.map((item2, index2) => {
+                                                return (
+                                                    <tr>
+                                                        <td>{index2 + 1}</td>
+                                                        <td>{item2.name}</td>
+                                                        <td>
+                                                            <Image src={item2.image} style={{ height: 100, width: 100 }} rounded />
+                                                        </td>
+                                                        <td>{item2.quantity}</td>
+                                                        <td>IDR {item2.price.toLocaleString()}</td>
+                                                        <td>IDR {item2.total.toLocaleString()}</td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </Table>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom:'15px', marginRight:'15px'}}>
+                                        <Button variant='danger' onClick={() => cancelOrder(item.order_number)}>Cancel Order</Button>
+                                    </div>
+                                </div>
                             </Accordion.Collapse>
                         </Card>
                     )
