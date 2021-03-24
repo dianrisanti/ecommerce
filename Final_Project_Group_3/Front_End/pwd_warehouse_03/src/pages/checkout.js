@@ -40,7 +40,6 @@ const Checkout = () => {
     const handleSubmit = e => {
         e.preventDefault()
         async function fetchData() {
-            
             try {
                 const order_number = data[0].order_number
                 const payment_method = selected

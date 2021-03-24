@@ -105,9 +105,17 @@ module.exports = {
         }
     },
 
-    updateStock: async(req, res) => {
-        const { lat, lng, order_number, id_product, quantity } = req.body
+    bookedStock: async(req, res) => {
+        const { order_number } = req.body
         try{
+            const queryUserLoc = `SELECT o.id_user, ul.lat, ul.lng FROM orders o 
+            JOIN profile p ON o.id_user = p.id_user
+            JOIN user_location ul ON p.location_id = ul.id
+            WHERE o.order_number = '${order_number}'`
+            const userLoc = await asyncQuery(queryUserLoc)
+
+            const { lat, lng } = userLoc[0]
+
             const queryUserOrder = `SELECT order_number, id_product, quantity FROM order_details WHERE order_number = '${order_number}'`
             const userOrder = await asyncQuery(queryUserOrder)
 
@@ -120,14 +128,15 @@ module.exports = {
                 }
                 userProducts.push(temp)
             })
-            const queryWarehouse = `SELECT w.id_warehouse, w.product_id, w.stock, wl.lat, wl.lng, w.location location_id 
+            const queryWarehouse = `SELECT w.id_warehouse, w.product_id, w.booked, w.must_delivery, w.stock, 
+            wl.lat, wl.lng, w.location_id 
             FROM warehouse w 
-            JOIN warehouse_loc wl ON w.location = wl.id_warehouse
+            JOIN warehouse_loc wl ON w.location_id = wl.id
             WHERE w.product_id IN (${userProducts.map(i => i.id_product)})
             ORDER BY w.product_id`
             const warehouse = await asyncQuery(queryWarehouse)
 
-            const warehouseAvailableStock = warehouse.filter(i => i.stock !== 0)
+            const warehouseAvailableStock = warehouse.filter(i => i.stock - i.booked - i.must_delivery !== 0)
 
             let distance = []
             warehouseAvailableStock.map(item => {
@@ -139,6 +148,7 @@ module.exports = {
                             {latitude: item.lat, longitude: item.lng},
                             {latitude: lat, longitude: lng}
                         ),
+                        booked: item.booked,
                         stock: item.stock,
                         location: item.location_id}
                     ]
@@ -158,19 +168,33 @@ module.exports = {
 
             groupedWarehouse.map(i => i.warehouse.sort((a, b) => a.distance - b.distance))
 
+            let details = []
             for(user of userProducts){
                 for(item of groupedWarehouse){
                     if(user.id_product === item.id_product) {
                         let temp = user.quantity
                         for(update of item.warehouse){
-                            if(update.stock >= temp) {
-                                update.stock -= temp
+                            if(update.stock - update.booked >= temp) {
+                                update.booked += temp
+                                const dum = {
+                                    id_product: item.id_product,
+                                    location_id: update.location,
+                                    qty: temp
+                                }
+                                details.push(dum)
                                 break
                             }
                                 
-                            if(update.stock < temp) { 
-                                temp -= update.stock
-                                update.stock = 0
+                            if(update.stock - update.booked < temp) {
+                                const selisih = update.stock - update.booked
+                                temp -= selisih
+                                update.booked += selisih
+                                const dum = {
+                                    id_product: item.id_product,
+                                    location_id: update.location,
+                                    qty: selisih
+                                }
+                                details.push(dum)
                             }
                         }
                     }
@@ -179,13 +203,43 @@ module.exports = {
 
             for(item of groupedWarehouse){
                 for await (i of item.warehouse){
-                    const queryUpdate = `UPDATE warehouse SET stock = ${i.stock} 
-                    WHERE product_id = ${+item.id_product} AND id_warehouse = ${+i.id_warehouse} AND location = ${+i.location}`
+                    const queryUpdate = `UPDATE warehouse SET booked = ${i.booked} 
+                    WHERE product_id = ${+item.id_product} AND id_warehouse = ${+i.id_warehouse} AND location_id = ${+i.location}`
                     await asyncQuery(queryUpdate)
                 }
             }
 
-            res.status(200).send("update berhasil")
+            for await (i of details){
+                let queryUpdate
+                if(i.location_id === 1) {
+                    queryUpdate = `UPDATE order_details SET sent_loc_1 = ${i.qty} 
+                    WHERE product_id = ${+i.id_product} AND order_number = '${order_number}'`
+                }
+                if(i.location_id === 2) {
+                    queryUpdate = `UPDATE order_details SET sent_loc_2 = ${i.qty} 
+                    WHERE product_id = ${+i.id_product} AND order_number = '${order_number}'`
+                }
+                if(i.location_id === 3) {
+                    queryUpdate = `UPDATE order_details SET sent_loc_3 = ${i.qty} 
+                    WHERE product_id = ${+i.id_product} AND order_number = '${order_number}'`
+                }
+                await asyncQuery(queryUpdate)
+            }
+
+            res.status(200).send(groupedWarehouse)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
+    deliveryStock: async(req, res) => {
+        const { order_number } = req.body
+        try{
+            
+
+            res.status(200).send("test")
         }
         catch(err){
             console.log(err)

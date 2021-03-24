@@ -9,6 +9,7 @@ router.post('/delete', orderController.deleteCart)
 router.get('/history/:id', orderController.getHistory)
 router.get('/summary/:id', orderController.getSummary)
 router.post('/invoice/:id', orderController.getInvoice)
-router.post('/update_stock', orderController.updateStock)
+router.post('/booked_stock', orderController.bookedStock)
+router.post('/delivery_stock', orderController.deliveryStock)
 
 module.exports = router
