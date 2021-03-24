@@ -78,14 +78,14 @@ const ProductDetail = (props) => {
 
             <Modal show={cartSuccess} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Hi, {username}</Modal.Title>
+                    <Modal.Title style={{fontFamily:'Playfair Display, serif'}}>Hi, {username}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Berhasil menambahkan {product.name} ke dalam keranjang</Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" as={Link} to='./'>
+                    <Button variant='outline-danger' as={Link} to='./'>
                         Produk Lain
                     </Button>
-                    <Button variant="primary" as={Link} to='./cart'>
+                    <Button variant="outline-success" as={Link} to='./cart'>
                         Keranjang
                 </Button>
                 </Modal.Footer>
