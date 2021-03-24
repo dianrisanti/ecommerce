@@ -5,8 +5,8 @@ import { Redirect, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
 import {
-    EditCartQtyAction,
-    DeleteCartItemAction
+    EditCart,
+    DeleteCart
 } from '../actions';
 
 const CartPage = () => {
@@ -41,7 +41,7 @@ const CartPage = () => {
             id_product: itemId,
             order_number: num
         }
-        dispatch(DeleteCartItemAction(input, id))
+        dispatch(DeleteCart(input, id))
         console.log(input)
     }
 
@@ -54,7 +54,7 @@ const CartPage = () => {
             qty,
             total: price * qty
         }
-        dispatch(EditCartQtyAction(input, id))
+        dispatch(EditCart(input, id))
         setEditIndex(null)
         console.log(input)
     }
@@ -90,22 +90,24 @@ const CartPage = () => {
                         </td>
                         <td style={{ textAlign: 'right' }}>{item.price}</td>
                         <td style={{ textAlign: 'center' }}>
-                            <button
-                                disabled={qty <= 0 ? true : false}
-                                onClick={() => setQty(qty - 1)}
-                                style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
-                            ><i className="fas fa-minus"></i></button>
-                            <Form.Control style={{ width: '90px', fontSize: '20px' }} onChange={(e) => changeQty(e)} value={qty} min={0} />
-                            <button
-                                disabled={qty >= products.total_stock ? true : false}
-                                onClick={() => setQty(qty + 1)}
-                                style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
-                            ><i className="fas fa-plus"></i></button>
+                            <div style={{ display: 'flex' }}>
+                                <button
+                                    disabled={qty <= 0 ? true : false}
+                                    onClick={() => setQty(qty - 1)}
+                                    style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
+                                ><i className="fas fa-minus"></i></button>
+                                <Form.Control style={{ width: '90px', fontSize: '20px' }} onChange={(e) => changeQty(e)} value={qty} min={0} />
+                                <button
+                                    disabled={qty >= products.total_stock ? true : false}
+                                    onClick={() => setQty(qty + 1)}
+                                    style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
+                                ><i className="fas fa-plus"></i></button>
+                            </div>
                         </td>
                         <td style={{ textAlign: 'right' }}>{item.price * qty}</td>
                         <td style={{ textAlign: 'center' }}>
-                            <Button style={{ marginRight: '5px' }} onClick={() => saveHandler(item.id_product)}> Save </Button>
-                            <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => setEditIndex(null)}> Cancel </Button>
+                            <Button variant="outline-success" style={{ marginRight: '5px' }} onClick={() => saveHandler(item.id_product)}> ✔ </Button>
+                            <Button variant="outline-danger" style={{ marginLeft: '5px' }} onClick={() => setEditIndex(null)}> ❌ </Button>
                         </td>
                     </tr>
                     :
@@ -116,10 +118,10 @@ const CartPage = () => {
                             {item.name}
                         </td>
                         <td style={{ textAlign: 'right' }}>IDR {item.price.toLocaleString()}</td>
-                        <td style={{ textAlign: 'center' }}>{item.quantity} pcs</td>
+                        <td style={{ textAlign: 'center', fontFamily:'Lobster, cursive' }}>{item.quantity} pcs</td>
                         <td style={{ textAlign: 'right' }}>IDR {item.total.toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
-                            <Button style={{ marginRight: '5px' }} onClick={() => setEditIndex(index)}> Edit </Button>
+                            <Button variant="warning" style={{ marginRight: '5px' }} onClick={() => setEditIndex(index)}> Edit </Button>
                             <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => deleteHandler(item.id_product)}> Delete </Button>
                         </td>
                     </tr>
@@ -136,10 +138,10 @@ const CartPage = () => {
                 <Alert.Link as={Link} to='./profile'> profile Anda </Alert.Link>
                 sebelum membuat pesanan
             </Alert>
-            
+
             <Table striped bordered hover variant="dark">
                 <thead style={{ backgroundColor: '#2f3640', textAlign: 'center' }}>
-                    <tr>
+                    <tr style={{fontFamily:'Roboto, sans-serif'}}>
                         <th>No</th>
                         <th>Product</th>
                         <th>Price</th>

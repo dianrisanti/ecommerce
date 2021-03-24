@@ -388,5 +388,21 @@ module.exports = {
             res.status(400).send(err)
         }
         
-    }
+    },
+
+    cancelOrder: async (req, res) => {
+        const order_number = req.params.order_number
+
+        try {
+            const deleteItem = `DELETE FROM orders WHERE (order_number = '${order_number}')`
+            await asyncQuery(deleteItem)
+
+            res.status(200).send(`cancel order ${order_number} success`)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
 }

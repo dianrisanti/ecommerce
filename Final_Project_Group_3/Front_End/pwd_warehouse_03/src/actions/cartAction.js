@@ -2,7 +2,7 @@ import Axios from 'axios';
 import { GET_CART} from './helper';
 
 // edit qty in user's cart
-export const EditCartQtyAction = (input, id) => {
+export const EditCart = (input, id) => {
     return async (dispatch) => {
         try {
             // request api : EDIT
@@ -20,7 +20,7 @@ export const EditCartQtyAction = (input, id) => {
 };
 
 // delete user's cart item
-export const DeleteCartItemAction = (input, id) => {
+export const DeleteCart = (input, id) => {
     return async (dispatch) => {
         try {
             // request api : DELETE
@@ -36,3 +36,32 @@ export const DeleteCartItemAction = (input, id) => {
         }
     };
 };
+
+export const CancelOrder = (order_number) => {
+    return async (dispatch) => {
+        try {
+            // console.log(data, id)
+            const option = {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }
+
+            const res = await Axios.post(`http://localhost:2000/cart/cancel/${order_number}`, option)
+            console.log(res.data)
+
+            const res2 = await Axios.get(`http://localhost:2000/user/getpayment/${order_number}`, option)
+            console.log(res2.data)
+
+            const token = localStorage.getItem('token')
+            // console.log(token)
+
+            // get user data from token
+            const res3 = await Axios.post('http://localhost:2000/user/keepLogin', { token })
+            // console.log('hasil dari api', res.data)
+
+            dispatch({ type: 'LOG_IN', payload: res3.data })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+}
