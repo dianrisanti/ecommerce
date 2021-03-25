@@ -60,14 +60,14 @@ function App() {
             <Route path='/forgot_password' component={ForgotPassword} />
             <Route path='/requestNewPassword' component={RequestNewPassword} />
             <Route path='/order_listing' component={OrderListing} />
-            <Route path='/warehouse_stock' component={WarehouseStock}/>
-            <Route path='/get_all' component={GetAll}/>
-            <Route path='/get_jakarta' component={GetJakarta}/>
-            <Route path='/get_medan' component={GetMedan}/>
-            <Route path='/get_surabaya' component={GetSurabaya}/>
-            <Route path='*' component={NotFound} /> 
-            </Switch>
-            <Footer/>
+            <Route path='/warehouse_stock' component={WarehouseStock} />
+            <Route path='/get_all' component={GetAll} />
+            <Route path='/get_jakarta' component={GetJakarta} />
+            <Route path='/get_medan' component={GetMedan} />
+            <Route path='/get_surabaya' component={GetSurabaya} />
+            <Route path='*' component={NotFound} />
+          </Switch>
+          <Footer />
         </div>
       )
     }
@@ -87,13 +87,14 @@ function App() {
           <Route path='/history' component={History} />
           <Route path='/checkout' component={Checkout} />
           <Route path='/upload_payment' component={PaymentConfirmation} />
+          
           // NOTE nanti ganti hanya admin only
-          <Route path='/warehouse_stock' component={WarehouseStock}/>
-          <Route path='/get_all' component={GetAll}/>
-          <Route path='/get_jakarta' component={GetJakarta}/>
-          <Route path='/get_medan' component={GetMedan}/>
-          <Route path='/get_surabaya' component={GetSurabaya}/>
-      
+          <Route path='/warehouse_stock' component={WarehouseStock} />
+          <Route path='/get_all' component={GetAll} />
+          <Route path='/get_jakarta' component={GetJakarta} />
+          <Route path='/get_medan' component={GetMedan} />
+          <Route path='/get_surabaya' component={GetSurabaya} />
+
           <Route path='*' component={NotFound} />
         </Switch>
         <Footer />

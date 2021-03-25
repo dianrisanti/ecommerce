@@ -10,7 +10,7 @@ const allReducers = combineReducers({
     user: userReducer,
     product: productReducer,
     profile: profileReducer,
-    order: orderReducer
+    order: orderReducer,
     admin: adminReducer
 })
 

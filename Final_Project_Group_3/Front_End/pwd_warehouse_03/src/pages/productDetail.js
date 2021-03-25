@@ -22,7 +22,7 @@ const ProductDetail = (props) => {
             username: state.user.username
         }
     })
-    
+    console.log(products)
     const selected = products.filter(item => item.id === id)
     const product = selected[0]
     console.log(product)
