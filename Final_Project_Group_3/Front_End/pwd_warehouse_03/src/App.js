@@ -21,6 +21,11 @@ import Checkout from './pages/checkout'
 import PaymentConfirmation from './pages/UploadPayment'
 import WarehouseStock from './pages/warehouseStock'
 
+import GetAll from './pages/admin_product'
+import GetJakarta from './pages/admin_jakarta'
+import GetMedan from './pages/admin_medan'
+import GetSurabaya from './pages/admin_surabaya'
+
 import { useDispatch, useSelector } from 'react-redux'
 
 import { getProduct, getCarousel, keepLogin } from './actions'
@@ -51,6 +56,12 @@ function App() {
                 <Route path='/checkout' component={Checkout}/>
                 <Route path='/upload_payment' component={PaymentConfirmation}/>
                 <Route path='/warehouse_stock' component={WarehouseStock}/>
+
+                <Route path='/get_all' component={GetAll}/>
+                <Route path='/get_jakarta' component={GetJakarta}/>
+                <Route path='/get_medan' component={GetMedan}/>
+                <Route path='/get_surabaya' component={GetSurabaya}/>
+                
                 <Route path='*' component={NotFound} />
             </Switch>
             <Footer/>
