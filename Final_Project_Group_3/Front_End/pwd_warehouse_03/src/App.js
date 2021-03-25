@@ -19,8 +19,8 @@ import Profile from './pages/profile'
 import History from './pages/history'
 import Checkout from './pages/checkout'
 import PaymentConfirmation from './pages/UploadPayment'
+import OrderListing from './pages/ADMIN_OrderListing'
 import WarehouseStock from './pages/warehouseStock'
-
 import GetAll from './pages/admin_product'
 import GetJakarta from './pages/admin_jakarta'
 import GetMedan from './pages/admin_medan'
@@ -28,44 +28,82 @@ import GetSurabaya from './pages/admin_surabaya'
 
 import { useDispatch, useSelector } from 'react-redux'
 
-import { getProduct, getCarousel, keepLogin } from './actions'
+import { getProduct, getCarousel, keepLogin, getOrder } from './actions'
 
 function App() {
   const dispatch = useDispatch()
+
+  const { role } = useSelector((state) => {
+    return {
+      role: state.user.role
+    }
+  })
 
   React.useEffect(() => {
     dispatch(getProduct())
     dispatch(getCarousel())
     dispatch(keepLogin())
+    dispatch(getOrder())
   }, [])
-  
-  return (
+  console.log('role :', role)
+  function renderPage() {
+    if (role === 1) {
+      console.log('login sebagai admin')
+      return (
         <div>
-            <Navigation />
-            <Switch>
-                <Route path='/' component={Home} exact />
-                <Route path='/register' component={SignUp} />
-                <Route path='/forgot_password' component={ForgotPassword} />
-                <Route path='/requestNewPassword' component={RequestNewPassword} />
-                <Route path='/verification' component={Verify} />
-                <Route path='/login' component={Login} />
-                <Route path='/detail' component={ProductDetail}/>
-                <Route path='/cart' component={CartPage}/>
-                <Route path='/profile' component={Profile}/>
-                <Route path='/history' component={History}/>
-                <Route path='/checkout' component={Checkout}/>
-                <Route path='/upload_payment' component={PaymentConfirmation}/>
-                <Route path='/warehouse_stock' component={WarehouseStock}/>
-
-                <Route path='/get_all' component={GetAll}/>
-                <Route path='/get_jakarta' component={GetJakarta}/>
-                <Route path='/get_medan' component={GetMedan}/>
-                <Route path='/get_surabaya' component={GetSurabaya}/>
-                
-                <Route path='*' component={NotFound} />
+          <Navigation />
+          <Switch>
+            <Route path='/' component={Home} exact />
+            <Route path='/login' component={Login} />
+            <Route path='/register' component={SignUp} />
+            <Route path='/detail' component={ProductDetail} />
+            <Route path='/forgot_password' component={ForgotPassword} />
+            <Route path='/requestNewPassword' component={RequestNewPassword} />
+            <Route path='/order_listing' component={OrderListing} />
+            <Route path='/warehouse_stock' component={WarehouseStock}/>
+            <Route path='/get_all' component={GetAll}/>
+            <Route path='/get_jakarta' component={GetJakarta}/>
+            <Route path='/get_medan' component={GetMedan}/>
+            <Route path='/get_surabaya' component={GetSurabaya}/>
+            <Route path='*' component={NotFound} /> 
             </Switch>
             <Footer/>
         </div>
+      )
+    }
+    return (
+      <div>
+        <Navigation />
+        <Switch>
+          <Route path='/' component={Home} exact />
+          <Route path='/register' component={SignUp} />
+          <Route path='/forgot_password' component={ForgotPassword} />
+          <Route path='/requestNewPassword' component={RequestNewPassword} />
+          <Route path='/verification' component={Verify} />
+          <Route path='/login' component={Login} />
+          <Route path='/detail' component={ProductDetail} />
+          <Route path='/cart' component={CartPage} />
+          <Route path='/profile' component={Profile} />
+          <Route path='/history' component={History} />
+          <Route path='/checkout' component={Checkout} />
+          <Route path='/upload_payment' component={PaymentConfirmation} />
+          // NOTE nanti ganti hanya admin only
+          <Route path='/warehouse_stock' component={WarehouseStock}/>
+          <Route path='/get_all' component={GetAll}/>
+          <Route path='/get_jakarta' component={GetJakarta}/>
+          <Route path='/get_medan' component={GetMedan}/>
+          <Route path='/get_surabaya' component={GetSurabaya}/>
+      
+          <Route path='*' component={NotFound} />
+        </Switch>
+        <Footer />
+      </div>
+    )
+  }
+  return (
+    <div>
+      {renderPage()}
+    </div>
   )
 }
 
