@@ -13,5 +13,9 @@ router.post('/update_stock', orderController.updateStock)
 router.get('/order_listing', orderController.getAllOrder)
 router.get('/detail_order', orderController.getDetailOrder)
 router.get('/order_value', orderController.getTotalOrder)
+router.post('/booked_stock', orderController.bookedStock)
+router.post('/delivery_stock', orderController.deliveryStock)
+router.post('/cancel/:order_number', orderController.cancelOrder)
+
 
 module.exports = router

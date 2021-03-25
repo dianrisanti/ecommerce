@@ -5,26 +5,13 @@ const { generateQuery, asyncQuery } = require('../helpers/queryHelp')
 module.exports = {
     getProd: async(req, res) => {
         try{
-            const queryPaid = `SELECT od.id_product, sum(od.quantity) quantity FROM order_details od 
-            JOIN orders o ON od.order_number = o.order_number 
-            WHERE o.status = 3 
-            GROUP BY od.id_product`
-            const paidResult = await asyncQuery(queryPaid)
-
-            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.available) total_stock FROM products p 
             JOIN product_category pc ON p.category_id = pc.id
             JOIN warehouse w ON p.id = w.product_id  
             GROUP BY p.id) main 
             JOIN product_img pi ON main.id = pi.product_id 
             GROUP BY main.id`
             const productResult = await asyncQuery(queryProduct)
-            productResult.map(item => item.images = item.images.split(','))
-
-            for(const product of productResult){
-                for(const paid of paidResult){
-                    if(product.id === paid.id_product) product.total_stock = product.total_stock - paid.quantity
-                }
-            }
 
             res.status(200).send(productResult)
         }

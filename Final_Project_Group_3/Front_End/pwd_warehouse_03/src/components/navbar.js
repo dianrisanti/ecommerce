@@ -9,6 +9,8 @@ import {
 } from 'react-bootstrap'
 import { Redirect, Link } from 'react-router-dom'
 
+import { Logo } from '../assets'
+
 import { useSelector, useDispatch } from 'react-redux'
 
 //NOTE import action log out
@@ -36,12 +38,13 @@ function Navigation() {
                 <Navbar.Brand as={Link} to='/'>
                     <Image
                         alt="Electronic-Shop"
-                        src="http://www.kniwwelino.lu/fileadmin/logos/electronic-shop.png"
-                        width="150px"
+                        src={Logo.default}
+                        width="100px"
                         height="50px"
                         fluid
                     />
                 </Navbar.Brand>
+            <p style={{fontFamily:'Sriracha, cursive', fontSize:'28px', marginTop:'12px'}}>Electronic Shop</p>
             </Navbar>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
