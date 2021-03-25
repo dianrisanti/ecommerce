@@ -9,28 +9,26 @@ import {
 } from 'react-bootstrap'
 import { Redirect, Link } from 'react-router-dom'
 
-import {
-    LOGO
-} from '../assets'
-
 import { useSelector, useDispatch } from 'react-redux'
 
 //NOTE import action log out
 import { logout } from "../actions"
 
 function Navigation() {
-    const { username } = useSelector((state) => {
+    const { username, role } = useSelector((state) => {
         return {
-            username: state.user.username
+            username: state.user.username,
+            role: state.user.role
         }
     })
+
+
 
     const dispatch = useDispatch()
     const logoutHandler = () => {
         dispatch(logout())
-
-        return <Redirect to='/'/>
     }
+
 
     return (
         <Navbar fixed='top' style={{ background: 'rgba(82, 192, 192, 0.7)' }} expand="lg">
@@ -39,7 +37,7 @@ function Navigation() {
                     <Image
                         alt="Electronic-Shop"
                         src="http://www.kniwwelino.lu/fileadmin/logos/electronic-shop.png"
-                        width="250px"
+                        width="150px"
                         height="50px"
                         fluid
                     />
@@ -48,22 +46,47 @@ function Navigation() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    <NavLink as={Link} to='/' style={{ color: 'black' }}>
-                        <i className="fas fa-home" syle={{ marginRight: '10px' }}></i>
-                        <strong>HOME</strong>
-                    </NavLink>
+                    {role === 1
+                        ?
+                        <>
+                            <NavLink as={Link} to='/' style={{ color: 'black' }}>
+                                <i className="fas fa-home" syle={{ marginRight: '15px' }}></i>
+                                <strong> HOME</strong>
+                            </NavLink>
+                            <NavLink as={Link} to='/order_listing' style={{ color: 'black' }}>
+                                <i className="fas fa-dollar-sign" syle={{ marginRight: '15px' }}></i>
+                                <strong> Order Listing</strong>
+                            </NavLink>
+                        </>
+                        :
+                        <>
+                            <NavLink as={Link} to='/' style={{ color: 'black' }}>
+                                <i className="fas fa-home" syle={{ marginRight: '10px' }}></i>
+                                <strong> HOME</strong>
+                            </NavLink>
+                        </>
+                    }
                 </Nav>
-                <Link to='/cart' style={{fontSize:'30px', marginRight:'10px', marginBottom:'10px', textDecoration:'none'}}> 🛒 </Link>
+                <Link to='/cart' style={{ fontSize: '30px', marginRight: '10px', marginBottom: '10px', textDecoration: 'none' }}> 🛒 </Link>
                 <Dropdown>
-                <DropdownButton title={!username ? 'Username' : username}
+                    <DropdownButton title={!username ? 'Username' : username}
                         variant={username ? 'primary' : 'success'} id="dropdown-button-drop-left" >
                         {username
                             ?
                             <>
-                            <Dropdown.Item onClick={logoutHandler}>Log out</Dropdown.Item>
-                            <Dropdown.Item as={Link} to='/verification'>Verification</Dropdown.Item>
-                            <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
-                            <Dropdown.Item as={Link} to='/history'>History</Dropdown.Item>
+                                {role === 1
+                                    ?
+                                    <>
+                                        <Dropdown.Item as={Link} to ='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
+                                    </>
+                                    :
+                                    <>
+                                        <Dropdown.Item as={Link} to ='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
+                                        <Dropdown.Item as={Link} to='/verification'>Verification</Dropdown.Item>
+                                        <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
+                                        <Dropdown.Item as={Link} to='/history'>History</Dropdown.Item>
+                                    </>
+                                }
                             </>
                             :
                             <>

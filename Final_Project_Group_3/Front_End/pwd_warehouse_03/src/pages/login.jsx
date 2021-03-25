@@ -38,7 +38,7 @@ function Login(props) {
         const body = {
             username,
             email,
-            password
+            password,
         }
         props.login(body)
     }
@@ -122,7 +122,7 @@ const styles = {
         height: '100vh',
         background: "url(https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1934&q=80) no-repeat center",
         backgroundSize: '100vw 100vh',
-        marginTop: '138px'
+        marginTop: '100px'
     }
 }
 

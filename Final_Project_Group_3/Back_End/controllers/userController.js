@@ -18,9 +18,13 @@ const SECRET_KEY = process.env.CRYPTO_KEY
 // export controller
 module.exports = {
     getAllUser: (req, res) => {
-        const userQuery = 'SELECT * FROM users'
+        const userQuery = 'SELECT * FROM users WHERE username<>"admin"'
         db.query(userQuery, (err, result) => {
             if (err) return res.status(500).send(err)
+            Array.prototype.insert = function ( index, item ) {
+                this.splice( index, 0, item );
+            }
+            result.insert(0,{username: "All"})
 
             res.status(200).send(result)
         })
@@ -34,7 +38,7 @@ module.exports = {
         const hashpass = cryptojs.HmacMD5(password, SECRET_KEY)
 
 
-        const loginQuery = `SELECT u.id, u.username, u.email, u.status, ul.province_name location, p.address FROM users u 
+        const loginQuery = `SELECT u.id, u.username, u.email, u.status, u.role, ul.province_name location, p.address FROM users u 
         JOIN profile p ON u.id = p.id_user
         LEFT JOIN user_location ul ON p.location_id = ul.id WHERE ` + QUERY +
         `AND u.password=${db.escape(hashpass.toString())}`
@@ -274,7 +278,7 @@ module.exports = {
 
         try {
             // query to get data from database
-            const getUser = `SELECT u.id, u.username, u.email, u.status, ul.province_name location, p.address FROM users u 
+            const getUser = `SELECT u.id, u.username, u.email, u.status, u.role, ul.province_name location, p.address FROM users u 
             JOIN profile p ON u.id = p.id_user
             LEFT JOIN user_location ul ON p.location_id = ul.id
             WHERE u.username='${req.user.username}'`

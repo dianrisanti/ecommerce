@@ -10,5 +10,8 @@ router.get('/history/:id', orderController.getHistory)
 router.get('/summary/:id', orderController.getSummary)
 router.post('/invoice/:id', orderController.getInvoice)
 router.post('/update_stock', orderController.updateStock)
+router.get('/order_listing', orderController.getAllOrder)
+router.get('/detail_order', orderController.getDetailOrder)
+router.get('/order_value', orderController.getTotalOrder)
 
 module.exports = router
