@@ -118,4 +118,62 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+
+    getCategory: async(req, res) => {
+        try{
+            const cate = `SELECT * FROM product_category`
+            const result = await asyncQuery(cate)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
+    addCategory: async(req, res) => {
+        let {category} = req.body
+
+        try{
+            const cate = `INSERT INTO product_category (category) VALUES ('${category}')`
+            const result = await asyncQuery(cate)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
+    deleteCategory: async(req, res) => {
+        let {id} = req.body
+
+        try{
+            const cate = `DELETE FROM product_category WHERE id = ${parseInt(id)}`
+            const result = await asyncQuery(cate)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
+    editCategory: async(req, res) => {
+        let {category, id} = req.body
+
+        try{
+            const cate = `UPDATE product_category SET category = '${category}' WHERE id = ${parseInt(id)}`
+            const result = await asyncQuery(cate)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
 }
