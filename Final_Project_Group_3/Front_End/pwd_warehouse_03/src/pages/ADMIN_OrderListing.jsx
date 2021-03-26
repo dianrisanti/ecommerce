@@ -8,9 +8,13 @@ import {
     Button,
     Accordion,
     Table,
-    Image
+    Image,
+    Modal,
+    InputGroup,
+    FormControl
 } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { confirmPayment, getOrder, cancelOrder } from '../actions'
 
 const OrderListing = () => {
     const { data } = useSelector((state) => {
@@ -20,6 +24,7 @@ const OrderListing = () => {
     })
 
     console.log(data)
+    const dispatch = useDispatch()
 
     // NOTE filter harga dan nama
     const options = [
@@ -29,49 +34,48 @@ const OrderListing = () => {
         'Total Belanja Terendah',
     ]
     const [selectedOption, setSelectedOption] = React.useState("")
-    const [data2, setData2] = React.useState([]) // NOTE data total belanja
-    const [data3, setData3] = React.useState([]) // NOTE data user
+    const [dataUser, setDataUser] = React.useState([]) // NOTE data user
+    let [refresh, setRefresh] = React.useState(0)
+    let [alert, setAlert] = React.useState(false)
+    let [orderNumber, setOrderNumber] = React.useState("")
+    let Message = React.useRef('')
+
+    console.log("value orderNum :", orderNumber)
+
 
     React.useEffect(() => {
         async function fetchData() {
             try {
-                let res2 = await Axios.get(`http://localhost:2000/cart/detail_order`)
-                setData2(res2.data)
-                try {
-                    let res3 = await Axios.get(`http://localhost:2000/user/getUser`)
-                    setData3(res3.data)
-                }
-                catch (err3) {
-                    console.log(err3)
-                }
+                let res = await Axios.get(`http://localhost:2000/user/getUser`)
+                setDataUser(res.data)
+                dispatch(getOrder())
             }
-            catch (err2) {
-                console.log(err2)
+            catch (err) {
+                console.log(err)
             }
 
         }
         fetchData()
-    }, [])
+    }, [refresh])
 
     console.log('data :', data)
-    console.log('total belanja :', data2)
-    console.log('data user :', data3)
+    console.log('data user :', dataUser)
 
 
     const handleClickListItem = (index) => {
         const input = options[index]
         setSelectedOption(input)
 
-        if (index === 0) return data2.sort((a, b) => a.username.localeCompare(b.username))
-        if (index === 1) return data2.sort((a, b) => -1 * a.username.localeCompare(b.username))
+        if (index === 0) return data.sort((a, b) => a.username.localeCompare(b.username))
+        if (index === 1) return data.sort((a, b) => -1 * a.username.localeCompare(b.username))
         if (index === 2) return data.sort((a, b) => b.total_belanja - a.total_belanja)
         if (index === 3) return data.sort((a, b) => a.total_belanja - b.total_belanja)
     }
 
     const [selectedUser, setSelectedUser] = React.useState("")
 
-    const handleClickListItemCate = (index) => {
-        const input = data3[index]
+    const handleClickListUser = (index) => {
+        const input = dataUser[index]
         setSelectedUser(input.username)
 
         if (input.username === 'All') return setSelectedUser("")
@@ -81,7 +85,7 @@ const OrderListing = () => {
     // pagination
     const itemsPerPage = 3
     const [page, setPage] = React.useState(1)
-    const noOfPages = selectedUser ? 1 : Math.ceil(data2.length / itemsPerPage)
+    const noOfPages = selectedUser ? 1 : Math.ceil(data.length / itemsPerPage)
     const listItem = Array(noOfPages).fill(1)
 
     const goToDetail = (index) => {
@@ -89,8 +93,37 @@ const OrderListing = () => {
         return <Redirect to={`/detail?id=${index}`} />
     }
 
-    function handlePaymentCon() {
+    function handlePaymentCon(orderNum) {
+        dispatch(confirmPayment(orderNum))
+        let useRefresh = refresh
+        setRefresh(refresh + 1)
+        console.log("refresh request executed =", useRefresh, "times")
+    }
 
+    function handleCancelOrder(orderNum) {
+        dispatch(cancelOrder(orderNum))
+        setOrderNumber(orderNum)
+        let useRefresh = refresh
+        setRefresh(refresh + 1)
+        setAlert(true)
+        console.log("refresh request executed =", useRefresh, "times")
+    }
+
+    function handleCancelMessage() {
+        let CancelMsg = {message: Message.current.value}
+
+
+        Axios.post(`http://localhost:2000/admin/cancelOrder/${orderNumber}`, CancelMsg)
+            .then((res) => {
+                console.log(res.data)
+                let useRefresh = refresh
+                setRefresh(refresh + 1)
+                console.log("refresh request executed =", useRefresh, "times")
+                setAlert(false)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     return (
@@ -105,21 +138,50 @@ const OrderListing = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu style={{ height: '200px', overflowY: 'scroll' }}>
-                            {data3.map((item, index) => {
+                            {dataUser.map((item, index) => {
                                 return (
-                                    <Dropdown.Item key={index} onClick={() => handleClickListItemCate(index)}>{item.username}</Dropdown.Item>
+                                    <Dropdown.Item key={index} onClick={() => handleClickListUser(index)}>{item.username}</Dropdown.Item>
                                 )
                             })}
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>
+                <div style={{ display: 'flex', flexDirection: 'row', width: 350 }}>
+                    <h3 style={{ marginRight: 10 }}>Sort By</h3>
+                    <Dropdown style={{ marginRight: "4%" }}>
+                        <Dropdown.Toggle style={{ backgroundColor: "transparent", fontFamily: "Dosis", color: 'black' }} id="dropdown-basic">
+                            {selectedOption ? selectedOption : "Berdasarkan"}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                            {options.map((item, index) => {
+                                return (
+                                    <Dropdown.Item key={index} onClick={() => handleClickListItem(index)}>{item}</Dropdown.Item>
+                                )
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </div>
+                <div>
+                    <Pagination>
+                        <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
+                        {listItem.map((item, index) => {
+                            return (
+                                <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
+                            )
+                        })}
+                        <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
+                    </Pagination>
+                </div>
             </div>
+
+
             <div style={{ marginTop: "20px", padding: "0 20px", height: 300 }}>
-                <Table striped bordered hover style={{ textAlign: "center"}}>
+                <Table striped bordered hover style={{ textAlign: "center" }}>
                     {selectedUser
                         ?
                         // console.log(data.filter(item => item.username === selectedUser.username))
-                        data2
+                        data
                             .filter(item => item.username === selectedUser)
                             .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                             .map((item, index) => {
@@ -135,23 +197,27 @@ const OrderListing = () => {
                                                         <span>Date: {item.date}</span>
                                                         <span>Payment Method: {item.payment_method}</span>
                                                         <span>Status: {item.status}</span>
-                                                        <span>Total Belanja :
-                                                        {
-                                                                data
-                                                                    .filter(item2 => item2.order_number === item.order_number)
-                                                                    .map((item2, index2) => {
-                                                                        return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item2.total_belanja)
-                                                                    })
-                                                            }
-                                                        </span>
-                                                        {item.payment_confirmation === 1
-                                                            ?
-                                                            <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
-                                                            :
-                                                            <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                                        }
+                                                        <span>Total Belanja :{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</span>
                                                     </span>
                                                 </Accordion.Toggle>
+                                                {item.payment_confirmation === 0
+                                                    ?
+                                                    <i style={{ color: "blue" }}>Waiting for user payment</i>
+                                                    :
+                                                    item.status !== "Paid"
+                                                        ?
+                                                        item.status === "On Delivery"
+                                                            ?
+                                                            <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
+                                                            :
+                                                            <i style={{ color: "blue" }}>Dibatalkan karena {item.message}</i>
+                                                        :
+                                                        <>
+                                                            <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
+                                                            <Button className="btn btn-danger" style={{ marginRight: '5px' }} onClick={() => handleCancelOrder(item.order_number)}> Cancel Order </Button>
+                                                        </>
+
+                                                }
                                             </Card.Header>
                                             <Accordion.Collapse eventKey={index + 1}>
                                                 <Table striped bordered hover>
@@ -188,7 +254,7 @@ const OrderListing = () => {
                                 )
                             })
                         :
-                        data2
+                        data
                             .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                             .map((item, index) => {
                                 return (
@@ -203,23 +269,27 @@ const OrderListing = () => {
                                                         <span>Date: {item.date}</span>
                                                         <span>Payment Method: {item.payment_method}</span>
                                                         <span>Status: {item.status}</span>
-                                                        <span>Total Belanja :
-                                                        {
-                                                                data
-                                                                    .filter(item2 => item2.order_number === item.order_number)
-                                                                    .map((item2, index2) => {
-                                                                        return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item2.total_belanja)
-                                                                    })
-                                                            }
-                                                        </span>
-                                                        {item.payment_confirmation === 1
-                                                            ?
-                                                            <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
-                                                            :
-                                                            <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                                        }
+                                                        <span>Total Belanja :{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</span>
                                                     </span>
                                                 </Accordion.Toggle>
+                                                {item.payment_confirmation === 0
+                                                    ?
+                                                    <i style={{ color: "blue" }}>Waiting for user payment</i>
+                                                    :
+                                                    item.status !== "Paid"
+                                                        ?
+                                                        item.status === "On Delivery"
+                                                            ?
+                                                            <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
+                                                            :
+                                                            <i style={{ color: "blue" }}>Dibatalkan karena {item.message}</i>
+                                                        :
+                                                        <>
+                                                            <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
+                                                            <Button className="btn btn-danger" style={{ marginRight: '5px' }} onClick={() => handleCancelOrder(item.order_number)}> Cancel Order </Button>
+                                                        </>
+
+                                                }
                                             </Card.Header>
                                             <Accordion.Collapse eventKey={index + 1}>
                                                 <Table striped bordered hover>
@@ -257,19 +327,32 @@ const OrderListing = () => {
                             })
                     }
                 </Table>
+                <Modal show={alert} onHide={() => setAlert(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Please insert the cancellation reason</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <InputGroup className="mb-3">
+                            <InputGroup.Prepend>
+                                <InputGroup.Text id="basic-addon1">
+                                    <i className="fas fa-comment-dots"></i>
+                                </InputGroup.Text>
+                            </InputGroup.Prepend>
+                            <FormControl
+                                ref={Message}
+                                placeholder="Input the reason for cancellation"
+                                aria-describedby="basic-addon1"
+                            />
+                        </InputGroup>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" data-dismiss="modal" onClick={() => handleCancelMessage()}>
+                            Okay
+                            </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
-            <div>
-                <Pagination>
-                    <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
-                    {listItem.map((item, index) => {
-                        return (
-                            <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
-                        )
-                    })}
-                    <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
-                </Pagination>
-            </div>
-        </div>
+        </div >
     )
 }
 

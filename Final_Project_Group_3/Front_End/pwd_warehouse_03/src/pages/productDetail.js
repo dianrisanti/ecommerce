@@ -105,17 +105,18 @@ const ProductDetail = (props) => {
             <div style={styles.content}>
                 <div style={styles.left}>
                     <Carousel>
-                        {product.images.map((item, index) => {
-                            return (
-                                <Carousel.Item key={index}>
+                                <Carousel.Item > 
                                     <img
                                         className="d-block w-100"
-                                        src={item}
+                                        src={product.images}
                                         alt="Slide"
                                     />
                                 </Carousel.Item>
+                                {/* NOTE error caraousel key={index} di carousel */}
+                        {/* {product.images.map((item, index) => {
+                            return (
                             )
-                        })}  
+                        })}   */}
                     </Carousel>
                 </div>
                 <div style={styles.right}>

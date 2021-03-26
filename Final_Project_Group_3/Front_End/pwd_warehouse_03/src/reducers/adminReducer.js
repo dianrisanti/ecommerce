@@ -1,6 +1,7 @@
 const INITIAL_STATE = {
     productStock: [],
     products: [],
+    status: "",
     category: []
 }
 
@@ -15,6 +16,11 @@ const adminReducer = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 productStock: action.payload
+            }
+        case 'SET_STATUS_PAYMENT':
+            return {
+                ...state,
+                status: action.payload
             }
         case 'GET_CATEGORY':
             return {

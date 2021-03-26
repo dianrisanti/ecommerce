@@ -60,6 +60,10 @@ function Navigation() {
                                 <i className="fas fa-dollar-sign" syle={{ marginRight: '15px' }}></i>
                                 <strong> Order Listing</strong>
                             </NavLink>
+                            <NavLink as={Link} to='/sales_report' style={{ color: 'black' }}>
+                                <i className="far fa-chart-bar" syle={{ marginRight: '15px' }}></i>
+                                <strong> Sales Report</strong>
+                            </NavLink>
                         </>
                         :
                         <>

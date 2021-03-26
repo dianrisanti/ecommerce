@@ -488,7 +488,7 @@ module.exports = {
     getDetailOrder: async(req, res) => {
         try{
             const history = `SELECT o.date , x.username, o.order_number, od.id_product, IF(LEFT(o.payment_confirmation, 1) = 'i', true, false) AS payment,sum(distinct od.total) as total_belanja, p.name, od.quantity, 
-            p.price, od.total,  pi.image, os.status, o.payment_method
+            p.price, od.total,  pi.image, os.status, o.payment_method, o.message
             FROM orders o
             JOIN order_details od ON o.order_number = od.order_number
             JOIN products p ON od.id_product = p.id
@@ -508,6 +508,7 @@ module.exports = {
                     payment_confirmation: item.payment,
                     payment_method: item.payment_method,
                     status: item.status,
+                    message: item.message,
                     products: [{
                         id_product: item.id_product,
                         name: item.name,
@@ -515,11 +516,14 @@ module.exports = {
                         price: item.price,
                         total: item.total,
                         image: item.image
-                    }]
+                    }],
+                    
                 }
                 output.push(temp)
             })
+            
             console.log('output detail order',output)
+            
 
             let out = []
             for(entry of output){
@@ -530,7 +534,10 @@ module.exports = {
                   out.push(entry)
                 }
             }
-
+            out.map(i => {
+                if(i.products.length === 1) i.total_belanja = i.products[0].total
+                if (i.products.length > 1) i.total_belanja = i.products.reduce((a,b) => (a.total + b.total))
+            })
             res.status(200).send(out)
         }
         catch(err){
