@@ -9,13 +9,12 @@ router.post('/delete', orderController.deleteCart)
 router.get('/history/:id', orderController.getHistory)
 router.get('/summary/:id', orderController.getSummary)
 router.post('/invoice/:id', orderController.getInvoice)
-// router.post('/update_stock', orderController.updateStock)
 router.get('/order_listing', orderController.getAllOrder)
 router.get('/detail_order', orderController.getDetailOrder)
 router.get('/order_value', orderController.getTotalOrder)
 router.post('/booked_stock', orderController.bookedStock)
 router.post('/delivery_stock', orderController.deliveryStock)
 router.post('/cancel/:order_number', orderController.cancelOrder)
-
+router.post('/confirm/:order_number', orderController.confirmArrived)
 
 module.exports = router

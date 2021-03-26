@@ -8,20 +8,28 @@ import {
     Alert,
     Form
 } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import {getCart} from '../actions'
 
 const ProductDetail = (props) => {
     const input = props.location.search
     const id = parseInt(input.slice(4, input.length))
     // console.log(id)
 
-    const { products, id_user, username } = useSelector((state) => {
+    const { products, id_user, username, cart } = useSelector((state) => {
         return{
             products: state.product.products,
             id_user: state.user.id_user,
-            username: state.user.username
+            username: state.user.username,
+            cart: state.product.cart
         }
     })
+
+    const dispatch = useDispatch()
+    React.useEffect(() => {
+        dispatch(getCart(+id_user))
+    }, [])
+
     console.log(products)
     const selected = products.filter(item => item.id === id)
     const product = selected[0]
@@ -42,6 +50,9 @@ const ProductDetail = (props) => {
     const addToCartHandler = () => {
         if(!id_user) return setCheckError([true, "Silahkan login terlebih dahulu"])
         if(qty <= 0) return setQtyErr([true, "Minimal pembelian produk ini adalah 1 barang"])
+
+        const checkCart = cart.filter(i => i.id_product === id)
+        if(checkCart[0].quantity + qty >= product.total_stock) return setQtyErr([true, "Pembelian melebihi stock. Silahkan periksa keranjang belanja Anda"])
 
         const addToCart = {
             order_number: Date.now(),

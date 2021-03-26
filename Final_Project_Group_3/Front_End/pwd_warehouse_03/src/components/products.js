@@ -35,30 +35,14 @@ const Product = () => {
     }
 
     // filter kategori
-    const optionsCate = [
-        'All',
-        'Smartphone',
-        'Casing & Cover',
-        'Keyboard',
-        'Screen Guard',
-        'Smartwatch',
-        'Data cable',
-        'Portable Power Bank',
-        'Memory Card',
-        'Wireless charger',
-        'Stand & Holder',
-        'Stylus',
-        'Virtual Reality',
-        'Laptop',
-        'Mini PC',
-        'Playstation',
-        'Mouse',
-        'Antena',
-        'TV',
-        'CCTV',
-        'Monitor',
-        'Audio'
-    ]
+    const optionsCate = ['All']
+    for(let entry of products){
+        const existingEntry = optionsCate.find(o => o === entry.category)
+        if(!existingEntry){
+            optionsCate.push(entry.category)
+        }
+    }
+
     const [selectedCate, setSelectedCate] = React.useState("")
 
     const handleClickListItemCate = (index) => {

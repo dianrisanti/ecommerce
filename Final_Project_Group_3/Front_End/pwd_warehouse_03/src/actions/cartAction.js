@@ -65,3 +65,32 @@ export const CancelOrder = (order_number) => {
         }
     }
 }
+
+export const ConfirmArrived = (order_number) => {
+    return async (dispatch) => {
+        try {
+            // console.log(data, id)
+            const option = {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }
+
+            const res = await Axios.post(`http://localhost:2000/cart/confirm/${order_number}`, option)
+            console.log(res.data)
+
+            const res2 = await Axios.get(`http://localhost:2000/user/getpayment/${order_number}`, option)
+            console.log(res2.data)
+
+            const token = localStorage.getItem('token')
+            // console.log(token)
+
+            // get user data from token
+            const res3 = await Axios.post('http://localhost:2000/user/keepLogin', { token })
+            // console.log('hasil dari api', res.data)
+
+            dispatch({ type: 'LOG_IN', payload: res3.data })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+}

@@ -8,7 +8,7 @@ import {
     Image,
     Button
 } from 'react-bootstrap'
-import { CancelOrder, paymentConf } from '../actions'
+import { CancelOrder, ConfirmArrived, paymentConf } from '../actions'
 import { Link } from 'react-router-dom'
 
 const HistoryPage = () => {
@@ -22,9 +22,17 @@ const HistoryPage = () => {
 
 
     React.useEffect(() => {
-        Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
-            .then(res => (setData(res.data)))
-            .catch(err => console.log(err))
+        async function fetchData() {
+            try {
+                const res = await Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
+                setData(res.data)
+            }
+            catch(err) {
+                console.log(err)
+            }
+
+        }
+        fetchData()
     }, [id])
 
     function handlePaymentCon(e) {
@@ -37,7 +45,13 @@ const HistoryPage = () => {
         console.log(e)
     }
 
+    const confirmArrived = (e) => {
+        dispatch(ConfirmArrived(e))
+        console.log(e)
+    }
+
     console.log(data)
+
     const renderTbody = () => {
         return (
             <Accordion>
@@ -59,6 +73,18 @@ const HistoryPage = () => {
                                             :
                                             <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
                                         }
+                                        {item.status === 5
+                                            ?
+                                            <h1>test</h1>
+                                            :
+                                            <Button variant='danger' onClick={() => cancelOrder(item.order_number)}>Cancel</Button>
+                                        }
+                                        {item.status === 6
+                                            ?
+                                            <h1>test</h1>
+                                            :
+                                            <Button variant='success' onClick={() => confirmArrived(item.order_number)}>Done</Button>
+                                        }
                                     </span>
                                 </Accordion.Toggle>
                             </Card.Header>
@@ -73,6 +99,13 @@ const HistoryPage = () => {
                                                 <th>Quantity</th>
                                                 <th>Price</th>
                                                 <th>Total</th>
+                                                {
+                                                    item.status === "On Delivery" || item.status === "Arrived"
+                                                    ?
+                                                    <th>Kirim Dari</th>
+                                                    :
+                                                    <></>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -87,14 +120,18 @@ const HistoryPage = () => {
                                                         <td>{item2.quantity}</td>
                                                         <td>IDR {item2.price.toLocaleString()}</td>
                                                         <td>IDR {item2.total.toLocaleString()}</td>
+                                                        {
+                                                            item.status === "On Delivery" || item.status === "Arrived"
+                                                            ?
+                                                            <td>{item2.delivery_loc.join(", ")}</td>
+                                                            :
+                                                            <></>
+                                                        }
                                                     </tr>
                                                 )
                                             })}
                                         </tbody>
                                     </Table>
-                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom:'15px', marginRight:'15px'}}>
-                                        <Button variant='danger' onClick={() => cancelOrder(item.order_number)}>Cancel Order</Button>
-                                    </div>
                                 </div>
                             </Accordion.Collapse>
                         </Card>
