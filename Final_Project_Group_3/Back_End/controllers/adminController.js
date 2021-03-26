@@ -24,13 +24,13 @@ module.exports = {
             for await (item of warehouse) {
                 let query
                 if(item.location === 'Jakarta') {
-                    query = `UPDATE warehouse SET stock = ${item.stock} WHERE product_id = ${+id_product} AND location_id = 1`
+                    query = `UPDATE warehouse SET stock = ${item.stock}, available = (${item.stock} - booked) WHERE product_id = ${+id_product} AND location_id = 1`
                 }
                 if(item.location === 'Medan') {
-                    query = `UPDATE warehouse SET stock = ${item.stock} WHERE product_id = ${+id_product} AND location_id = 2`
+                    query = `UPDATE warehouse SET stock = ${item.stock}, available = (${item.stock} - booked) WHERE product_id = ${+id_product} AND location_id = 2`
                 }
                 if(item.location === 'Surabaya') {
-                    query = `UPDATE warehouse SET stock = ${item.stock} WHERE product_id = ${+id_product} AND location_id = 3`
+                    query = `UPDATE warehouse SET stock = ${item.stock}, available = (${item.stock} - booked) WHERE product_id = ${+id_product} AND location_id = 3`
                 }
                 
                 await asyncQuery(query) 

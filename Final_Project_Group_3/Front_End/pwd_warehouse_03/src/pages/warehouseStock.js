@@ -14,8 +14,14 @@ const WarehouseStock = () => {
     const [modal, setModal] = React.useState(false)
     const [stockProdId, setStockProdId] = React.useState(null)
     const [stockJkt, setStockJkt] = React.useState(null)
+    const [bookedJkt, setBookedJkt] = React.useState(null)
+    const [availableJkt, setAvailableJkt] = React.useState(null)
     const [stockMedan, setStockMedan] = React.useState(null)
+    const [bookedMedan, setBookedMedan] = React.useState(null)
+    const [availableMedan, setAvailableMedan] = React.useState(null)
     const [stockSurabaya, setStockSurabaya] = React.useState(null)
+    const [bookedSurabaya, setBookedSurabaya] = React.useState(null)
+    const [availableSurabaya, setAvailableSurabaya] = React.useState(null)
     const [stockProdName, setStockProdName] = React.useState("")
     const [stockProdTotal, setStockProdTotal] = React.useState(0)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
@@ -44,9 +50,21 @@ const WarehouseStock = () => {
         const filtered = data.filter(item => item.id === i)
 
         for(const entry of filtered) {
-            if(entry.location === "Jakarta") setStockJkt(entry.stock)
-            if(entry.location === "Medan") setStockMedan(entry.stock)
-            if(entry.location === "Surabaya") setStockSurabaya(entry.stock)
+            if(entry.location === "Jakarta") {
+                setBookedJkt(entry.booked) 
+                setAvailableJkt(entry.available)
+                setStockJkt(entry.stock)
+            }
+            if(entry.location === "Medan") {
+                setBookedMedan(entry.booked)
+                setAvailableMedan(entry.available)
+                setStockMedan(entry.stock)
+            }
+            if(entry.location === "Surabaya") {
+                setBookedSurabaya(entry.booked)
+                setAvailableSurabaya(entry.available)
+                setStockSurabaya(entry.stock)
+            }
         }
 
         const sum = filtered.reduce((a, b) => a + b.stock, 0)
@@ -73,6 +91,7 @@ const WarehouseStock = () => {
     }
 
     const saveHandler = () => {
+        if(stockJkt < bookedJkt || stockMedan < bookedMedan || stockSurabaya < bookedSurabaya) return setQtyErr([true, `Stock kurang dari booked`])
         if(stockJkt + stockMedan + stockSurabaya !== stockProdTotal) return setQtyErr([true, `Jumlah tidak sesuai total`])
         const input = {
             id_product: stockProdId,
@@ -140,6 +159,45 @@ const WarehouseStock = () => {
         )
     }
 
+    const renderTableDetail = () => {
+        <Table striped bordered hover>
+            <thead>
+                <tr>
+                    <th>Lokasi</th>
+                    <th>Booked</th>
+                    <th>Available</th>
+                    <th>Total Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Jakarta</td>
+                    <td>{bookedJkt}</td>
+                    <td>{availableJkt}</td>
+                    <td>
+                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyJkt(e)} value={stockJkt} min={0}/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Medan</td>
+                    <td>{bookedMedan}</td>
+                    <td>{availableMedan}</td>
+                    <td>
+                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyMedan(e)} value={stockMedan} min={0}/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Surabaya</td>
+                    <td>{bookedSurabaya}</td>
+                    <td>{availableSurabaya}</td>
+                    <td>
+                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtySurabaya(e)} value={stockSurabaya} min={0}/>
+                    </td>
+                </tr>
+            </tbody>
+        </Table>
+    }
+
     const renderModal = () => {
         return(
             <Modal show={modal} onHide={() => setModal(false)}>
@@ -153,21 +211,43 @@ const WarehouseStock = () => {
                         <p style={{marginLeft: '15px'}}>{stockProdTotal}</p>
                     </div>
 
-                    <div style={{width: '200px'}}>
-                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <p>Jakarta: </p>
-                            <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyJkt(e)} value={stockJkt} min={0}/>
-                        </div>
-
-                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <p>Medan: </p>
-                            <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyMedan(e)} value={stockMedan} min={0}/>
-                        </div>
-
-                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <p>Surabaya : </p>
-                            <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtySurabaya(e)} value={stockSurabaya} min={0}/>
-                        </div>
+                    <div style={{width: '400px'}}>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Lokasi</th>
+                                <th>Booked</th>
+                                <th>Available</th>
+                                <th>Total Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jakarta</td>
+                                <td>{bookedJkt}</td>
+                                <td>{availableJkt}</td>
+                                <td>
+                                    <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyJkt(e)} value={stockJkt} min={0}/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Medan</td>
+                                <td>{bookedMedan}</td>
+                                <td>{availableMedan}</td>
+                                    <td>
+                                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyMedan(e)} value={stockMedan} min={0}/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Surabaya</td>
+                                    <td>{bookedSurabaya}</td>
+                                    <td>{availableSurabaya}</td>
+                                    <td>
+                                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtySurabaya(e)} value={stockSurabaya} min={0}/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </Table>
                     </div>
 
                     <p style={{fontSize: '14px', color: 'red'}}>{qtyErr[0] ? qtyErr[1] : "" }</p>
