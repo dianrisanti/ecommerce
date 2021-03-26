@@ -24,7 +24,7 @@ const productReducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 productDetail: action.payload
             }
-        case GET_CART : 
+        case 'GET_CART' : 
             return {
                 ...state,
                 cart: action.payload

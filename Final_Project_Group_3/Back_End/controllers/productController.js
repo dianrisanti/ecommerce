@@ -12,6 +12,7 @@ module.exports = {
             JOIN product_img pi ON main.id = pi.product_id 
             GROUP BY main.id`
             const productResult = await asyncQuery(queryProduct)
+            productResult.map(item => item.images = item.images.split(','))
 
             res.status(200).send(productResult)
         }

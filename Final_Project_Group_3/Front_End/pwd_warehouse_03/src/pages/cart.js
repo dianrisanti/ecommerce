@@ -6,34 +6,37 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
 import {
     EditCart,
-    DeleteCart
-} from '../actions';
+    DeleteCart,
+    getCart
+} from '../actions'
 
 const CartPage = () => {
-    const [data, setData] = React.useState([])
+    // const [data, setData] = React.useState([])
     const [loc, setLoc] = React.useState(false)
     const [noLoc, setNoLoc] = React.useState(false)
     const [editIndex, setEditIndex] = React.useState(null)
     const [qty, setQty] = React.useState(0)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
 
-    const { id, location, address, products, cart } = useSelector((state) => {
+    const { id, location, address, products, data } = useSelector((state) => {
         return {
             id: state.user.id_user,
             location: state.user.location,
             address: state.user.address,
             products: state.product.products,
-            cart: state.product.cart
+            data: state.product.cart
         }
     })
 
     const dispatch = useDispatch();
 
     React.useEffect(() => {
-        Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
-            .then(res => (setData(res.data)))
-            .catch(err => console.log(err))
-    }, [id, data, qty])
+        // Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
+        //     .then(res => (setData(res.data)))
+        //     .catch(err => console.log(err))
+
+        dispatch(getCart(+id))
+    }, [id, qty])
 
     const deleteHandler = (itemId) => {
         const num = data[0].order_number

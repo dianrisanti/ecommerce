@@ -22,9 +22,17 @@ const HistoryPage = () => {
 
 
     React.useEffect(() => {
-        Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
-            .then(res => (setData(res.data)))
-            .catch(err => console.log(err))
+        async function fetchData() {
+            try {
+                const res = await Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
+                setData(res.data)
+            }
+            catch(err) {
+                console.log(err)
+            }
+
+        }
+        fetchData()
     }, [id])
 
     function handlePaymentCon(e) {
@@ -37,7 +45,6 @@ const HistoryPage = () => {
         console.log(e)
     }
 
-    console.log(data)
     const renderTbody = () => {
         return (
             <Accordion>
@@ -73,6 +80,13 @@ const HistoryPage = () => {
                                                 <th>Quantity</th>
                                                 <th>Price</th>
                                                 <th>Total</th>
+                                                {
+                                                    item.status === "On Delivery" || item.status === "Arrived"
+                                                    ?
+                                                    <th>Kirim Dari</th>
+                                                    :
+                                                    <></>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -87,6 +101,13 @@ const HistoryPage = () => {
                                                         <td>{item2.quantity}</td>
                                                         <td>IDR {item2.price.toLocaleString()}</td>
                                                         <td>IDR {item2.total.toLocaleString()}</td>
+                                                        {
+                                                            item.status === "On Delivery" || item.status === "Arrived"
+                                                            ?
+                                                            <td>{item2.delivery_loc.join(", ")}</td>
+                                                            :
+                                                            <></>
+                                                        }
                                                     </tr>
                                                 )
                                             })}
