@@ -25,6 +25,7 @@ import GetAll from './pages/admin_product'
 import GetJakarta from './pages/admin_jakarta'
 import GetMedan from './pages/admin_medan'
 import GetSurabaya from './pages/admin_surabaya'
+import GetCategory from './pages/admin_category'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -50,7 +51,7 @@ function App() {
     if (role === 1) {
       console.log('login sebagai admin')
       return (
-        <div>
+        <div> 
           <Navigation />
           <Switch>
             <Route path='/' component={Home} exact />
@@ -65,6 +66,7 @@ function App() {
             <Route path='/get_jakarta' component={GetJakarta} />
             <Route path='/get_medan' component={GetMedan} />
             <Route path='/get_surabaya' component={GetSurabaya} />
+            <Route path='/get_category' component={GetCategory}/>
             <Route path='*' component={NotFound} />
           </Switch>
           <Footer />
@@ -94,7 +96,8 @@ function App() {
           <Route path='/get_jakarta' component={GetJakarta} />
           <Route path='/get_medan' component={GetMedan} />
           <Route path='/get_surabaya' component={GetSurabaya} />
-
+          <Route path='/get_category' component={GetCategory}/>
+      
           <Route path='*' component={NotFound} />
         </Switch>
         <Footer />
