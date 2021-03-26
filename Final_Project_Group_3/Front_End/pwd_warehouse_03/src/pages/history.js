@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom'
 
 const HistoryPage = () => {
     const [data, setData] = React.useState([])
-    const [refresh, setRefresh] = React.useState(false)
+    const [refresh, setRefresh] = React.useState(0)
     const { id } = useSelector((state) => {
         return {
             id: state.user.id_user,
@@ -28,7 +28,7 @@ const HistoryPage = () => {
                 const res = await Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
                 setData(res.data)
             }
-            catch(err) {
+            catch (err) {
                 console.log(err)
             }
 
@@ -42,20 +42,34 @@ const HistoryPage = () => {
     }
 
     const cancelOrder = (e) => {
-        dispatch(CancelOrder(e))
-        setRefresh(true)
         console.log(e)
+        dispatch(CancelOrder(e))
+        let CancelMsg = { message: "Canceled by USER" }
+
+
+        Axios.post(`http://localhost:2000/admin/cancelOrder/${e}`, CancelMsg)
+            .then((res) => {
+                console.log(res.data)
+                let useRefresh = refresh
+                setRefresh(refresh + 1)
+                console.log("refresh request executed =", useRefresh, "times")
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     const confirmArrived = (e) => {
         dispatch(ConfirmArrived(e))
-        setRefresh(null)
+        let useRefresh = refresh
+        setRefresh(refresh + 1)
+        console.log("refresh request executed =", useRefresh, "times")
         console.log(e)
     }
 
     const renderButton = (status, order_number) => {
-        if(status === "Not Paid") return (<Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>)
-        if(status === "On Delivery") return (<Button variant='success' onClick={() => confirmArrived(order_number)}>Done</Button>)
+        if (status === "Not Paid") return (<Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>)
+        if (status === "On Delivery") return (<Button variant='success' onClick={() => confirmArrived(order_number)}>Done</Button>)
     }
 
     console.log(data)
@@ -77,9 +91,17 @@ const HistoryPage = () => {
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
                                         {item.payment_confirmation === 1
                                             ?
-                                            <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
+                                            item.status === "Canceled"
+                                                ?
+                                                <i style={{ color: "blue" }}>Your payment has been refunded</i>
+                                                :
+                                                <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
                                             :
-                                            <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
+                                            item.status === "Canceled"
+                                                ?
+                                                <></>
+                                                :
+                                                <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
                                         }
                                     </span>
                                 </Accordion.Toggle>
@@ -97,10 +119,10 @@ const HistoryPage = () => {
                                                 <th>Total</th>
                                                 {
                                                     item.status === "On Delivery" || item.status === "Arrived"
-                                                    ?
-                                                    <th>Kirim Dari</th>
-                                                    :
-                                                    <></>
+                                                        ?
+                                                        <th>Kirim Dari</th>
+                                                        :
+                                                        <></>
                                                 }
                                             </tr>
                                         </thead>
@@ -118,23 +140,26 @@ const HistoryPage = () => {
                                                         <td>IDR {item2.total.toLocaleString()}</td>
                                                         {
                                                             item.status === "On Delivery" || item.status === "Arrived"
-                                                            ?
-                                                            <td>{item2.delivery_loc.join(", ")}</td>
-                                                            :
-                                                            <></>
+                                                                ?
+                                                                <td>{item2.delivery_loc.join(", ")}</td>
+                                                                :
+                                                                <></>
                                                         }
                                                     </tr>
                                                 )
                                             })}
                                         </tbody>
                                     </Table>
-                                    
-                                    {
-                                        item.status === "Paid" || item.status === "Canceled"
+
+                                    {item.status === "Canceled"
                                         ?
-                                        <div></div>
+                                        <i style={{ color: "blue" }}>{item.message}</i>
                                         :
-                                        <div>{renderButton(item.status, item.order_number)}</div>
+                                        item.status === "Paid"
+                                            ?
+                                            <div></div>
+                                            :
+                                            <div>{renderButton(item.status, item.order_number)}</div>
                                     }
                                 </div>
                             </Accordion.Collapse>
