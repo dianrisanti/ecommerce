@@ -1,4 +1,5 @@
 const { asyncQuery } = require('../helpers/queryHelp')
+const db = require('../database')
 
 module.exports = {
     getProductStock: async(req, res) => {
@@ -118,4 +119,34 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+    adminPaymentConfirmation: async (req, res) => {
+        const order_number = req.params.order_number
+        const status = req.body.status
+        try {
+            const queryPaymentConf = `UPDATE orders SET status = ${db.escape(status)} WHERE (order_number = ${db.escape(order_number)})`
+            const result = await asyncQuery(queryPaymentConf)
+            console.log(result)
+
+            res.status(200).send(result)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    adminCancelOrder: async (req, res) => {
+        const order_number = req.params.order_number
+        const message = req.body.message
+        try {
+            const queryPaymentConf = `UPDATE orders SET message = ${db.escape(message)} WHERE (order_number = ${db.escape(order_number)})`
+            const result = await asyncQuery(queryPaymentConf)
+            console.log(result)
+
+            res.status(200).send(result)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    }
 }

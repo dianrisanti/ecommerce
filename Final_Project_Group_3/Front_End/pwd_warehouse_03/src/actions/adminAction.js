@@ -27,3 +27,39 @@ export const getProduct = () => {
         }
     }
 }
+
+export const confirmPayment = (data) => {
+    return async(dispatch) => {
+        try{
+            let status = {status: 4}
+            const res = await Axios.post(`http://localhost:2000/admin/confirmPayment/${data}`, status)
+            console.log(res.data)
+
+            dispatch({
+                type: 'SET_PAYMENT_STATUS',
+                payload: res.data
+            })
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+}
+
+export const cancelOrder = (data) => {
+    return async(dispatch) => {
+        try{
+            let status = {status: 5}
+            const res = await Axios.post(`http://localhost:2000/admin/confirmPayment/${data}`, status)
+            console.log(res.data)
+
+            dispatch({
+                type: 'SET_PAYMENT_STATUS',
+                payload: res.data
+            })
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+}

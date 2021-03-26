@@ -25,6 +25,7 @@ import GetAll from './pages/admin_product'
 import GetJakarta from './pages/admin_jakarta'
 import GetMedan from './pages/admin_medan'
 import GetSurabaya from './pages/admin_surabaya'
+import salesReport from './pages/ADMIN_SalesReport'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -65,6 +66,7 @@ function App() {
             <Route path='/get_jakarta' component={GetJakarta} />
             <Route path='/get_medan' component={GetMedan} />
             <Route path='/get_surabaya' component={GetSurabaya} />
+            <Route path='/sales_report' component={salesReport} />
             <Route path='*' component={NotFound} />
           </Switch>
           <Footer />
