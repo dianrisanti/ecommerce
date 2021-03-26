@@ -30,10 +30,11 @@ const ProductDetail = (props) => {
         dispatch(getCart(+id_user))
     }, [])
 
-    console.log(products)
+    console.log('cart', cart)
+    console.log('products', products)
     const selected = products.filter(item => item.id === id)
     const product = selected[0]
-    console.log(product)
+    console.log('product', product)
 
     const [qty, setQty] = React.useState(0)
     const [cartErr, setCartErr] = React.useState(false)
@@ -51,9 +52,6 @@ const ProductDetail = (props) => {
         if(!id_user) return setCheckError([true, "Silahkan login terlebih dahulu"])
         if(qty <= 0) return setQtyErr([true, "Minimal pembelian produk ini adalah 1 barang"])
 
-        const checkCart = cart.filter(i => i.id_product === id)
-        if(checkCart[0].quantity + qty >= product.total_stock) return setQtyErr([true, "Pembelian melebihi stock. Silahkan periksa keranjang belanja Anda"])
-
         const addToCart = {
             order_number: Date.now(),
             id_user: idUser,
@@ -62,7 +60,13 @@ const ProductDetail = (props) => {
             qty,
             total: qty * product.price
         }
-        console.log(addToCart)
+
+        const checkCart = cart.filter(i => i.id_product === id)
+
+        const qtyCart = checkCart.length === 0 ? 0 : checkCart[0].quantity
+        
+        if(qtyCart + qty >= product.total_stock) return setQtyErr([true, "Pembelian melebihi stock. Silahkan periksa keranjang belanja Anda"])
+
         Axios.post('http://localhost:2000/cart/add', addToCart)
             .then(res => {
                 console.log(res.data)
@@ -70,6 +74,7 @@ const ProductDetail = (props) => {
                 setQtyErr([false, ""])
             })
             .catch(err => console.log(err))
+        console.log(addToCart)
     }
 
     const changeQty = (e) => {

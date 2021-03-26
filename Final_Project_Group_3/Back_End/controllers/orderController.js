@@ -204,6 +204,8 @@ module.exports = {
                 }
             }
 
+            let test = []
+
             for(item of groupedWarehouse){
                 for await (i of item.warehouse){
                     const queryUpdate = `UPDATE warehouse SET booked = ${i.booked}, available = ${i.available} 
@@ -229,7 +231,7 @@ module.exports = {
                 await asyncQuery(queryUpdate)
             }
 
-            res.status(200).send("update berhasil")
+            res.status(200).send(groupedWarehouse)
         }
         catch(err){
             console.log(err)

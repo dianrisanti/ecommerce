@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 
 const HistoryPage = () => {
     const [data, setData] = React.useState([])
+    const [refresh, setRefresh] = React.useState(false)
     const { id } = useSelector((state) => {
         return {
             id: state.user.id_user,
@@ -33,7 +34,7 @@ const HistoryPage = () => {
 
         }
         fetchData()
-    }, [id])
+    }, [id, refresh])
 
     function handlePaymentCon(e) {
         console.log(e)
@@ -42,12 +43,19 @@ const HistoryPage = () => {
 
     const cancelOrder = (e) => {
         dispatch(CancelOrder(e))
+        setRefresh(true)
         console.log(e)
     }
 
     const confirmArrived = (e) => {
         dispatch(ConfirmArrived(e))
+        setRefresh(null)
         console.log(e)
+    }
+
+    const renderButton = (status, order_number) => {
+        if(status === "Not Paid") return (<Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>)
+        if(status === "On Delivery") return (<Button variant='success' onClick={() => confirmArrived(order_number)}>Done</Button>)
     }
 
     console.log(data)
@@ -72,18 +80,6 @@ const HistoryPage = () => {
                                             <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
                                             :
                                             <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                        }
-                                        {item.status === 5
-                                            ?
-                                            <h1>test</h1>
-                                            :
-                                            <Button variant='danger' onClick={() => cancelOrder(item.order_number)}>Cancel</Button>
-                                        }
-                                        {item.status === 6
-                                            ?
-                                            <h1>test</h1>
-                                            :
-                                            <Button variant='success' onClick={() => confirmArrived(item.order_number)}>Done</Button>
                                         }
                                     </span>
                                 </Accordion.Toggle>
@@ -132,6 +128,14 @@ const HistoryPage = () => {
                                             })}
                                         </tbody>
                                     </Table>
+                                    
+                                    {
+                                        item.status === "Paid" || item.status === "Canceled"
+                                        ?
+                                        <div></div>
+                                        :
+                                        <div>{renderButton(item.status, item.order_number)}</div>
+                                    }
                                 </div>
                             </Accordion.Collapse>
                         </Card>
