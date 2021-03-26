@@ -121,7 +121,7 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: "138px"
+        marginTop: "100px"
     },
     center: {
         marginTop: 230,

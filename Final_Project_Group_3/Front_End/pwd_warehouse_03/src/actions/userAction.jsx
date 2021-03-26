@@ -1,4 +1,6 @@
 import Axios from 'axios'
+import { Redirect } from 'react-router-dom'
+import { useSelector} from 'react-redux'
 
 export const login = (data) => {
     return async (dispatch) => {
@@ -21,7 +23,7 @@ export const logout = () => {
     return async (dispatch) => {
         try {
             localStorage.removeItem('token')
-            dispatch({ type: 'LOG_OUT' })
+            await dispatch({ type: 'LOG_OUT' })
         }
         catch (err) {
             console.log(err)
