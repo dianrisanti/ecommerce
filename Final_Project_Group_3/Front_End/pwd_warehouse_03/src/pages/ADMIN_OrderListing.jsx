@@ -200,23 +200,26 @@ const OrderListing = () => {
                                                         <span>Total Belanja :{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</span>
                                                     </span>
                                                 </Accordion.Toggle>
-                                                {item.payment_confirmation === 0
+                                                {item.status === "Canceled"
                                                     ?
-                                                    <i style={{ color: "blue" }}>Waiting for user payment</i>
+                                                    <i style={{ color: "blue" }}>{item.message}</i>   
                                                     :
-                                                    item.status !== "Paid"
+                                                    item.payment_confirmation === 0
                                                         ?
-                                                        item.status === "On Delivery"
-                                                            ?
-                                                            <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
-                                                            :
-                                                            <i style={{ color: "blue" }}>Dibatalkan karena {item.message}</i>
+                                                        <i style={{ color: "blue" }}>Waiting for user payment</i>
                                                         :
-                                                        <>
+                                                        item.status !== "Paid"
+                                                            ?
+                                                            item.status === "On Delivery"
+                                                                ?
+                                                                <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
+                                                                :
+                                                                <i style={{ color: "blue" }}>{item.message}</i>
+                                                            :
+                                                            <>
                                                             <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
                                                             <Button className="btn btn-danger" style={{ marginRight: '5px' }} onClick={() => handleCancelOrder(item.order_number)}> Cancel Order </Button>
-                                                        </>
-
+                                                            </>
                                                 }
                                             </Card.Header>
                                             <Accordion.Collapse eventKey={index + 1}>
@@ -272,23 +275,26 @@ const OrderListing = () => {
                                                         <span>Total Belanja :{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</span>
                                                     </span>
                                                 </Accordion.Toggle>
-                                                {item.payment_confirmation === 0
+                                                {item.status === "Canceled"
                                                     ?
-                                                    <i style={{ color: "blue" }}>Waiting for user payment</i>
+                                                    <i style={{ color: "blue" }}>{item.message}</i>   
                                                     :
-                                                    item.status !== "Paid"
+                                                    item.payment_confirmation === 0
                                                         ?
-                                                        item.status === "On Delivery"
-                                                            ?
-                                                            <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
-                                                            :
-                                                            <i style={{ color: "blue" }}>Dibatalkan karena {item.message}</i>
+                                                        <i style={{ color: "blue" }}>Waiting for user payment</i>
                                                         :
-                                                        <>
+                                                        item.status !== "Paid"
+                                                            ?
+                                                            item.status === "On Delivery"
+                                                                ?
+                                                                <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
+                                                                :
+                                                                <i style={{ color: "blue" }}>{item.message}</i>
+                                                            :
+                                                            <>
                                                             <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
                                                             <Button className="btn btn-danger" style={{ marginRight: '5px' }} onClick={() => handleCancelOrder(item.order_number)}> Cancel Order </Button>
-                                                        </>
-
+                                                            </>
                                                 }
                                             </Card.Header>
                                             <Accordion.Collapse eventKey={index + 1}>
