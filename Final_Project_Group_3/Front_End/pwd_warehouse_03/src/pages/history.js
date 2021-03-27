@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom'
 
 const HistoryPage = () => {
     const [data, setData] = React.useState([])
-    const [refresh, setRefresh] = React.useState(false)
+    const [refresh, setRefresh] = React.useState(0)
     const { id } = useSelector((state) => {
         return {
             id: state.user.id_user,
@@ -28,7 +28,7 @@ const HistoryPage = () => {
                 const res = await Axios.get(`http://localhost:2000/cart/history/${parseInt(id)}`)
                 setData(res.data)
             }
-            catch(err) {
+            catch (err) {
                 console.log(err)
             }
 
@@ -42,17 +42,30 @@ const HistoryPage = () => {
     }
 
     const cancelOrder = (e) => {
-        dispatch(CancelOrder(e))
-        setRefresh(true)
         console.log(e)
+        dispatch(CancelOrder(e))
+        let CancelMsg = { message: "Canceled by USER" }
+
+
+        Axios.post(`http://localhost:2000/admin/cancelOrder/${e}`, CancelMsg)
+            .then((res) => {
+                console.log(res.data)
+                let useRefresh = refresh
+                setRefresh(refresh + 1)
+                console.log("refresh request executed =", useRefresh, "times")
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     const confirmArrived = (e) => {
         dispatch(ConfirmArrived(e))
-        setRefresh(null)
+        let useRefresh = refresh
+        setRefresh(refresh + 1)
+        console.log("refresh request executed =", useRefresh, "times")
         console.log(e)
     }
-
 
     const renderFooter = (status, order_number) => {
         if (status === "Not Paid") {
@@ -96,6 +109,20 @@ const HistoryPage = () => {
                                         <span>Payment Method: {item.payment_method}</span>
                                         <span>Status: {item.status}</span>
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
+                                        {item.payment_confirmation === 1
+                                            ?
+                                            item.status === "Canceled"
+                                                ?
+                                                <i style={{ color: "blue" }}>Your payment has been refunded</i>
+                                                :
+                                                <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
+                                            :
+                                            item.status === "Canceled"
+                                                ?
+                                                <></>
+                                                :
+                                                <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
+                                        }
                                     </span>
                                 </Accordion.Toggle>
                             </Card.Header>
@@ -112,6 +139,7 @@ const HistoryPage = () => {
                                                 <th>Total</th>
                                                 {
                                                     item.status === "On Delivery" || item.status === "Arrived"
+
                                                     ?
                                                     <th>Send From</th>
                                                     :
@@ -133,10 +161,10 @@ const HistoryPage = () => {
                                                         <td>IDR {item2.total.toLocaleString()}</td>
                                                         {
                                                             item.status === "On Delivery" || item.status === "Arrived"
-                                                            ?
-                                                            <td>{item2.delivery_loc.join(", ")}</td>
-                                                            :
-                                                            <></>
+                                                                ?
+                                                                <td>{item2.delivery_loc.join(", ")}</td>
+                                                                :
+                                                                <></>
                                                         }
                                                     </tr>
                                                 )
@@ -144,6 +172,17 @@ const HistoryPage = () => {
                                         </tbody>
                                     </Table>
                                     {renderFooter(item.status, item.order_number)}
+
+                                    {item.status === "Canceled"
+                                        ?
+                                        <i style={{ color: "blue" }}>{item.message}</i>
+                                        :
+                                        item.status === "Paid"
+                                            ?
+                                            <div></div>
+                                            :
+                                            <div>{renderButton(item.status, item.order_number)}</div>
+                                    }
                                 </div>
                             </Accordion.Collapse>
                         </Card>

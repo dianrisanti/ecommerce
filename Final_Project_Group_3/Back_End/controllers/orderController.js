@@ -257,7 +257,7 @@ module.exports = {
             const id_user = req.params.id ? +req.params.id  : 0
             const history = `SELECT o.date , o.order_number, od.id_product, IF(LEFT(o.payment_confirmation, 1) = 'i', true, false) AS payment, p.name, 
             od.quantity, od.sent_loc_1, od.sent_loc_2, od.sent_loc_3,
-            p.price, od.total,  pi.image, os.status, o.payment_method
+            p.price, od.total,  pi.image, os.status, o.payment_method, o.message
             FROM orders o
             JOIN order_details od ON o.order_number = od.order_number
             JOIN products p ON od.id_product = p.id
@@ -275,6 +275,7 @@ module.exports = {
                     payment_confirmation: item.payment,
                     payment_method: item.payment_method,
                     status: item.status,
+                    message: item.message,
                     products: [{
                         id_product: item.id_product,
                         name: item.name,
@@ -401,44 +402,21 @@ module.exports = {
     },
     getAllOrder: async(req, res) => {
         try{
-            const history = `SELECT o.date , x.username, o.order_number, od.id_product, IF(LEFT(o.payment_confirmation, 1) = 'i', true, false) AS payment,sum(distinct od.total) as total_belanja, p.name, od.quantity, 
-            p.price, od.total,  pi.image, os.status, o.payment_method
+            const history = `SELECT o.date , x.username, o.order_number, od.id_product, IF(LEFT(o.payment_confirmation, 1) = 'i', true, false) AS payment_status,sum(distinct od.total) as total_belanja, p.name, od.quantity, 
+            p.price, od.total,  pi.image, os.status, o.payment_method, o.message
             FROM orders o
             JOIN order_details od ON o.order_number = od.order_number
             JOIN products p ON od.id_product = p.id
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
             JOIN users x ON o.id_user = x.id 
-            WHERE (o.status = 2 OR o.status = 3 OR o.status = 4 OR o.status = 5 OR o.status = 6 OR o.status = 7)
-            GROUP BY o.order_number`
+            WHERE (o.status = 3 OR o.status = 4 OR o.status = 6 OR o.status = 7)
+            GROUP BY od.total`
             const historyResult = await asyncQuery(history)
             console.log(historyResult)
-            let output = []
-            historyResult.forEach((item, index) => {
-                let temp = {
-                    username: item.username,
-                    order_number: item.order_number,
-                    date: item.date,
-                    payment_confirmation: item.payment,
-                    payment_method: item.payment_method,
-                    status: item.status,
-                    total_belanja: item.total_belanja
-                }
-                output.push(temp)
-            })
-            console.log(output)
+            
 
-            let out = []
-            for(entry of output){
-                const existingEntry = out.find(o => o.order_number === entry.order_number)
-                if(existingEntry){
-                  existingEntry.products = existingEntry.products.concat(entry.products)
-                } else {
-                  out.push(entry)
-                }
-            }
-
-            res.status(200).send(out)
+            res.status(200).send(historyResult)
         }
         catch(err){
             console.log(err)
