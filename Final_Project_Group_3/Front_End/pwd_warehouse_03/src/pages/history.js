@@ -53,12 +53,33 @@ const HistoryPage = () => {
         console.log(e)
     }
 
-    const renderButton = (status, order_number) => {
-        if(status === "Not Paid") return (<Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>)
-        if(status === "On Delivery") return (<Button variant='success' onClick={() => confirmArrived(order_number)}>Done</Button>)
-    }
 
-    console.log(data)
+    const renderFooter = (status, order_number) => {
+        if (status === "Not Paid") {
+            return(
+                <div style={{display: 'flex', justifyContent: 'space-between', width: 235, marginLeft: 970, marginBottom: 15}}>
+                    <Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>
+                    <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(order_number)}> Confirm Payment </Button>
+                </div>
+            )
+        }
+        if (status === "Paid") {
+            return(
+                <div>
+                    <p>
+                        <i style={{ color: "#457b9d" }}>Waiting for approval payment confirmation</i>
+                    </p>
+                </div>
+            )
+        }
+        if (status === "On Delivery") {
+            return(
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 25, marginBottom: 15}}>
+                    <Button variant='success' style={{width: '100px', fontSize: 18}} onClick={() => confirmArrived(order_number)}>Done</Button>
+                </div>
+            )
+        }
+    }
 
     const renderTbody = () => {
         return (
@@ -75,12 +96,6 @@ const HistoryPage = () => {
                                         <span>Payment Method: {item.payment_method}</span>
                                         <span>Status: {item.status}</span>
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
-                                        {item.payment_confirmation === 1
-                                            ?
-                                            <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
-                                            :
-                                            <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                        }
                                     </span>
                                 </Accordion.Toggle>
                             </Card.Header>
@@ -98,7 +113,7 @@ const HistoryPage = () => {
                                                 {
                                                     item.status === "On Delivery" || item.status === "Arrived"
                                                     ?
-                                                    <th>Kirim Dari</th>
+                                                    <th>Send From</th>
                                                     :
                                                     <></>
                                                 }
@@ -128,14 +143,7 @@ const HistoryPage = () => {
                                             })}
                                         </tbody>
                                     </Table>
-                                    
-                                    {
-                                        item.status === "Paid" || item.status === "Canceled"
-                                        ?
-                                        <div></div>
-                                        :
-                                        <div>{renderButton(item.status, item.order_number)}</div>
-                                    }
+                                    {renderFooter(item.status, item.order_number)}
                                 </div>
                             </Accordion.Collapse>
                         </Card>

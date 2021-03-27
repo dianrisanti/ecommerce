@@ -9,7 +9,7 @@ import {
     Modal
 } from 'react-bootstrap'
 
-const Checkout = () => {
+const Checkout = (props) => {
     const [selected, setSelected] = React.useState("")
     let [confirmEmail, setConfirmEmail] = React.useState([false, ""])
     let [regError, setRegError] = React.useState([false, ""])
@@ -60,76 +60,86 @@ const Checkout = () => {
         setToHome(true)
     }
 
+    if(!props.location.search) return <Redirect to="*"/>
     if(toHome) return <Redirect to="/"/>
     return (
         <div style={styles.container}>
-            <div>
-                <h3>Pilih Metode Pembayaran:</h3>
-                <Form.Group controlId={selected}>
-                    <div>
-                        <Form.Check
-                            value="BCA"
-                            type="radio"
-                            aria-label="radio 1"
-                            label={
-                                <Image
-                                    src="https://1.bp.blogspot.com/-LOG22fyGGOo/WransnAeOlI/AAAAAAAABiA/RnFHp0YAHuIcmzMDZNnHFFz-M2sqUEPFQCKgBGAs/s1600/logo-bca.jpg"
-                                    style={{ width: '150px', height: '60px' }}
-                                />
-                            }
-                            onChange={handleChange}
-                            checked={selected === "BCA"}
-                        />
-                        <div style={{ marginLeft: '20px' }}>
-                            <p>Bank BCA - 000-000-0000</p>
-                            <p style={{ marginTop: '-15px' }}>a.n Electronic Shop</p>
+            <div style={{border: '1px solid #adb5bd', width: '55vw'}}>
+                <div style={{padding: 15}}>
+                    <h3>Choose Payment Method:</h3>
+                    <hr/>
+                    <Form.Group controlId={selected}>
+                        <div>
+                            <Form.Check
+                                value="BCA"
+                                type="radio"
+                                aria-label="radio 1"
+                                label={
+                                    <Image
+                                        src="https://1.bp.blogspot.com/-LOG22fyGGOo/WransnAeOlI/AAAAAAAABiA/RnFHp0YAHuIcmzMDZNnHFFz-M2sqUEPFQCKgBGAs/s1600/logo-bca.jpg"
+                                        style={{ width: '150px', height: '60px' }}
+                                    />
+                                }
+                                onChange={handleChange}
+                                checked={selected === "BCA"}
+                            />
+                            <div style={{ marginLeft: '20px' }}>
+                                <p>Bank BCA - 000-000-0000</p>
+                                <p style={{ marginTop: '-15px' }}>a.n Electronic Shop</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <Form.Check
-                            value="Mandiri"
-                            type="radio"
-                            aria-label="radio 2"
-                            label={
-                                <Image
-                                    src="http://1.bp.blogspot.com/-zkv5u5OGPEM/VKOWnIRRKBI/AAAAAAAAA7E/ovxa4ZW3I0o/w1200-h630-p-k-no-nu/Logo%2BBank%2BMandiri.png"
-                                    style={{ width: '150px', height: '80px' }}
-                                />
-                            }
-                            onChange={handleChange}
-                            checked={selected === "Mandiri"}
-                        />
-                        <div style={{ marginLeft: '20px' }}>
-                            <p>Bank Mandiri - 000-000-0000</p>
-                            <p style={{ marginTop: '-15px' }}>a.n Electronic Shop</p>
+                        <div>
+                            <Form.Check
+                                value="Mandiri"
+                                type="radio"
+                                aria-label="radio 2"
+                                label={
+                                    <Image
+                                        src="http://1.bp.blogspot.com/-zkv5u5OGPEM/VKOWnIRRKBI/AAAAAAAAA7E/ovxa4ZW3I0o/w1200-h630-p-k-no-nu/Logo%2BBank%2BMandiri.png"
+                                        style={{ width: '150px', height: '80px' }}
+                                    />
+                                }
+                                onChange={handleChange}
+                                checked={selected === "Mandiri"}
+                            />
+                            <div style={{ marginLeft: '20px' }}>
+                                <p>Bank Mandiri - 000-000-0000</p>
+                                <p style={{ marginTop: '-15px' }}>a.n Electronic Shop</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <Form.Check
-                            value="BNI"
-                            type="radio"
-                            aria-label="radio 2"
-                            label={
-                                <Image
-                                    src="https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/1200px-BNI_logo.svg.png"
-                                    style={{ width: '150px', height: '50px' }}
-                                />
-                            }
-                            onChange={handleChange}
-                            checked={selected === "BNI"}
-                        />
-                        <div style={{ marginLeft: '20px' }}>
-                            <p>Bank BNI - 000-000-0000</p>
-                            <p style={{ marginTop: '-15px' }}>a.n Electronic Shop</p>
+                        <div>
+                            <Form.Check
+                                value="BNI"
+                                type="radio"
+                                aria-label="radio 2"
+                                label={
+                                    <Image
+                                        src="https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/1200px-BNI_logo.svg.png"
+                                        style={{ width: '150px', height: '50px' }}
+                                    />
+                                }
+                                onChange={handleChange}
+                                checked={selected === "BNI"}
+                            />
+                            <div style={{ marginLeft: '20px' }}>
+                                <p>Bank BNI - 000-000-0000</p>
+                                <p style={{ marginTop: '-15px' }}>a.n Electronic Shop</p>
+                            </div>
                         </div>
-                    </div>
-                </Form.Group>
+                    </Form.Group>
 
-                <Button variant="primary" type="submit" onClick={handleSubmit} >
-                    Place Order
-                </Button>
+                    <Button 
+                        variant="primary" 
+                        type="submit" 
+                        onClick={handleSubmit} 
+                        style={{marginLeft: 500, width: 150}}
+                    >
+                        Place Order
+                    </Button>
+                </div>
+
                 <Modal show={confirmEmail[0]} onHide={() => setConfirmEmail([false, ""])}>
                     <Modal.Header closeButton>
                         <Modal.Title>Checkout Success</Modal.Title>
@@ -157,13 +167,16 @@ const Checkout = () => {
             {
                 data.length !== 0
                     ?
-                    <div style={{ width: '20vw' }}>
-                        <h4>Order Summary</h4>
-                        <p style={{ fontSize: '20', fontWeight: 'bold' }}>Shipping</p>
-                        <p style={{ marginTop: '-10px' }}>{data[0].address}</p>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <h5>Order Total: </h5>
-                            <p>IDR {data[0].total.toLocaleString()}</p>
+                    <div style={{border: '1px solid #adb5bd', width: '25vw', height: '40vh'}}>
+                        <div style={{width: '20vw', padding: 15, marginTop: 10, marginRight: 10 }}>
+                            <h4>Order Summary</h4>
+                            <hr/>
+                            <p style={{ fontSize: '20', fontWeight: 'bold' }}>Shipping to:</p>
+                            <p style={{ marginTop: '-10px' }}>{data[0].address}</p>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <h5>Order Total: </h5>
+                                <p>IDR {data[0].total.toLocaleString()}</p>
+                            </div>
                         </div>
                     </div>
                     :

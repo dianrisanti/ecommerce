@@ -1,7 +1,5 @@
 import React from 'react'
-import Axios from 'axios'
 import { Redirect, Link } from 'react-router-dom'
-
 import { useSelector, useDispatch } from 'react-redux'
 import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
 import {
@@ -11,7 +9,6 @@ import {
 } from '../actions'
 
 const CartPage = () => {
-    // const [data, setData] = React.useState([])
     const [loc, setLoc] = React.useState(false)
     const [noLoc, setNoLoc] = React.useState(false)
     const [editIndex, setEditIndex] = React.useState(null)
@@ -28,13 +25,11 @@ const CartPage = () => {
         }
     })
 
+    const ordernum = data.length === 0 ? null : data[0].order_number
+
     const dispatch = useDispatch();
 
     React.useEffect(() => {
-        // Axios.get(`http://localhost:2000/cart/get/${parseInt(id)}`)
-        //     .then(res => (setData(res.data)))
-        //     .catch(err => console.log(err))
-
         dispatch(getCart(+id))
     }, [id, qty])
 
@@ -133,7 +128,7 @@ const CartPage = () => {
     }
 
     if (!id) return <Redirect to='/' />
-    if (loc) return <Redirect to="/checkout" />
+    if (loc) return <Redirect to={`/checkout?${ordernum}`} />
     return (
         <div style={{ marginTop: "138px" }}>
             <Alert show={noLoc} variant="danger" onClose={() => setNoLoc(false)} dismissible>

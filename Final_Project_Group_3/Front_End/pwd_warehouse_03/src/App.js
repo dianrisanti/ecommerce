@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom'
 
 // import component
 import Navigation from './components/navbar'
+import NavigationAdmin from './components/navbar_admin'
 import Footer from './components/footer'
 
 // import pages
@@ -54,7 +55,7 @@ function App() {
       console.log('login sebagai admin')
       return (
         <div> 
-          <Navigation />
+          <NavigationAdmin/>
           <Switch>
             <Route path='/' component={Home} exact />
             <Route path='/login' component={Login} />
