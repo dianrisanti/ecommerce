@@ -67,12 +67,32 @@ const HistoryPage = () => {
         console.log(e)
     }
 
-    const renderButton = (status, order_number) => {
-        if (status === "Not Paid") return (<Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>)
-        if (status === "On Delivery") return (<Button variant='success' onClick={() => confirmArrived(order_number)}>Done</Button>)
+    const renderFooter = (status, order_number) => {
+        if (status === "Not Paid") {
+            return(
+                <div style={{display: 'flex', justifyContent: 'space-between', width: 235, marginLeft: 970, marginBottom: 15}}>
+                    <Button variant='danger' onClick={() => cancelOrder(order_number)}>Cancel</Button>
+                    <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(order_number)}> Confirm Payment </Button>
+                </div>
+            )
+        }
+        if (status === "Paid") {
+            return(
+                <div>
+                    <p>
+                        <i style={{ color: "#457b9d" }}>Waiting for approval payment confirmation</i>
+                    </p>
+                </div>
+            )
+        }
+        if (status === "On Delivery") {
+            return(
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginRight: 25, marginBottom: 15}}>
+                    <Button variant='success' style={{width: '100px', fontSize: 18}} onClick={() => confirmArrived(order_number)}>Done</Button>
+                </div>
+            )
+        }
     }
-
-    console.log(data)
 
     const renderTbody = () => {
         return (
@@ -119,10 +139,11 @@ const HistoryPage = () => {
                                                 <th>Total</th>
                                                 {
                                                     item.status === "On Delivery" || item.status === "Arrived"
-                                                        ?
-                                                        <th>Kirim Dari</th>
-                                                        :
-                                                        <></>
+
+                                                    ?
+                                                    <th>Send From</th>
+                                                    :
+                                                    <></>
                                                 }
                                             </tr>
                                         </thead>
@@ -150,6 +171,7 @@ const HistoryPage = () => {
                                             })}
                                         </tbody>
                                     </Table>
+                                    {renderFooter(item.status, item.order_number)}
 
                                     {item.status === "Canceled"
                                         ?
