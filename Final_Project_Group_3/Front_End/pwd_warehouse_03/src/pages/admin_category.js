@@ -2,7 +2,7 @@ import React from 'react'
 import Axios from 'axios'
 
 import { useDispatch } from 'react-redux'
-import { Table, Button, Form, Toast, Alert } from 'react-bootstrap'
+import { Table, Button, Form, Toast, Alert, Pagination } from 'react-bootstrap'
 import {
     editCategory,
     deleteCategory,
@@ -68,8 +68,15 @@ const GetCategory = () => {
 
     const handleClose = () => setAddSuccess(false)
 
+    const itemsPerPage = 5
+    const [page, setPage] = React.useState(1)
+    const noOfPages = Math.ceil(data.length / itemsPerPage)
+    const listItem = Array(noOfPages).fill(1)
+
     const renderTable = () => {
-        return data.map((item, index) => {
+        return data
+        .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+        .map((item, index) => {
             return (
                 index === editIndex
                     ?
@@ -133,6 +140,17 @@ const GetCategory = () => {
                 </thead>
                 <tbody>{renderTable()}</tbody>
             </Table>
+            <div>
+                <Pagination>
+                    <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
+                    {listItem.map((item, index) => {
+                        return (
+                            <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
+                        )
+                    })}
+                    <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
+                </Pagination>
+            </div>
         </div>
     )
 }
