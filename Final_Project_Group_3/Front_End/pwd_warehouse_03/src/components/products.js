@@ -64,7 +64,7 @@ const Product = () => {
     }
 
     return (
-        <div style={{padding: 10, margin: 25, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '60px'}}>
+        <div style={{padding: 10, margin: 25, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '60px', marginLeft: 60}}>
             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', marginBottom: '40px'}}>
                 <div style={{display: 'flex', flexDirection: 'row', width: 300}}>
                     <h3 style={{marginRight: 10}}>Kategori</h3>

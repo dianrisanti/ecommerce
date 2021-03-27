@@ -13,7 +13,7 @@ const Slider = () => {
     })
 
     return(
-        <div>
+        <div style={{width: '90vw', padding: 50, marginLeft: 60}}>
             <Carousel>
                 {
                     carousel.map((item, index) => {
