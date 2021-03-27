@@ -23,7 +23,7 @@ const SalesReport = () => {
     React.useEffect(() => {
         async function fetchData() {
             try {
-                let res = await Axios.get(`http://localhost:2000/cart/order_listing`)
+                let res = await Axios.get(`http://localhost:2000/cart/mostBuyProduct`)
                 setData(res.data)
             }
             catch (err) {
@@ -39,14 +39,18 @@ const SalesReport = () => {
     const options = [
         'Total Belanja Tertinggi',
         'Total Belanja Terendah',
+        'Total Quantity Tertinggi',
+        'Total Quantity Terendah',
     ]
 
     const handleClickListItem = (index) => {
         const input = options[index]
         setSelectedOption(input)
 
-        if (index === 0) return data.sort((a, b) => b.total - a.total)
-        if (index === 1) return data.sort((a, b) => a.total - b.total)
+        if (index === 0) return data.sort((a, b) => b.total_belanja - a.total_belanja)
+        if (index === 1) return data.sort((a, b) => a.total_belanja - b.total_belanja)
+        if (index === 2) return data.sort((a, b) => b.qty - a.qty)
+        if (index === 3) return data.sort((a, b) => a.qty - b.qty)
     }
     // pagination
     const itemsPerPage = 5
@@ -61,11 +65,7 @@ const SalesReport = () => {
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Date</th>
-                        <th>Order Number</th>
                         <th>Product Name</th>
-                        <th>Payment Method</th>
-                        <th>Status</th>
                         <th>Qty</th>
                         <th>Price</th>
                         <th>Total</th>
@@ -79,14 +79,10 @@ const SalesReport = () => {
                                 return (
                                     <tr>
                                         <td>{index + 1}</td>
-                                        <td>{item.date}</td>
-                                        <td>{item.order_number}</td>
                                         <td>{item.name}</td>
-                                        <td>{item.payment_method}</td>
-                                        <td>{item.status}</td>
-                                        <td>{item.quantity}</td>
+                                        <td>{item.qty}</td>
                                         <td>{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.price)}</td>
-                                        <td>{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total)}</td>
+                                        <td>{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</td>
                                     </tr>
                                 )
                             })

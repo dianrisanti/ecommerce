@@ -28,6 +28,7 @@ import GetMedan from './pages/admin_medan'
 import GetSurabaya from './pages/admin_surabaya'
 import salesReport from './pages/ADMIN_SalesReport'
 import GetCategory from './pages/admin_category'
+import MostBuy from './pages/ADMIN_most_buy'
 
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -71,6 +72,7 @@ function App() {
             <Route path='/get_surabaya' component={GetSurabaya} />
             <Route path='/sales_report' component={salesReport} />
             <Route path='/get_category' component={GetCategory}/>
+            <Route path='/most_buy' component={MostBuy}/>
             <Route path='*' component={NotFound} />
           </Switch>
           <Footer />
