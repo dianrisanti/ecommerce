@@ -525,5 +525,28 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+    getMostBuy: async(req, res) => {
+        try{
+            const history = `SELECT od.id_product,sum(distinct od.total) as total_belanja, p.name, sum(distinct od.quantity) qty, 
+            p.price,  pi.image
+            FROM orders o
+            JOIN order_details od ON o.order_number = od.order_number
+            JOIN products p ON od.id_product = p.id
+            JOIN order_status os ON o.status = os.id_status
+            JOIN product_img pi ON od.id_product = pi.product_id
+            JOIN users x ON o.id_user = x.id 
+            WHERE (o.status = 3 OR o.status = 4 OR o.status = 6 OR o.status = 7)
+            GROUP BY od.id_product`
+            const historyResult = await asyncQuery(history)
+            console.log(historyResult)
+            
+
+            res.status(200).send(historyResult)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    }
 
 }
