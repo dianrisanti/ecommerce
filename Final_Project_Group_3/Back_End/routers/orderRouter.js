@@ -15,6 +15,7 @@ router.get('/detail_order', orderController.getDetailOrder)
 router.get('/order_value', orderController.getTotalOrder)
 router.post('/booked_stock', orderController.bookedStock)
 router.post('/delivery_stock', orderController.deliveryStock)
+router.post('/cancel_stock', orderController.cancelStock)
 router.post('/cancel/:order_number', orderController.cancelOrder)
 router.post('/confirm/:order_number', orderController.confirmArrived)
 
