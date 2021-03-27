@@ -67,7 +67,7 @@ const HistoryPage = () => {
         console.log(e)
     }
 
-    const renderFooter = (status, order_number) => {
+    const renderFooter = (status, order_number, paymentConf, msg) => {
         if (status === "Not Paid") {
             return(
                 <div style={{display: 'flex', justifyContent: 'space-between', width: 235, marginLeft: 970, marginBottom: 15}}>
@@ -92,6 +92,24 @@ const HistoryPage = () => {
                 </div>
             )
         }
+        if (status === "Canceled" && paymentConf === 1) {
+            return(
+                <div>
+                    <p>
+                        <i style={{ color: "#457b9d" }}>Your payment has been refunded</i>
+                    </p>
+                </div> 
+            )
+        }
+        if (status === "Canceled") {
+            return(
+                <div>
+                    <p>
+                        <i style={{ color: "#457b9d" }}>{msg}</i>
+                    </p>
+                </div> 
+            )
+        }
     }
 
     const renderTbody = () => {
@@ -109,20 +127,6 @@ const HistoryPage = () => {
                                         <span>Payment Method: {item.payment_method}</span>
                                         <span>Status: {item.status}</span>
                                         <span>Press for Detail <i className="fas fa-caret-square-down"></i></span>
-                                        {item.payment_confirmation === 1
-                                            ?
-                                            item.status === "Canceled"
-                                                ?
-                                                <i style={{ color: "blue" }}>Your payment has been refunded</i>
-                                                :
-                                                <i style={{ color: "blue" }}>Waiting for approval payment confirmation</i>
-                                            :
-                                            item.status === "Canceled"
-                                                ?
-                                                <></>
-                                                :
-                                                <Button as={Link} to='/upload_payment' style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                        }
                                     </span>
                                 </Accordion.Toggle>
                             </Card.Header>
@@ -171,18 +175,7 @@ const HistoryPage = () => {
                                             })}
                                         </tbody>
                                     </Table>
-                                    {renderFooter(item.status, item.order_number)}
-
-                                    {item.status === "Canceled"
-                                        ?
-                                        <i style={{ color: "blue" }}>{item.message}</i>
-                                        :
-                                        item.status === "Paid"
-                                            ?
-                                            <div></div>
-                                            :
-                                            <div>{renderButton(item.status, item.order_number)}</div>
-                                    }
+                                    {renderFooter(item.status, item.order_number, item.payment_confirmation, item.message)}
                                 </div>
                             </Accordion.Collapse>
                         </Card>
