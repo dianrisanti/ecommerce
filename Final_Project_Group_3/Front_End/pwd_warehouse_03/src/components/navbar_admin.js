@@ -44,11 +44,14 @@ function NavigationAdmin() {
                         fluid
                     />
                 </Navbar.Brand>
-            <p style={{fontFamily:'Sriracha, cursive', fontSize:'28px', marginTop:'12px'}}>ES - Admin</p>
+                <p style={{ fontFamily: 'Sriracha, cursive', fontSize: '28px', marginTop: '12px' }}>ES - Admin</p>
             </Navbar>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
+            <Navbar.Collapse id="basic-navbar-nav" style={{marginLeft:'50px'}}>
                 <Nav className="mr-auto">
+                    <NavLink as={Link} to='/get_category' style={{ color: 'black' }}>
+                        <strong> Category List</strong>
+                    </NavLink>
                     <NavLink as={Link} to='/warehouse_stock' style={{ color: 'black' }}>
                         <strong> Warehouse Stock</strong>
                     </NavLink>
@@ -61,11 +64,11 @@ function NavigationAdmin() {
                         <strong> Sales Report</strong>
                     </NavLink>
                 </Nav>
-                
+
                 <Dropdown>
                     <DropdownButton title={username}
                         variant='primary' id="dropdown-button-drop-left" >
-                        <Dropdown.Item as={Link} to ='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
+                        <Dropdown.Item as={Link} to='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
                     </DropdownButton>
                 </Dropdown>
             </Navbar.Collapse >

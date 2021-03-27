@@ -29,6 +29,7 @@ import GetSurabaya from './pages/admin_surabaya'
 import salesReport from './pages/ADMIN_SalesReport'
 import GetCategory from './pages/admin_category'
 import MostBuy from './pages/ADMIN_most_buy'
+import NewProduct from './pages/newproduct'
 
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -58,7 +59,7 @@ function App() {
         <div> 
           <NavigationAdmin/>
           <Switch>
-            <Route path='/' component={Home} exact />
+            <Route path='/' component={GetAll} exact/>
             <Route path='/login' component={Login} />
             <Route path='/register' component={SignUp} />
             <Route path='/detail' component={ProductDetail} />
@@ -66,13 +67,13 @@ function App() {
             <Route path='/requestNewPassword' component={RequestNewPassword} />
             <Route path='/order_listing' component={OrderListing} />
             <Route path='/warehouse_stock' component={WarehouseStock} />
-            <Route path='/get_all' component={GetAll} />
             <Route path='/get_jakarta' component={GetJakarta} />
             <Route path='/get_medan' component={GetMedan} />
             <Route path='/get_surabaya' component={GetSurabaya} />
             <Route path='/sales_report' component={salesReport} />
             <Route path='/get_category' component={GetCategory}/>
             <Route path='/most_buy' component={MostBuy}/>
+            <Route path='/newproduct' component={NewProduct}/>
             <Route path='*' component={NotFound} />
           </Switch>
           <Footer />
@@ -95,15 +96,6 @@ function App() {
           <Route path='/history' component={History} />
           <Route path='/checkout' component={Checkout} />
           <Route path='/upload_payment' component={PaymentConfirmation} />
-          
-          // NOTE nanti ganti hanya admin only
-          <Route path='/warehouse_stock' component={WarehouseStock} />
-          <Route path='/get_all' component={GetAll} />
-          <Route path='/get_jakarta' component={GetJakarta} />
-          <Route path='/get_medan' component={GetMedan} />
-          <Route path='/get_surabaya' component={GetSurabaya} />
-          <Route path='/get_category' component={GetCategory}/>
-      
           <Route path='*' component={NotFound} />
         </Switch>
         <Footer />
