@@ -301,7 +301,7 @@ module.exports = {
         if (!req.file) return res.status(400).send('NO IMAGE')
 
         try {
-            const updatePict = `UPDATE orders SET payment_confirmation = 'images/${req.file.filename}' 
+            const updatePict = `UPDATE orders SET payment_confirmation = 'images/${req.file.filename}', status = 3 
                                 WHERE order_number = ${db.escape(order_number)}`
             const result = await asyncQuery(updatePict)
 
@@ -315,9 +315,10 @@ module.exports = {
     getPaymentConfirmation: async (req, res) => {
         const order_number = req.params.order_number
         try {
-            const queryPaymentConf = `SELECT o.* , x.total FROM orders o 
+            const queryPaymentConf = `SELECT o.* , sum(x.total) total FROM orders o 
                                     JOIN order_details x ON o.order_number = x.order_number
-                                    WHERE o.order_number=${db.escape(order_number)}`
+                                    WHERE o.order_number=${db.escape(order_number)}
+                                    GROUP BY o.order_number`
             const result = await asyncQuery(queryPaymentConf)
             
             const currencyFractionDigits = new Intl.NumberFormat('de-DE', {

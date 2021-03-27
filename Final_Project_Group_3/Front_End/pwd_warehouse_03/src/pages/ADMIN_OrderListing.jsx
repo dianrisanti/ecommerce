@@ -94,19 +94,39 @@ const OrderListing = () => {
     }
 
     function handlePaymentCon(orderNum) {
-        dispatch(confirmPayment(orderNum))
-        let useRefresh = refresh
-        setRefresh(refresh + 1)
-        console.log("refresh request executed =", useRefresh, "times")
+        async function fetchData() {
+            try {
+                await Axios.post(`http://localhost:2000/cart/delivery_stock`, {order_number: orderNum})
+                dispatch(confirmPayment(orderNum))
+                let useRefresh = refresh
+                setRefresh(refresh + 1)
+                console.log("refresh request executed =", useRefresh, "times")
+            }
+            catch (err) {
+                console.log(err)
+            }
+
+        }
+        fetchData()
     }
 
     function handleCancelOrder(orderNum) {
-        dispatch(cancelOrder(orderNum))
-        setOrderNumber(orderNum)
-        let useRefresh = refresh
-        setRefresh(refresh + 1)
-        setAlert(true)
-        console.log("refresh request executed =", useRefresh, "times")
+        async function fetchData() {
+            try {
+                await Axios.post(`http://localhost:2000/cart/cancel_stock`, {order_number: orderNum})
+                dispatch(cancelOrder(orderNum))
+                setOrderNumber(orderNum)
+                let useRefresh = refresh
+                setRefresh(refresh + 1)
+                setAlert(true)
+                console.log("refresh request executed =", useRefresh, "times")
+            }
+            catch (err) {
+                console.log(err)
+            }
+
+        }
+        fetchData() 
     }
 
     function handleCancelMessage() {

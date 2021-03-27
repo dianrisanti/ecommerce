@@ -242,9 +242,58 @@ module.exports = {
     deliveryStock: async(req, res) => {
         const { order_number } = req.body
         try{
-            
+            const data = `SELECT * FROM order_details WHERE order_number = '${order_number}'`
+            const dataRes = await asyncQuery(data)
 
-            res.status(200).send("test")
+            for await (item of dataRes) {
+                let query
+                if(item.sent_loc_1) {
+                    query = `UPDATE warehouse SET booked = (booked - ${item.sent_loc_1}), stock = (stock - ${item.sent_loc_1})
+                    WHERE product_id = ${item.id_product} AND location_id = 1`
+                }
+                if(item.sent_loc_2) {
+                    query = `UPDATE warehouse SET booked = (booked - ${item.sent_loc_2}), stock = (stock - ${item.sent_loc_2})
+                    WHERE product_id = ${item.id_product} AND location_id = 2`
+                }
+                if(item.sent_loc_3) {
+                    query = `UPDATE warehouse SET booked = (booked - ${item.sent_loc_3}), stock = (stock - ${item.sent_loc_3})
+                    WHERE product_id = ${item.id_product} AND location_id = 3`
+                }
+                await asyncQuery(query)
+            }
+
+            res.status(200).send("update stock berhasil")
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
+    cancelStock: async(req, res) => {
+        const { order_number } = req.body
+        try{
+            const data = `SELECT * FROM order_details WHERE order_number = '${order_number}'`
+            const dataRes = await asyncQuery(data)
+
+            for await (item of dataRes) {
+                let query
+                if(item.sent_loc_1) {
+                    query = `UPDATE warehouse SET booked = (booked - ${item.sent_loc_1}), available = (available + ${item.sent_loc_1})
+                    WHERE product_id = ${item.id_product} AND location_id = 1`
+                }
+                if(item.sent_loc_2) {
+                    query = `UPDATE warehouse SET booked = (booked - ${item.sent_loc_2}), available = (available + ${item.sent_loc_2})
+                    WHERE product_id = ${item.id_product} AND location_id = 2`
+                }
+                if(item.sent_loc_3) {
+                    query = `UPDATE warehouse SET booked = (booked - ${item.sent_loc_3}), available = (available + ${item.sent_loc_3})
+                    WHERE product_id = ${item.id_product} AND location_id = 3`
+                }
+                await asyncQuery(query)
+            }
+
+            res.status(200).send("update stock berhasil")
         }
         catch(err){
             console.log(err)
@@ -264,7 +313,8 @@ module.exports = {
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
             WHERE (o.status = 2 OR o.status = 3 OR o.status = 4 OR o.status = 5 OR o.status = 6) AND o.id_user = ${id_user}
-            GROUP BY od.id_product, o.order_number`
+            GROUP BY od.id_product, o.order_number
+            ORDER BY o.order_number `
             const historyResult = await asyncQuery(history)
             
             let output = []

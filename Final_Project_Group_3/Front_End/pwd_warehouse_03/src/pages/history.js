@@ -60,9 +60,9 @@ const HistoryPage = () => {
     }
 
     const confirmArrived = (e) => {
+        setRefresh(refresh + 5)
         dispatch(ConfirmArrived(e))
         let useRefresh = refresh
-        setRefresh(refresh + 1)
         console.log("refresh request executed =", useRefresh, "times")
         console.log(e)
     }

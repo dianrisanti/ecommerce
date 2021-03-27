@@ -6,7 +6,7 @@ import {
     Button
 } from 'react-bootstrap'
 
-import { upload } from '../actions'
+import { upload, getProduct } from '../actions'
 
 import NO_DATA from '../assets/no_data.png'
 
@@ -57,6 +57,9 @@ function PaymentConfirmation() {
                 pict.append('IMG', image)
                 console.log(pict.get('IMG'))
                 let res = await dispatch(upload(pict, orderNum))
+                await Axios.post('http://localhost:2000/cart/booked_stock', {order_number})
+
+                dispatch(getProduct())
                 setRefresh(refresh + 1)
                 console.log("refresh request executed =", useRefresh, "times")
             }

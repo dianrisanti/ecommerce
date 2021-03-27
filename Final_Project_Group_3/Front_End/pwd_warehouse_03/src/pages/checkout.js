@@ -45,7 +45,7 @@ const Checkout = (props) => {
                 const payment_method = selected
                 let res = await Axios.post(`http://localhost:2000/cart/invoice/${parseInt(id)}`, {order_number, payment_method})
                 console.log(res)
-                setConfirmEmail([true, "Invoice has been sent to your email"])
+                setConfirmEmail([true, "Invoice has been sent to your email. Confirm your payment on history"])
             }
             catch (err) {
                 console.log(err.response.data)
