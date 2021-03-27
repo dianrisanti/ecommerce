@@ -131,3 +131,88 @@ export const addCategory = (newInput) => {
         }
     };
 }
+
+export const EditJakarta = (input) => {
+    return async (dispatch) => {
+        try {
+            // request api : EDIT
+            const res = await Axios.post('http://localhost:2000/admin/editjakarta', input);
+            console.log(res.data);
+            console.log(input);
+
+            // request api get cart data
+            const cart = await Axios.get(`http://localhost:2000/admin/getall`);
+            dispatch({ type: "GET_CATEGORY", payload: cart.data });
+        } catch (err) {
+            console.log(err.response ? err.response.data : err);
+        }
+    };
+};
+
+export const EditMedan = (input) => {
+    return async (dispatch) => {
+        try {
+            // request api : EDIT
+            const res = await Axios.post('http://localhost:2000/admin/editmedan', input);
+            console.log(res.data);
+            console.log(input);
+
+            // request api get cart data
+            const cart = await Axios.get(`http://localhost:2000/admin/getall`);
+            dispatch({ type: "GET_CATEGORY", payload: cart.data });
+        } catch (err) {
+            console.log(err.response ? err.response.data : err);
+        }
+    };
+};
+
+export const EditSurabaya = (input) => {
+    return async (dispatch) => {
+        try {
+            // request api : EDIT
+            const res = await Axios.post('http://localhost:2000/admin/editsurabaya', input);
+            console.log(res.data);
+            console.log(input);
+
+            // request api get cart data
+            const cart = await Axios.get(`http://localhost:2000/admin/getall`);
+            dispatch({ type: "GET_CATEGORY", payload: cart.data });
+        } catch (err) {
+            console.log(err.response ? err.response.data : err);
+        }
+    };
+};
+
+export const EditProduct = (input) => {
+    return async (dispatch) => {
+        try {
+            // request api : EDIT
+            const res = await Axios.post('http://localhost:2000/admin/editproduct', input);
+            console.log(res.data);
+            console.log(input);
+
+            // request api get cart data
+            const cart = await Axios.get(`http://localhost:2000/admin/getall`);
+            dispatch({ type: "GET_CATEGORY", payload: cart.data });
+        } catch (err) {
+            console.log(err.response ? err.response.data : err);
+        }
+    };
+};
+
+export const DeleteProduct = (input) => {
+    return async (dispatch) => {
+        try {
+            // request api : EDIT
+            const res = await Axios.post('http://localhost:2000/admin/deleteproduct', input);
+            console.log(res.data);
+            console.log(input);
+
+            // request api get cart data
+            const cart = await Axios.get(`http://localhost:2000/admin/getall`);
+            dispatch({ type: "GET_CATEGORY", payload: cart.data });
+        } catch (err) {
+            console.log(err.response ? err.response.data : err);
+        }
+    };
+};

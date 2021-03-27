@@ -1,17 +1,42 @@
 import React from 'react'
 import Axios from 'axios'
 
+import { useDispatch } from 'react-redux'
+
 import { Table, Button, Form, Image, Nav } from 'react-bootstrap'
+
+import {
+    EditMedan
+} from '../actions';
 
 const GetMedan = () => {
     const [data, setData] = React.useState([])
     const [editIndex, setEditIndex] = React.useState(null)
+    const [stock, setStock] = React.useState('')
+
+    const dispatch = useDispatch();
 
     React.useEffect(() => {
         Axios.get(`http://localhost:2000/admin/getmedan`)
             .then(res => (setData(res.data)))
             .catch(err => console.log(err))
-    }, [data])
+    }, [data, stock])
+
+    const changeStock = (e) => {
+        const input = e.target.value
+        if (isNaN(+input)) return setStock(0)
+        setStock(input)
+    }
+
+    const saveHandler = (itemId) => {
+        const input = {
+            product_id: itemId,
+            stock
+        }
+        dispatch(EditMedan(input))
+        setEditIndex(null)
+        console.log(input)
+    }
 
     const renderTable = () => {
         return data.map((item, index) => {
@@ -28,11 +53,11 @@ const GetMedan = () => {
                         <td style={{ textAlign: 'right' }}>{item.price.toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
                             <div style={{ display: 'flex' }}>
-                                <Form.Control style={{ width: '90px', fontSize: '20px' }}/>
+                                <Form.Control style={{ width: '90px', fontSize: '20px' }} onChange={(e) => changeStock(e)} value={stock} min={0}/>
                             </div>
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                            <Button variant="outline-success" style={{ marginRight: '5px' }} > ✔ </Button>
+                            <Button variant="outline-success" style={{ marginRight: '5px' }} onClick={() => saveHandler(item.id)} > ✔ </Button>
                             <Button variant="outline-danger" style={{ marginLeft: '5px' }} onClick={() => setEditIndex(null)}> ❌ </Button>
                         </td>
                     </tr>
@@ -55,9 +80,9 @@ const GetMedan = () => {
     }
     return (
         <div style={{ marginTop: "138px" }}>
-            <Nav variant="pills" defaultActiveKey="/get_medan">
+            <Nav variant="tabs" defaultActiveKey="/get_medan" style={{marginBottom:'20px'}}>
                 <Nav.Item>
-                    <Nav.Link href="/get_all">General</Nav.Link>
+                    <Nav.Link href="/">General</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link href="/get_jakarta">Warehouse Jakarta</Nav.Link>

@@ -18,7 +18,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     editProductStock: async(req, res) => {
         const { id_product, warehouse } = req.body
         try{
@@ -44,7 +43,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     getAll: async(req, res) => {
         try{
             const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
@@ -62,7 +60,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     getJakarta: async(req, res) => {
         try{
             const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
@@ -81,7 +78,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     getMedan: async(req, res) => {
         try{
             const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
@@ -100,7 +96,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     getSurabaya: async(req, res) => {
         try{
             const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
@@ -134,7 +129,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     getCategory: async(req, res) => {
         try{
             const cate = `SELECT * FROM product_category`
@@ -147,7 +141,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     addCategory: async(req, res) => {
         let {category} = req.body
 
@@ -162,7 +155,6 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-
     deleteCategory: async(req, res) => {
         let {id} = req.body
 
@@ -206,4 +198,79 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+    editJakarta: async (req, res) => {
+        const { product_id, stock } = req.body
+
+        try {
+            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}
+            WHERE product_id = ${parseInt(product_id)} AND location_id = 1`
+            await asyncQuery(editStock)
+
+            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    editMedan: async (req, res) => {
+        const { product_id, stock } = req.body
+
+        try {
+            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}
+            WHERE product_id = ${parseInt(product_id)} AND location_id = 2`
+            await asyncQuery(editStock)
+
+            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    editSurabaya: async (req, res) => {
+        const { product_id, stock } = req.body
+
+        try {
+            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}
+            WHERE product_id = ${parseInt(product_id)} AND location_id = 3`
+            await asyncQuery(editStock)
+
+            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    editProduct: async (req, res) => {
+        const { name, category_id, price, product_id} = req.body
+
+        try {
+            const editProduct = `UPDATE products SET name = '${name}', category_id = ${parseInt(category_id)}, price = ${parseInt(price)}
+            WHERE id = ${parseInt(product_id)}`
+            await asyncQuery(editProduct)
+
+            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+        }
+        catch (err) {
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    deleteProduct: async(req, res) => {
+        let {id} = req.body
+
+        try{
+            const delProduct = `DELETE FROM products WHERE id = ${parseInt(id)}`
+            const result = await asyncQuery(delProduct)
+
+            res.status(200).send(result)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+    
 }

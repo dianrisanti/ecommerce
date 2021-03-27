@@ -120,7 +120,7 @@ const GetCategory = () => {
             </Toast>
             <div style={{ display: 'flex', marginBottom: '30px', marginRight: '20px', justifyContent: 'flex-end' }}>
                 <Form.Control style={{ width: '400px', fontSize: '20px', marginRight: '10px' }} onChange={(e) => changeInput(e)} value={input} placeholder='input category' />
-                <Button variant="outline-primary" onClick={() => addHandler()}>➕</Button>
+                <Button variant="outline-primary" onClick={() => addHandler()}><i class="far fa-plus-octagon"></i></Button>
             </div>
             <Table striped bordered hover variant="dark">
                 <thead style={{ backgroundColor: '#2f3640', textAlign: 'center' }}>
