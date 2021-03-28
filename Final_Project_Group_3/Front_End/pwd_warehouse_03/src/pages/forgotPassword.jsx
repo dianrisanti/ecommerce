@@ -106,7 +106,7 @@ function ForgotPassword(props) {
 
 
                         <div>
-                            <div style={{marginTop:"80px"}}>
+                            <div style={{marginTop:"6px"}}>
                                 <h1>Forgot Password</h1>
                             </div>
                             <div style={{ ...styles.item, textAlign: 'center' }}>
@@ -178,12 +178,12 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: "138px"
+        marginTop: "108px"
     },
     center: {
         marginTop: 100,
         padding: "10px 30px",
-        width: 550,
+        width: 430,
         height: "40vh",
         display: "flex",
         flexDirection: "column",

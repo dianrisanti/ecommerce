@@ -1,6 +1,6 @@
 import React from 'react'
 import Axios from 'axios'
-import { Redirect, Link } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import {
     Card,
     Dropdown,
@@ -73,20 +73,20 @@ const OrderListing = () => {
     }
 
     const [selectedUser, setSelectedUser] = React.useState("")
+    const itemsPerPage = 3
+    const [page, setPage] = React.useState(1)
+    const noOfPages = selectedUser ? 1 : Math.ceil(data.length / itemsPerPage)
+    const listItem = Array(noOfPages).fill(1)
 
     const handleClickListUser = (index) => {
         const input = dataUser[index]
         setSelectedUser(input.username)
 
         if (input.username === 'All') return setSelectedUser("")
+        setPage(1)
     }
     console.log('selectedUser :', selectedUser)
 
-    // pagination
-    const itemsPerPage = 3
-    const [page, setPage] = React.useState(1)
-    const noOfPages = selectedUser ? 1 : Math.ceil(data.length / itemsPerPage)
-    const listItem = Array(noOfPages).fill(1)
 
     const goToDetail = (index) => {
         console.log(index)

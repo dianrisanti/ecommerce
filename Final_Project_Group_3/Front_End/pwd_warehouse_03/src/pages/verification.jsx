@@ -48,13 +48,13 @@ function Verification(props) {
                     parseInt(status) === 1
                         ?
                         <>
-                            <h3 style={{marginTop: 50, textAlign: "center"}}> Your account has been verified</h3>
+                            <h3 style={{marginTop: 10, textAlign: "center"}}> Your account has been verified</h3>
             <Button as={Link} to='/' style={{marginTop: 10}}>
                                     Go To Home
             </Button>
                         </>
                         :
-                        <h3>'Waiting for account verification'</h3>
+                        <h3 style={{marginTop: 10, textAlign: "center"}}>'Waiting for account verification'</h3>
                 }
             </div>
         </div>
@@ -68,10 +68,10 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: "138px"
+        marginTop: "108px"
     },
     center: {
-        marginTop: 300,
+        marginTop: 200,
         padding: "10px 30px",
         width: 350,
         height: "28vh",

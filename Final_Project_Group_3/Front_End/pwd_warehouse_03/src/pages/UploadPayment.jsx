@@ -3,7 +3,8 @@ import { Redirect, Link } from 'react-router-dom'
 import React from 'react';
 import Axios from 'axios'
 import {
-    Button
+    Button,
+    Modal
 } from 'react-bootstrap'
 
 import { upload, getProduct } from '../actions'
@@ -17,10 +18,12 @@ function PaymentConfirmation() {
     let [paymentCon, setPaymentCon] = React.useState(null)
     let [data, setData] = React.useState([])
     let [refresh, setRefresh] = React.useState(0)
+    const [modal, setModal] = React.useState(false)
     const dispatch = useDispatch()
-    const { order_number } = useSelector((state) => {
+    const { order_number, username } = useSelector((state) => {
         return {
             order_number: state.user.order_number,
+            username: state.user.username
         }
     })
     let [orderNum, setOrderNum] = React.useState(order_number)
@@ -68,6 +71,7 @@ function PaymentConfirmation() {
             }
         }
         fetchData()
+        setModal(true)
     }
 
     console.log(data)
@@ -75,20 +79,28 @@ function PaymentConfirmation() {
     return (
         <div style={styles.profileContainer}>
             <div style={styles.profileBox}>
+                <Modal show={modal} onHide={() => setModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Hi, {username}! </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Terimakasih telah mengupload bukti pembayaran</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setModal(false)}>
+                            Close
+                        </Button>
+                        <Button as={Link} to='/' variant="primary"> 
+                            Go to HOME 
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: "center"}}>
                 <h2 style={{ color: !paymentCon ? "black" : "blue", marginBottom: "20px", marginTop: "30px" }}>{!paymentCon ? "Mohon upload bukti pembayaran" : "Terimakasih telah mengupload bukti pembayaran"}</h2>
-                {paymentCon
-                    ?
-                    <Button as={Link} to='/' style={{ marginLeft: '5px', height: "40px", marginTop: "15px" }}> Go to HOME </Button>
-                    :
-                    ""
-                }
                 </div>
                 <div
                     style={{
                         height: '100%',
                         width: '100%',
-                        // backgroundColor: 'blue',
                         backgroundImage: `url(${paymentCon ? URL_IMG + paymentCon : NO_DATA})`,
                         backgroundPosition: 'center',
                         backgroundSize: 'contain',
@@ -114,43 +126,13 @@ function PaymentConfirmation() {
                         className="button"
                         variant="success"
                         onClick={handleUpload}
+                        style={{marginTop: 15}}
+                        disabled={paymentCon ? true : false}
                     >
                         Upload
-                        </Button>
+                    </Button>
                 </div>
-                {/* <div style={styles.profileInfo}>
-                    <InputGroup className="mb-3">
-                        <InputGroup.Prepend>
-                            <InputGroup.Text id="basic-addon1">Gender</InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <FormControl
-                            defaultValue={gender ? gender : ''}
-                            disabled={!edit}
-                            ref="gender"
-                        />
-                    </InputGroup>
-                    <InputGroup className="mb-3">
-                        <InputGroup.Prepend>
-                            <InputGroup.Text id="basic-addon1">Kota</InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <FormControl
-                            defaultValue={kota ? kota : ''}
-                            disabled={!edit}
-                            ref="kota"
-                        />
-                    </InputGroup>
-                    <InputGroup className="mb-3">
-                        <InputGroup.Prepend>
-                            <InputGroup.Text id="basic-addon1">Umur</InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <FormControl
-                            aria-describedby="basic-addon1"
-                            defaultValue={umur ? umur : ''}
-                            disabled={!edit}
-                            ref="umur"
-                        />
-                    </InputGroup>
-                </div> */}
+                
             </div>
         </div >
     );
@@ -158,19 +140,17 @@ function PaymentConfirmation() {
 
 const styles = {
     profileContainer: {
-        marginTop: '150px',
+        marginTop: '5%',
         width: '100%',
         height: '85vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'violet'
     },
     profileBox: {
         marginTop: "20px",
         width: '65vw',
         height: '85vh',
-        // backgroundColor: 'yellowgreen',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -181,30 +161,17 @@ const styles = {
         height: '50%',
         marginTop: '2%',
         padding: '3% 5%',
-        // backgroundColor: 'turquoise'
     },
     buttonProfile: {
         marginTop: '3%',
         display: 'flex',
-        flexDirection: 'row',
-        // alignItems: 'center',
+        flexDirection: 'column',
     },
     buttonContainer: {
         width: '100%',
-        /* background-color: pink; */
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
-    }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        gender: state.user.gender,
-        kota: state.user.kota,
-        umur: state.user.umur,
-        profile_pic: state.user.profile_pic,
-        id: state.user.id_users
     }
 }
 

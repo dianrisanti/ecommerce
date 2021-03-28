@@ -197,10 +197,10 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: '100px'
+        marginTop: '108px'
     },
     center: {
-        marginTop: 100,
+        marginTop: 70,
         padding: "10px 30px",
         width: 350,
         height: "68vh",
@@ -209,7 +209,7 @@ const styles = {
         alignItems: "center",
         border: "1px solid gray",
         borderRadius: "30px",
-        backgroundColor: "rgba(255, 255, 255, .7)"
+        backgroundColor: "rgba(255, 255, 255, .8)"
     },
     item: {
         width: "100%",
