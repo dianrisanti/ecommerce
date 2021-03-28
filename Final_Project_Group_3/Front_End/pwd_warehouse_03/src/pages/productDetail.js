@@ -5,7 +5,6 @@ import {
     Carousel,
     Button,
     Modal,
-    Alert,
     Form
 } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
@@ -30,11 +29,8 @@ const ProductDetail = (props) => {
         dispatch(getCart(+id_user))
     }, [])
 
-    console.log('cart', cart)
-    console.log('products', products)
-    const selected = products.filter(item => item.id === id)
-    const product = selected[0]
-    console.log('product', product)
+    const selected = products.length === 0 ? [] : products.filter(item => item.id === id)
+    const product = selected.length === 0 ? [] : selected[0]
 
     const [qty, setQty] = React.useState(0)
     const [cartErr, setCartErr] = React.useState(false)
@@ -65,7 +61,7 @@ const ProductDetail = (props) => {
 
         const qtyCart = checkCart.length === 0 ? 0 : checkCart[0].quantity
         
-        if(qtyCart + qty >= product.total_stock) return setQtyErr([true, "Pembelian melebihi stock. Silahkan periksa keranjang belanja Anda"])
+        if(qtyCart + qty > product.total_stock) return setQtyErr([true, "Pembelian melebihi stock. Silahkan periksa keranjang belanja Anda"])
 
         Axios.post('http://localhost:2000/cart/add', addToCart)
             .then(res => {
@@ -106,73 +102,10 @@ const ProductDetail = (props) => {
                 </Button>
                 </Modal.Footer>
             </Modal>
-        
-            <div style={styles.content}>
-                <div style={styles.left}>
-                    <Carousel>
-                                <Carousel.Item > 
-                                    <img
-                                        className="d-block w-100"
-                                        src={product.images}
-                                        alt="Slide"
-                                    />
-                                </Carousel.Item>
-                                {/* NOTE error caraousel key={index} di carousel */}
-                        {/* {product.images.map((item, index) => {
-                            return (
-                            )
-                        })}   */}
-                    </Carousel>
-                </div>
-                <div style={styles.right}>
-                    <h3>{product.name}</h3>
-                    <p style={{fontSize: "30px"}}>Harga: IDR {product.price.toLocaleString()}</p>
-                    <p style={{fontSize: "20px"}}>Stok: {product.total_stock}</p>
-                    <div style={styles.qty}>
-                        <div>
-                             <p style={{fontSize: "20px"}}>Jumlah: </p>
-                        </div>
-                        <div style={{display: "flex", margin: "15px"}}>
-                            <button
-                                disabled= {qty <= 0 ? true : false}
-                                onClick={() => setQty(qty - 1)}
-                                style={{height: "2rem", margin: "10px", borderRadius: "30px"}}
-                            ><i className="fas fa-minus"></i></button>
-                        
-                            <Form.Control style={{width: '90px', fontSize: '20px'}} onChange={(e) => changeQty(e)} value={qty} min={0}/>
 
-                            <button
-                                disabled= {qty >= product.total_stock ? true : false}
-                                onClick={() => setQty(qty + 1)}
-                                style={{height: "2rem", margin: "10px", borderRadius: "30px"}}
-                            ><i className="fas fa-plus"></i></button>
-                        </div>
-                    </div>
-                    <p style={{fontSize: '14px', color: 'red'}}>{qtyErr[0] ? qtyErr[1] : "" }</p>
-                    <div style={styles.description}>
-                        <p style={{fontSize: "20px"}}>Kategori: {product.category}</p>
-                        <p style={{fontSize: "15px"}}>Deskripsi: {product.description}</p>
-                    </div>
-                    <Button style={styles.checkout} onClick={addToCartHandler}>
-                        <i className="fas fa-plus"></i> Keranjang
-                    </Button>
-                </div>
-
-                <Modal show={cartErr} onHide={() => setCartErr(false)}>
-                    <Modal.Header closeButton>
-                    <Modal.Title>Error⚠</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>Kuantitas belum sesuai!</Modal.Body>
-                    <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setCartErr(false)}>
-                        Close
-                    </Button>
-                    </Modal.Footer>
-                </Modal>
-
-                <Modal show={checkoutError[0]} onHide={() => setCheckError([false, ""])}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Error</Modal.Title>
+            <Modal show={checkoutError[0]} onHide={() => setCheckError([false, ""])}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Error</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>{checkoutError[1]}</Modal.Body>
                     <Modal.Footer>
@@ -180,8 +113,64 @@ const ProductDetail = (props) => {
                             Login
                         </Button>
                     </Modal.Footer>
-                </Modal>
-            </div>
+            </Modal>
+        
+            {
+                product.length !== 0
+                ?
+                <div style={styles.content}>
+                    <div style={styles.left}>
+                        <Carousel>
+                            {product.images.map((item, index) => {
+                                return (
+                                    <Carousel.Item key={index}>
+                                        <img
+                                            className="d-block w-100"
+                                            src={item}
+                                            alt="Slide"
+                                        />
+                                    </Carousel.Item>
+                                )
+                            })}  
+                        </Carousel>
+                    </div>
+                    <div style={styles.right}>
+                        <h3>{product.name}</h3>
+                        <p style={{fontSize: "30px"}}>Harga: IDR {product.price.toLocaleString()}</p>
+                        <p style={{fontSize: "20px"}}>Stok: {product.total_stock}</p>
+                        <div style={styles.qty}>
+                            <div>
+                                <p style={{fontSize: "20px"}}>Jumlah: </p>
+                            </div>
+                            <div style={{display: "flex", margin: "15px"}}>
+                                <button
+                                    disabled= {qty <= 0 ? true : false}
+                                    onClick={() => setQty(qty - 1)}
+                                    style={{height: "2rem", margin: "10px", borderRadius: "30px"}}
+                                ><i className="fas fa-minus"></i></button>
+                            
+                                <Form.Control style={{width: '90px', fontSize: '20px'}} onChange={(e) => changeQty(e)} value={qty} min={0}/>
+
+                                <button
+                                    disabled= {qty >= product.total_stock ? true : false}
+                                    onClick={() => setQty(qty + 1)}
+                                    style={{height: "2rem", margin: "10px", borderRadius: "30px"}}
+                                ><i className="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <p style={{fontSize: '14px', color: 'red'}}>{qtyErr[0] ? qtyErr[1] : "" }</p>
+                        <div style={styles.description}>
+                            <p style={{fontSize: "20px"}}>Kategori: {product.category}</p>
+                            <p style={{fontSize: "15px"}}>Deskripsi: {product.description}</p>
+                        </div>
+                        <Button style={styles.checkout} onClick={addToCartHandler}>
+                            <i className="fas fa-plus"></i> Keranjang
+                        </Button>
+                    </div>
+                </div>
+                :
+                <div></div>
+            }
         </div>
     )
 }

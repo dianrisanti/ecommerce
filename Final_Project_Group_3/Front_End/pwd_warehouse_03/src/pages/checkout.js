@@ -77,7 +77,7 @@ const Checkout = (props) => {
                                 label={
                                     <Image
                                         src="https://1.bp.blogspot.com/-LOG22fyGGOo/WransnAeOlI/AAAAAAAABiA/RnFHp0YAHuIcmzMDZNnHFFz-M2sqUEPFQCKgBGAs/s1600/logo-bca.jpg"
-                                        style={{ width: '150px', height: '60px' }}
+                                        style={{ width: '80px', height: '33px' }}
                                     />
                                 }
                                 onChange={handleChange}
@@ -97,7 +97,7 @@ const Checkout = (props) => {
                                 label={
                                     <Image
                                         src="http://1.bp.blogspot.com/-zkv5u5OGPEM/VKOWnIRRKBI/AAAAAAAAA7E/ovxa4ZW3I0o/w1200-h630-p-k-no-nu/Logo%2BBank%2BMandiri.png"
-                                        style={{ width: '150px', height: '80px' }}
+                                        style={{ width: '100px', height: '50px' }}
                                     />
                                 }
                                 onChange={handleChange}
@@ -117,7 +117,7 @@ const Checkout = (props) => {
                                 label={
                                     <Image
                                         src="https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/1200px-BNI_logo.svg.png"
-                                        style={{ width: '150px', height: '50px' }}
+                                        style={{ width: '80px', height: '28px' }}
                                     />
                                 }
                                 onChange={handleChange}
@@ -189,7 +189,7 @@ const Checkout = (props) => {
 
 const styles = {
     container: {
-        marginTop: '138px',
+        marginTop: '120px',
         marginLeft: '40px',
         display: 'flex',
         justifyContent: 'space-between',

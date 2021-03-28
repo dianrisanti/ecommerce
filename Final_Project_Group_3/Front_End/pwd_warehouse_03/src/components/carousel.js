@@ -13,7 +13,7 @@ const Slider = () => {
     })
 
     return(
-        <div style={{width: '90vw', padding: 50, marginLeft: 60}}>
+        <div>
             <Carousel>
                 {
                     carousel.map((item, index) => {
@@ -23,7 +23,6 @@ const Slider = () => {
                                     className="d-block w-100"
                                     src={item.image}
                                     alt="slide"
-                                    style={styles.image}
                                     
                                 />
                             </Carousel.Item> 
@@ -36,10 +35,6 @@ const Slider = () => {
 }
 
 const styles = {
-    image: {
-        height: "100vh",
-        width: "100vw"  
-    },
     title: {
         fontSize: "3rem",
         fontWeight: "450",

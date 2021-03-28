@@ -61,7 +61,7 @@ function RequestNewPassword(props) {
     return (
         <div style={styles.container}>
             <div style={styles.center}>
-                <div style={{marginTop: "100px"}}>
+                <div style={{marginTop: "40px"}}>
                     <h1>Forgot Password</h1>
                 </div>
                 <div style={{ ...styles.item, textAlign: 'center' }}>
@@ -121,10 +121,10 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: "100px"
+        marginTop: "108px"
     },
     center: {
-        marginTop: 230,
+        marginTop: 150,
         padding: "10px 30px",
         width: 450,
         height: "40vh",
@@ -137,7 +137,7 @@ const styles = {
     },
     item: {
         width: "100%",
-        height: "auto",
+        height: "100%",
         marginBottom: 15,
     }
 }

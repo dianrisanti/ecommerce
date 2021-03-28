@@ -43,20 +43,22 @@ const Product = () => {
         }
     }
 
-    const [selectedCate, setSelectedCate] = React.useState("")
-
-    const handleClickListItemCate = (index) => {
-        const input = optionsCate[index]
-        setSelectedCate(input)
-
-        if(input === 'All') return setSelectedCate("")
-    }
-
     // pagination
+    const [selectedCate, setSelectedCate] = React.useState("")
     const itemsPerPage = 12
     const [page, setPage] = React.useState(1)
     const noOfPages = selectedCate ? 1 : Math.ceil(products.length / itemsPerPage)
     const listItem = Array(noOfPages).fill(1)
+
+
+    const handleClickListItemCate = (index) => {
+        const input = optionsCate[index]
+        setSelectedCate(input)
+        
+        if(input === 'All') return setSelectedCate("")
+        setPage(1)
+    }
+
     
     const goToDetail = (index) => {
         console.log(index)

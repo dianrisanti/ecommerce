@@ -1,6 +1,4 @@
-// import Axios from 'axios' // NOTE ga pake axios lagi karna udah ada keep login
 import React, { useState, useRef } from 'react'
-// import Axios from 'axios'
 import {
     Button,
     InputGroup,
@@ -12,24 +10,29 @@ import {
 import { login, logout } from '../actions'
 
 // import connect redux
-import { connect } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 // import redirect from react router-dom
 import { Redirect, Link } from "react-router-dom"
 
-function Login(props) {
-    console.log(props)
+function Login() {
     let usernameRef = useRef('')
     let passwordRef = useRef('')
     let renderCount = useRef(1)
-    console.log(`Login page rendered ${renderCount.current} times`)
     renderCount.current = renderCount.current + 1
 
     let [visible, setVisible] = useState(false)
 
+    const dispatch = useDispatch()
+
+    const { username, msgError } = useSelector((state) => {
+        return {
+            username: state.user.username,
+            msgError: state.user.errLogin
+        }
+    })
 
     function handleLogin(x) {
-        console.log(x)
         let username = `${usernameRef.current.value.includes("@") ? "" : usernameRef.current.value}`
         let email = `${usernameRef.current.value.includes("@") ? usernameRef.current.value : ""}`
         let password = passwordRef.current.value
@@ -40,15 +43,15 @@ function Login(props) {
             email,
             password,
         }
-        props.login(body)
+        dispatch(login(body))
     }
-    if (props.username) return <Redirect to='/' />
+    if (username) return <Redirect to='/' />
     console.log(usernameRef.current.value)
     return (
         <div style={styles.background}>
             <div style={styles.container}>
                 <h1 style={{ display: "flex", justifyContent: "center" }}>Login</h1>
-                <p>Username</p>
+                <p>Username / Email</p>
                 <InputGroup className="mb-3">
                     <InputGroup.Prepend>
                         <InputGroup.Text id="basic-addon1">
@@ -57,7 +60,7 @@ function Login(props) {
                     </InputGroup.Prepend>
                     <FormControl
                         ref={usernameRef}
-                        placeholder="Username"
+                        placeholder="Username / Email"
                         aria-label="Username"
                         aria-describedby="basic-addon1"
                     />
@@ -68,7 +71,6 @@ function Login(props) {
                         onClick={() => setVisible(!visible)}>
                         <InputGroup.Text id="basic-addon1">
                             <i className={visible ?  "fas fa-eye" : "fas fa-eye-slash" }></i>
-                            {/* {visible ? <i class="fas fa-eye"></i> : <i class="fas fa-eye-slash"></i>} */}
                         </InputGroup.Text>
                     </InputGroup.Prepend>
                     <FormControl
@@ -82,19 +84,19 @@ function Login(props) {
                 <div style={{ display: "flex", justifyContent: "center", }}>
                     <Button onClick={handleLogin} variant='primary' style={{ marginTop: "10px", }}>Login</Button>
                 </div>
-                <p style={{ marginTop: "10px" }}>Do you have an account? <Link to='/register'>Register Here</Link></p>
-                <p>Forgot password ? <Link to='/requestNewPassword'>Click Here</Link></p>
-                <Modal show={Boolean(props.msgError)} onHide={props.logout}>
+                <p style={{ marginTop: "10px" }}>Do you have an account? <Link to='/register' style={{color: '#03045e'}}>Register Here</Link></p>
+                <p>Forgot password ? <Link to='/requestNewPassword' style={{color: '#03045e'}}>Click Here</Link></p>
+                <Modal show={Boolean(msgError)} onHide={() => dispatch(logout())}>
                     <Modal.Header closeButton>
                         <Modal.Title>Error</Modal.Title>
                     </Modal.Header>
 
                     <Modal.Body>
-                        <p>{props.msgError}</p>
+                        <p>{msgError}</p>
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="primary" onClick={props.logout}>
+                        <Button variant="primary" onClick={() => dispatch(logout())}>
                             Okay
                         </Button>
                     </Modal.Footer>
@@ -107,10 +109,10 @@ function Login(props) {
 const styles = {
     container: {
         width: '400px',
-        background: 'rgba(82, 192, 192, 0.7)',
+        background: 'rgba(82, 192, 192, 0.8)',
         padding: '10px',
         borderRadius: '15px',
-        marginTop: '200px',
+        marginTop: '90px',
         height: '400px',
     },
     item: {
@@ -122,16 +124,9 @@ const styles = {
         height: '100vh',
         background: "url(https://images.unsplash.com/photo-1614179924047-e1ab49a0a0cf?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1934&q=80) no-repeat center",
         backgroundSize: '100vw 100vh',
-        marginTop: '100px'
+        marginTop: '108px'
     }
 }
 
 
-const mapStateToProps = (state) => {
-    return {
-        username: state.user.username,
-        msgError: state.user.errLogin
-    }
-}
-
-export default connect(mapStateToProps, { login, logout })(Login)
+export default Login

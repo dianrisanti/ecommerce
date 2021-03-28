@@ -202,7 +202,7 @@ module.exports = {
         const { product_id, stock } = req.body
 
         try {
-            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}
+            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}, available = (${parseInt(stock)} - booked)
             WHERE product_id = ${parseInt(product_id)} AND location_id = 1`
             await asyncQuery(editStock)
 
@@ -226,7 +226,7 @@ module.exports = {
         const { product_id, stock } = req.body
 
         try {
-            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}
+            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}, available = (${parseInt(stock)} - booked)
             WHERE product_id = ${parseInt(product_id)} AND location_id = 2`
             await asyncQuery(editStock)
 
@@ -250,7 +250,7 @@ module.exports = {
         const { product_id, stock } = req.body
 
         try {
-            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}
+            const editStock = `UPDATE warehouse SET stock = ${parseInt(stock)}, available = (${parseInt(stock)} - booked)
             WHERE product_id = ${parseInt(product_id)} AND location_id = 3`
             await asyncQuery(editStock)
 

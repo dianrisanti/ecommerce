@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { Table, Button, Form, Modal, Image, Alert } from 'react-bootstrap'
+import { Table, Button, Form, Image, Alert } from 'react-bootstrap'
 import {
     EditCart,
     DeleteCart,
@@ -13,6 +13,7 @@ const CartPage = () => {
     const [noLoc, setNoLoc] = React.useState(false)
     const [editIndex, setEditIndex] = React.useState(null)
     const [qty, setQty] = React.useState(0)
+    const [stock, setStock] = React.useState(null)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
 
     const { id, location, address, products, data } = useSelector((state) => {
@@ -44,6 +45,7 @@ const CartPage = () => {
     }
 
     const saveHandler = (itemId) => {
+        if(!qty || qty === 0) return setQtyErr([true, `Pembelian tidak boleh 0`])
         const num = data[0].order_number
         const price = data[editIndex].price
         const input = {
@@ -54,15 +56,22 @@ const CartPage = () => {
         }
         dispatch(EditCart(input, id))
         setEditIndex(null)
-        console.log(input)
+        setQtyErr([false, ""])
     }
 
+    const editHandler = (editId, id_product) => {
+        setEditIndex(editId)
+
+        const editProduct = products.find(i => i.id === id_product)
+        const tempStock = editProduct.total_stock
+        setStock(tempStock)
+    }
 
     const changeQty = (e) => {
         const input = e.target.value
 
         if (isNaN(+input)) return setQty(0)
-        if (+input > products[0].total_stock) return setQtyErr([true, `Maks. pembelian barang ini ${products[0].total_stock} item`])
+        if (+input > stock) return setQtyErr([true, `Maks. pembelian barang ini ${stock} item`])
 
         setQty(+input)
         setQtyErr([false, ""])
@@ -88,7 +97,7 @@ const CartPage = () => {
                         </td>
                         <td style={{ textAlign: 'right' }}>{item.price}</td>
                         <td style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'flex' }}>
+                            <div style={{ display: 'flex'}}>
                                 <button
                                     disabled={qty <= 0 ? true : false}
                                     onClick={() => setQty(qty - 1)}
@@ -96,11 +105,12 @@ const CartPage = () => {
                                 ><i className="fas fa-minus"></i></button>
                                 <Form.Control style={{ width: '90px', fontSize: '20px' }} onChange={(e) => changeQty(e)} value={qty} min={0} />
                                 <button
-                                    disabled={qty >= products.total_stock ? true : false}
+                                    disabled={qty >= stock ? true : false}
                                     onClick={() => setQty(qty + 1)}
                                     style={{ height: "2rem", margin: "10px", borderRadius: "30px" }}
                                 ><i className="fas fa-plus"></i></button>
                             </div>
+                            <p style={{fontSize: '14px', color: 'red', textAlign: 'center'}}>{qtyErr[0] ? qtyErr[1] : "" }</p>
                         </td>
                         <td style={{ textAlign: 'right' }}>{item.price * qty}</td>
                         <td style={{ textAlign: 'center' }}>
@@ -119,7 +129,7 @@ const CartPage = () => {
                         <td style={{ textAlign: 'center', fontFamily:'Lobster, cursive' }}>{item.quantity} pcs</td>
                         <td style={{ textAlign: 'right' }}>IDR {item.total.toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
-                            <Button variant="warning" style={{ marginRight: '5px' }} onClick={() => setEditIndex(index)}> Edit </Button>
+                            <Button variant="warning" style={{ marginRight: '5px' }} onClick={() => editHandler(index, item.id_product)}> Edit </Button>
                             <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => deleteHandler(item.id_product)}> Delete </Button>
                         </td>
                     </tr>
@@ -127,7 +137,6 @@ const CartPage = () => {
         })
     }
 
-    if (!id) return <Redirect to='/' />
     if (loc) return <Redirect to={`/checkout?${ordernum}`} />
     return (
         <div style={{ marginTop: "138px" }}>
@@ -137,22 +146,32 @@ const CartPage = () => {
                 sebelum membuat pesanan
             </Alert>
 
-            <Table striped bordered hover variant="dark">
-                <thead style={{ backgroundColor: '#2f3640', textAlign: 'center' }}>
-                    <tr style={{fontFamily:'Roboto, sans-serif'}}>
-                        <th>No</th>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>{renderTable()}</tbody>
-            </Table>
-            <Button style={styles.checkout} onClick={checkoutHandler}>
-                <i className="fas fa-plus"></i> Checkout
-            </Button>
+            {
+                id
+                ?
+                <div>
+                    <Table striped bordered hover variant="dark">
+                        <thead style={{ backgroundColor: '#2f3640', textAlign: 'center' }}>
+                            <tr style={{fontFamily:'Roboto, sans-serif'}}>
+                                <th>No</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>{renderTable()}</tbody>
+                    </Table>
+                    <Button style={styles.checkout} onClick={checkoutHandler}>
+                        <i className="fas fa-plus"></i> Checkout
+                    </Button>
+                </div>
+                :
+                <div></div>
+
+            }
+
         </div>
     )
 }
