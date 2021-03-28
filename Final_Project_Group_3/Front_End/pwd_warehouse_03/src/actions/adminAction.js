@@ -101,7 +101,7 @@ export const deleteCategory = (input) => {
 export const editCategory = (input) => {
     return async (dispatch) => {
         try {
-            // request api : DELETE
+            // request api : EDIT
             const res = await Axios.post('http://localhost:2000/admin/editcategory', input);
             console.log(res.data)
             console.log(input);
@@ -118,7 +118,7 @@ export const editCategory = (input) => {
 export const addCategory = (newInput) => {
     return async (dispatch) => {
         try {
-            // request api : DELETE
+            // request api : ADD
             const res = await Axios.post('http://localhost:2000/admin/addcategory', newInput);
             console.log(res.data)
             console.log(newInput);
@@ -203,8 +203,25 @@ export const EditProduct = (input) => {
 export const DeleteProduct = (input) => {
     return async (dispatch) => {
         try {
-            // request api : EDIT
+            // request api : DELETE
             const res = await Axios.post('http://localhost:2000/admin/deleteproduct', input);
+            console.log(res.data);
+            console.log(input);
+
+            // request api get cart data
+            const cart = await Axios.get(`http://localhost:2000/admin/getall`);
+            dispatch({ type: "GET_CATEGORY", payload: cart.data });
+        } catch (err) {
+            console.log(err.response ? err.response.data : err);
+        }
+    };
+};
+
+export const AddProduct = (input) => {
+    return async (dispatch) => {
+        try {
+            // request api : ADD
+            const res = await Axios.post('http://localhost:2000/admin/addproduct', input);
             console.log(res.data);
             console.log(input);
 

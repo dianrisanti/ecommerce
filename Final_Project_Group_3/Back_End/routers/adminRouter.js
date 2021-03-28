@@ -19,5 +19,6 @@ router.post('/editmedan', adminController.editMedan)
 router.post('/editsurabaya', adminController.editSurabaya)
 router.post('/editproduct', adminController.editProduct)
 router.post('/deleteproduct', adminController.deleteProduct)
+router.post('/addproduct', adminController.addProduct)
 
 module.exports = router
