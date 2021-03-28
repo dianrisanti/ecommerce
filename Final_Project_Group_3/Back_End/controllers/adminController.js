@@ -206,7 +206,16 @@ module.exports = {
             WHERE product_id = ${parseInt(product_id)} AND location_id = 1`
             await asyncQuery(editStock)
 
-            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            JOIN product_category pc ON p.category_id = pc.id
+            JOIN warehouse w ON p.id = w.product_id
+            WHERE w.location_id = 1
+            GROUP BY p.id) main 
+            JOIN product_img pi ON main.id = pi.product_id 
+            GROUP BY main.id`
+            const productResult = await asyncQuery(queryProduct)
+
+            res.status(200).send(productResult)
         }
         catch (err) {
             console.log(err)
@@ -221,7 +230,16 @@ module.exports = {
             WHERE product_id = ${parseInt(product_id)} AND location_id = 2`
             await asyncQuery(editStock)
 
-            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            JOIN product_category pc ON p.category_id = pc.id
+            JOIN warehouse w ON p.id = w.product_id
+            WHERE w.location_id = 2
+            GROUP BY p.id) main 
+            JOIN product_img pi ON main.id = pi.product_id 
+            GROUP BY main.id`
+            const productResult = await asyncQuery(queryProduct)
+
+            res.status(200).send(productResult)
         }
         catch (err) {
             console.log(err)
@@ -236,7 +254,16 @@ module.exports = {
             WHERE product_id = ${parseInt(product_id)} AND location_id = 3`
             await asyncQuery(editStock)
 
-            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            JOIN product_category pc ON p.category_id = pc.id
+            JOIN warehouse w ON p.id = w.product_id
+            WHERE w.location_id = 3
+            GROUP BY p.id) main 
+            JOIN product_img pi ON main.id = pi.product_id 
+            GROUP BY main.id`
+            const productResult = await asyncQuery(queryProduct)
+
+            res.status(200).send(productResult)
         }
         catch (err) {
             console.log(err)
@@ -251,7 +278,15 @@ module.exports = {
             WHERE id = ${parseInt(product_id)}`
             await asyncQuery(editProduct)
 
-            res.status(200).send(`edit stock for product_id ${+product_id} success`)
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            JOIN product_category pc ON p.category_id = pc.id
+            JOIN warehouse w ON p.id = w.product_id  
+            GROUP BY p.id) main 
+            JOIN product_img pi ON main.id = pi.product_id 
+            GROUP BY main.id`
+            const productResult = await asyncQuery(queryProduct)
+
+            res.status(200).send(productResult)
         }
         catch (err) {
             console.log(err)
@@ -265,7 +300,15 @@ module.exports = {
             const delProduct = `DELETE FROM products WHERE id = ${parseInt(id)}`
             const result = await asyncQuery(delProduct)
 
-            res.status(200).send(result)
+            const queryProduct = `SELECT main.*, GROUP_CONCAT(pi.image separator ',') images FROM (SELECT p.id, p.name, pc.category, p.description, p.price, SUM(w.stock) total_stock FROM products p 
+            JOIN product_category pc ON p.category_id = pc.id
+            JOIN warehouse w ON p.id = w.product_id  
+            GROUP BY p.id) main 
+            JOIN product_img pi ON main.id = pi.product_id 
+            GROUP BY main.id`
+            const productResult = await asyncQuery(queryProduct)
+
+            res.status(200).send(productResult)
         }
         catch(err){
             console.log(err)
@@ -273,4 +316,24 @@ module.exports = {
         }
     },
     
+    addProduct: async(req, res) => {
+        let {name, cate, price, description, image } = req.body
+
+        try{
+            const add = `INSERT INTO products (name, category_id, description, price) VALUES ('${name}', ${parseInt(cate)}, '${description}', ${parseInt(price)})`
+            const result = await asyncQuery(add)
+
+            const add2 = `INSERT INTO warehouse (product_id, location_id) VALUES (${result.insertId}, 1), (${result.insertId},2), (${result.insertId},3)`
+            const result2 = await asyncQuery(add2)
+            
+            const add3 = `INSERT INTO product_img (product_id, image) VALUES (${result.insertId}, '${image}')`
+            const result3 = await asyncQuery(add3)
+
+            res.status(200).send('add success')
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    }
 }

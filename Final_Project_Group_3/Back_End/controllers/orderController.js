@@ -314,7 +314,7 @@ module.exports = {
             JOIN product_img pi ON od.id_product = pi.product_id
             WHERE (o.status = 2 OR o.status = 3 OR o.status = 4 OR o.status = 5 OR o.status = 6) AND o.id_user = ${id_user}
             GROUP BY od.id_product, o.order_number
-            ORDER BY o.order_number `
+            ORDER BY o.order_number DESC`
             const historyResult = await asyncQuery(history)
             
             let output = []

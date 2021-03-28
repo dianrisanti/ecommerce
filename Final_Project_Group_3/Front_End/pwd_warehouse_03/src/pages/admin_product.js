@@ -3,7 +3,7 @@ import Axios from 'axios'
 import { Link } from 'react-router-dom'
 
 import { useDispatch } from 'react-redux'
-import { Table, Button, Form, Nav, Dropdown, Pagination } from 'react-bootstrap'
+import { Table, Button, Form, Nav, Dropdown, Pagination, Alert } from 'react-bootstrap'
 
 import {
     EditProduct,
@@ -16,34 +16,68 @@ const GetAll = () => {
     const [name, setName] = React.useState('')
     const [cate, setCate] = React.useState('')
     const [price, setPrice] = React.useState('')
+    const [refresh, setRefresh] = React.useState(0)
     const [selectedOption, setSelectedOption] = React.useState("")
+    const [addError, setAddError] = React.useState([false, ""])
 
     const dispatch = useDispatch();
 
     React.useEffect(() => {
-        Axios.get(`http://localhost:2000/admin/getall`)
-            .then(res => (setData(res.data)))
-            .catch(err => console.log(err))
-    }, [data])
+        async function fetchData() {
+            try {
+                const res = await Axios.get(`http://localhost:2000/admin/getall`)
+                setData(res.data)
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+    }, [refresh, editIndex])
 
     const deleteHandler = (itemId) => {
+        setRefresh(refresh+1)
         const input = {
             id: itemId
-        }
-        dispatch(DeleteProduct(input))
+        } 
         console.log(input)
+        async function fetchData() {
+            try {
+                const res = await Axios.post(`http://localhost:2000/admin/deleteproduct`, input)
+                setData(res.data)
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
     }
 
     const saveHandler = (itemId) => {
+        if (!name || !cate || !price || price == 0) return setAddError([true, "input tidak boleh kosong"])
+        setRefresh(refresh+1)
         const input = {
             product_id: itemId,
             category_id: cate,
             name,
             price
         }
-        dispatch(EditProduct(input))
-        setEditIndex(null)
         console.log(input)
+        async function fetchData() {
+            try {
+                const res = await Axios.post(`http://localhost:2000/admin/editproduct`, input)
+                setData(res.data)
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+        setEditIndex(null)
+        setName('')
+        setCate('')
+        setPrice('')
+        setAddError([false, ''])
     }
 
     const changeName = (e) => {
@@ -64,8 +98,12 @@ const GetAll = () => {
     const options = [
         'Nama A - Z',
         'Nama Z - A',
+        'Kategori A - Z',
+        'Kategori Z - A',
         'Harga Tertinggi',
         'Harga Terendah',
+        'Stok Tertinggi',
+        'Stok Terendah',
     ]
 
     const handleClickListItem = (index) => {
@@ -74,11 +112,15 @@ const GetAll = () => {
 
         if (index === 0) return data.sort((a, b) => a.name.localeCompare(b.name))
         if (index === 1) return data.sort((a, b) => -1 * a.name.localeCompare(b.name))
-        if (index === 2) return data.sort((a, b) => b.price - a.price)
-        if (index === 3) return data.sort((a, b) => a.price - b.price)
+        if (index === 2) return data.sort((a, b) => a.category.localeCompare(b.category))
+        if (index === 3) return data.sort((a, b) => -1 * a.category.localeCompare(b.category))
+        if (index === 4) return data.sort((a, b) => b.price - a.price)
+        if (index === 5) return data.sort((a, b) => a.price - b.price)
+        if (index === 6) return data.sort((a, b) => b.total_stock - a.total_stock)
+        if (index === 7) return data.sort((a, b) => a.total_stock - b.total_stock)
     }
 
-    const itemsPerPage = 10
+    const itemsPerPage = 5
     const [page, setPage] = React.useState(1)
     const noOfPages = Math.ceil(data.length / itemsPerPage)
     const listItem = Array(noOfPages).fill(1)
@@ -95,6 +137,7 @@ const GetAll = () => {
                             <td style={{ textAlign: 'right' }}>
                                 <Form.Control style={{ width: '600px', fontSize: '20px' }} onChange={(e) => changeName(e)} value={name} placeholder='input product name' />
                             </td>
+                            <td style={{ textAlign: 'center' }}>{item.id}</td>
                             <td style={{ textAlign: 'center' }}>
                                 <Form.Control style={{ width: '200px', fontSize: '20px' }} onChange={(e) => changeCate(e)} value={cate} placeholder='input category id' />
                             </td>
@@ -111,6 +154,7 @@ const GetAll = () => {
                         <tr key={index}>
                             <td style={{ textAlign: 'center' }}>{index + 1}</td>
                             <td>{item.name}</td>
+                            <td style={{ textAlign: 'center' }}>{item.id}</td>
                             <td style={{ textAlign: 'center' }}>{item.category}</td>
                             <td style={{ textAlign: 'right' }}>IDR {item.price.toLocaleString()}</td>
                             <td style={{ textAlign: 'center', fontFamily: 'Lobster, cursive' }}>{item.total_stock} pcs</td>
@@ -124,6 +168,14 @@ const GetAll = () => {
     }
     return (
         <div style={{ marginTop: "138px" }}>
+            <Alert style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                marginTop:'120px'
+            }} show={addError[0]} variant="danger" onClose={() => setAddError([false, ""])} dismissible>
+                {addError[1]}
+            </Alert>
             <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
                 <Nav variant="tabs" defaultActiveKey="/" style={{ marginLeft: '10px' }}>
                     <Nav.Item>
@@ -140,7 +192,7 @@ const GetAll = () => {
                     </Nav.Item>
                 </Nav>
                 <div style={{ display: 'flex', flexDirection: 'row', width: 350 }}>
-                    <h3 style={{ marginRight: 10 }}>Sort By</h3>
+                    <h3 style={{ marginRight: 10 }}>Urutkan</h3>
                     <Dropdown style={{ marginRight: "4%" }}>
                         <Dropdown.Toggle style={{ backgroundColor: "transparent", fontFamily: "Dosis", color: 'black' }} id="dropdown-basic">
                             {selectedOption ? selectedOption : "Berdasarkan"}
@@ -161,6 +213,7 @@ const GetAll = () => {
                     <tr style={{ fontFamily: 'Roboto, sans-serif' }}>
                         <th>No</th>
                         <th>Name</th>
+                        <th>ID</th>
                         <th>Category</th>
                         <th>Price</th>
                         <th>Total Stock</th>
