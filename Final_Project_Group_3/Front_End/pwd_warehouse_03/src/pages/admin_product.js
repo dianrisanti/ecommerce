@@ -3,7 +3,7 @@ import Axios from 'axios'
 import { Link } from 'react-router-dom'
 
 import { useDispatch } from 'react-redux'
-import { Table, Button, Form, Nav, Dropdown, Pagination, Alert } from 'react-bootstrap'
+import { Table, Button, Form, Nav, Dropdown, Pagination, Alert, Image } from 'react-bootstrap'
 
 import {
     EditProduct,
@@ -153,7 +153,10 @@ const GetAll = () => {
                         :
                         <tr key={index}>
                             <td style={{ textAlign: 'center' }}>{index + 1}</td>
-                            <td>{item.name}</td>
+                            <td>
+                                <Image style={{ width: 60, height: 60, marginRight: "15px" }} src={item.images} rounded />
+                                {item.name}
+                            </td>
                             <td style={{ textAlign: 'center' }}>{item.id}</td>
                             <td style={{ textAlign: 'center' }}>{item.category}</td>
                             <td style={{ textAlign: 'right' }}>IDR {item.price.toLocaleString()}</td>
