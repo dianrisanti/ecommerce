@@ -13,11 +13,17 @@ import {getCart} from '../actions'
 const ProductDetail = (props) => {
     const input = props.location.search
     const id = parseInt(input.slice(4, input.length))
-    // console.log(id)
 
-    const { products, id_user, username, cart } = useSelector((state) => {
+    const [data, setData] = React.useState([])
+    const [qty, setQty] = React.useState(0)
+    const [cartSuccess, setCartSuccess] = React.useState(false)
+    const [qtyErr, setQtyErr] = React.useState([false, ""])
+    const [checkoutError, setCheckError] = React.useState([false, ""])
+
+    const product = data.length === 0 ? [] : data[0]
+
+    const { id_user, username, cart } = useSelector((state) => {
         return{
-            products: state.product.products,
             id_user: state.user.id_user,
             username: state.user.username,
             cart: state.product.cart
@@ -26,23 +32,18 @@ const ProductDetail = (props) => {
 
     const dispatch = useDispatch()
     React.useEffect(() => {
-        dispatch(getCart(+id_user))
-    }, [])
-
-    const selected = products.length === 0 ? [] : products.filter(item => item.id === id)
-    const product = selected.length === 0 ? [] : selected[0]
-
-    const [qty, setQty] = React.useState(0)
-    const [cartErr, setCartErr] = React.useState(false)
-    const [cartSuccess, setCartSuccess] = React.useState(false)
-    const [qtyErr, setQtyErr] = React.useState([false, ""])
-    let [checkoutError, setCheckError] = React.useState([false, ""])
-
-    const { idUser } = useSelector((state) => {
-        return {
-            idUser: state.user.id_user
+        const fetchData = async() => {
+            try{
+                const res = await Axios.get(`http://localhost:2000/products/detail/${id}`)
+                setData(res.data)
+                dispatch(getCart(+id_user))
+            }
+            catch(err){
+                console.log(err)
+            }
         }
-    })
+        fetchData()
+    }, [])
 
     const addToCartHandler = () => {
         if(!id_user) return setCheckError([true, "Silahkan login terlebih dahulu"])
@@ -50,16 +51,17 @@ const ProductDetail = (props) => {
 
         const addToCart = {
             order_number: Date.now(),
-            id_user: idUser,
+            id_user,
             id_product: product.id,
             harga: product.price,
             qty,
             total: qty * product.price
         }
 
-        const checkCart = cart.filter(i => i.id_product === id)
+        const checkCart = cart.find(i => i.id_product === id)
+        console.log('check cart ', checkCart)
 
-        const qtyCart = checkCart.length === 0 ? 0 : checkCart[0].quantity
+        const qtyCart = !checkCart ? 0 : checkCart.quantity
         
         if(qtyCart + qty > product.total_stock) return setQtyErr([true, "Pembelian melebihi stock. Silahkan periksa keranjang belanja Anda"])
 
@@ -70,7 +72,6 @@ const ProductDetail = (props) => {
                 setQtyErr([false, ""])
             })
             .catch(err => console.log(err))
-        console.log(addToCart)
     }
 
     const changeQty = (e) => {
@@ -90,15 +91,15 @@ const ProductDetail = (props) => {
 
             <Modal show={cartSuccess} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title style={{fontFamily:'Playfair Display, serif'}}>Hi, {username}</Modal.Title>
+                    <Modal.Title style={{fontFamily:'Playfair Display, serif'}}>Hi, {username}!</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Berhasil menambahkan {product.name} ke dalam keranjang</Modal.Body>
+                <Modal.Body>Success add {product.name} to your cart</Modal.Body>
                 <Modal.Footer>
                     <Button variant='outline-danger' as={Link} to='./'>
-                        Produk Lain
+                        Catalogue
                     </Button>
                     <Button variant="outline-success" as={Link} to='./cart'>
-                        Keranjang
+                        Cart
                 </Button>
                 </Modal.Footer>
             </Modal>
@@ -116,7 +117,7 @@ const ProductDetail = (props) => {
             </Modal>
         
             {
-                product.length !== 0
+                data.length !== 0
                 ?
                 <div style={styles.content}>
                     <div style={styles.left}>
@@ -136,11 +137,11 @@ const ProductDetail = (props) => {
                     </div>
                     <div style={styles.right}>
                         <h3>{product.name}</h3>
-                        <p style={{fontSize: "30px"}}>Harga: IDR {product.price.toLocaleString()}</p>
-                        <p style={{fontSize: "20px"}}>Stok: {product.total_stock}</p>
+                        <p style={{fontSize: 25}}>Price: IDR {product.price.toLocaleString()}</p>
+                        <p style={{fontSize: 20}}>Stock: {product.total_stock}</p>
                         <div style={styles.qty}>
                             <div>
-                                <p style={{fontSize: "20px"}}>Jumlah: </p>
+                                <p style={{fontSize: 20}}>Quantity: </p>
                             </div>
                             <div style={{display: "flex", margin: "15px"}}>
                                 <button
@@ -160,11 +161,11 @@ const ProductDetail = (props) => {
                         </div>
                         <p style={{fontSize: '14px', color: 'red'}}>{qtyErr[0] ? qtyErr[1] : "" }</p>
                         <div style={styles.description}>
-                            <p style={{fontSize: "20px"}}>Kategori: {product.category}</p>
-                            <p style={{fontSize: "15px"}}>Deskripsi: {product.description}</p>
+                            <p style={{fontSize: 20}}>Category: {product.category}</p>
+                            <p style={{fontSize: "15px"}}>Description: {product.description}</p>
                         </div>
                         <Button style={styles.checkout} onClick={addToCartHandler}>
-                            <i className="fas fa-plus"></i> Keranjang
+                            <i className="fas fa-plus"></i> Add to cart
                         </Button>
                     </div>
                 </div>
@@ -177,7 +178,7 @@ const ProductDetail = (props) => {
 
 const styles = {
     container: {
-        marginTop: "150px", 
+        marginTop: "108px", 
         padding: "0 20px",
         fontFamily: "PT Serif",
         paddingBottom: '30px'

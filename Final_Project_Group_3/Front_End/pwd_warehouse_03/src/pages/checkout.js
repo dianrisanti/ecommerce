@@ -11,18 +11,17 @@ import {
 
 const Checkout = (props) => {
     const [selected, setSelected] = React.useState("")
-    let [confirmEmail, setConfirmEmail] = React.useState([false, ""])
-    let [regError, setRegError] = React.useState([false, ""])
+    const [noSelected, setNoSelected] = React.useState(false)
+    const [confirmEmail, setConfirmEmail] = React.useState([false, ""])
+    const [regError, setRegError] = React.useState([false, ""])
     const [toHome, setToHome] = React.useState(false)
     const [data, setData] = React.useState([])
-    const { id } = useSelector((state) => {
+    const { id, email } = useSelector((state) => {
         return {
-            id: state.user.id_user
+            id: state.user.id_user,
+            email: state.user.email,
         }
     })
-
-    console.log('id user ', id)
-    console.log('data payment', data)
 
     React.useEffect(() => {
         Axios.get(`http://localhost:2000/cart/summary/${parseInt(id)}`)
@@ -32,19 +31,20 @@ const Checkout = (props) => {
 
     const handleChange = e => {
         e.persist()
-        console.log(e.target.value)
 
         setSelected(e.target.value)
     }
 
-    const handleSubmit = e => {
+    const handlePlaceOrder = e => {
         e.preventDefault()
+
+        if(!selected) return setNoSelected(true)
+
         async function fetchData() {
             try {
                 const order_number = data[0].order_number
                 const payment_method = selected
-                let res = await Axios.post(`http://localhost:2000/cart/invoice/${parseInt(id)}`, {order_number, payment_method})
-                console.log(res)
+                await Axios.post(`http://localhost:2000/cart/invoice/${parseInt(id)}`, {order_number, payment_method, email})
                 setConfirmEmail([true, "Invoice has been sent to your email. Confirm your payment on history"])
             }
             catch (err) {
@@ -61,7 +61,7 @@ const Checkout = (props) => {
     }
 
     if(!props.location.search) return <Redirect to="*"/>
-    if(toHome) return <Redirect to="/"/>
+    if(toHome || !id) return <Redirect to="/"/>
     return (
         <div style={styles.container}>
             <div style={{border: '1px solid #adb5bd', width: '55vw'}}>
@@ -133,7 +133,7 @@ const Checkout = (props) => {
                     <Button 
                         variant="primary" 
                         type="submit" 
-                        onClick={handleSubmit} 
+                        onClick={handlePlaceOrder} 
                         style={{marginLeft: 500, width: 150}}
                     >
                         Place Order
@@ -159,7 +159,18 @@ const Checkout = (props) => {
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setRegError([false, ""])}>
                             Okay
-                            </Button>
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={noSelected} onHide={() => setRegError([false, ""])}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Error</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>You have not selected payment method</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setNoSelected(false)}>
+                            Okay
+                        </Button>
                     </Modal.Footer>
                 </Modal>
             </div>

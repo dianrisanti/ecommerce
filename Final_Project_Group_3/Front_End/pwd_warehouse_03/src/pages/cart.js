@@ -1,7 +1,7 @@
 import React from 'react'
 import { Redirect, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { Table, Button, Form, Image, Alert } from 'react-bootstrap'
+import { Table, Button, Form, Image, Alert, Modal } from 'react-bootstrap'
 import {
     EditCart,
     DeleteCart,
@@ -9,20 +9,24 @@ import {
 } from '../actions'
 
 const CartPage = () => {
+    const [empty, setEmpty] = React.useState(false)
     const [loc, setLoc] = React.useState(false)
     const [noLoc, setNoLoc] = React.useState(false)
     const [editIndex, setEditIndex] = React.useState(null)
     const [qty, setQty] = React.useState(0)
     const [stock, setStock] = React.useState(null)
     const [qtyErr, setQtyErr] = React.useState([false, ""])
+    const [token, setToken] = React.useState("")
 
-    const { id, location, address, products, data } = useSelector((state) => {
+    console.log('token cart', token)
+
+    const { id, location, address, data, username } = useSelector((state) => {
         return {
             id: state.user.id_user,
             location: state.user.location,
             address: state.user.address,
-            products: state.product.products,
-            data: state.product.cart
+            data: state.product.cart,
+            username: state.user.username
         }
     })
 
@@ -59,10 +63,11 @@ const CartPage = () => {
         setQtyErr([false, ""])
     }
 
-    const editHandler = (editId, id_product) => {
+    const editHandler = (editId, id_product, quantity) => {
         setEditIndex(editId)
+        setQty(quantity)
 
-        const editProduct = products.find(i => i.id === id_product)
+        const editProduct = data.find(i => i.id_product === id_product)
         const tempStock = editProduct.total_stock
         setStock(tempStock)
     }
@@ -78,8 +83,8 @@ const CartPage = () => {
     }
 
     const checkoutHandler = () => {
-        console.log('checkout clicked')
-
+        if(data.length === 0) return setEmpty(true)
+        setEmpty(false)
         if (!location || !address) return setNoLoc(true)
         if (location) return setLoc(true)
     }
@@ -95,7 +100,7 @@ const CartPage = () => {
                             <Image style={{ width: 60, height: 60, marginRight: "15px" }} src={item.image} rounded />
                             {item.name}
                         </td>
-                        <td style={{ textAlign: 'right' }}>{item.price}</td>
+                        <td style={{ textAlign: 'right' }}>IDR {item.price.toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
                             <div style={{ display: 'flex'}}>
                                 <button
@@ -112,7 +117,7 @@ const CartPage = () => {
                             </div>
                             <p style={{fontSize: '14px', color: 'red', textAlign: 'center'}}>{qtyErr[0] ? qtyErr[1] : "" }</p>
                         </td>
-                        <td style={{ textAlign: 'right' }}>{item.price * qty}</td>
+                        <td style={{ textAlign: 'right' }}>IDR {(item.price * qty).toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
                             <Button variant="outline-success" style={{ marginRight: '5px' }} onClick={() => saveHandler(item.id_product)}> ✔ </Button>
                             <Button variant="outline-danger" style={{ marginLeft: '5px' }} onClick={() => setEditIndex(null)}> ❌ </Button>
@@ -129,7 +134,7 @@ const CartPage = () => {
                         <td style={{ textAlign: 'center', fontFamily:'Lobster, cursive' }}>{item.quantity} pcs</td>
                         <td style={{ textAlign: 'right' }}>IDR {item.total.toLocaleString()}</td>
                         <td style={{ textAlign: 'center' }}>
-                            <Button variant="warning" style={{ marginRight: '5px' }} onClick={() => editHandler(index, item.id_product)}> Edit </Button>
+                            <Button variant="warning" style={{ marginRight: '5px' }} onClick={() => editHandler(index, item.id_product, item.quantity)}> Edit </Button>
                             <Button variant="danger" style={{ marginLeft: '5px' }} onClick={() => deleteHandler(item.id_product)}> Delete </Button>
                         </td>
                     </tr>
@@ -137,14 +142,26 @@ const CartPage = () => {
         })
     }
 
-    if (loc) return <Redirect to={`/checkout?${ordernum}`} />
+    if (loc) return <Redirect to={`/checkout?${ordernum}process`} />
     return (
-        <div style={{ marginTop: "138px" }}>
+        <div style={{ marginTop: "108px" }}>
             <Alert show={noLoc} variant="danger" onClose={() => setNoLoc(false)} dismissible>
                 Mohon lengkapi lokasi dan alamat pada
                 <Alert.Link as={Link} to='./profile'> profile Anda </Alert.Link>
                 sebelum membuat pesanan
             </Alert>
+
+            <Modal show={empty} onHide={() => setEmpty(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title style={{fontFamily:'Playfair Display, serif'}}>Hi, {username}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Keranjang belanjamu kosong. Silahkan kembali ke halaman utama!</Modal.Body>
+                <Modal.Footer>
+                    <Button variant='outline-danger' as={Link} to='./'>
+                        Home
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             {
                 id

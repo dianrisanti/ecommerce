@@ -34,27 +34,27 @@ import NewProduct from './pages/newproduct'
 
 import { useDispatch, useSelector } from 'react-redux'
 
-import { getProduct, getCarousel, keepLogin, getOrder } from './actions'
+import { getCarousel, keepLogin, getOrder, getCart } from './actions'
 
 function App() {
   const dispatch = useDispatch()
 
-  const { role } = useSelector((state) => {
+  const { role, id } = useSelector((state) => {
     return {
-      role: state.user.role
+      role: state.user.role,
+      id: state.user.id_user
     }
   })
 
   React.useEffect(() => {
-    dispatch(getProduct())
     dispatch(getCarousel())
     dispatch(keepLogin())
     dispatch(getOrder())
+    dispatch(getCart(+id))
   }, [])
-  console.log('role :', role)
+
   function renderPage() {
     if (role === 1) {
-      console.log('login sebagai admin')
       return (
         <div> 
           <NavigationAdmin/>
@@ -80,27 +80,48 @@ function App() {
         </div>
       )
     }
-    return (
-      <div>
-        <Navigation />
-        <Switch>
-          <Route path='/' component={Home} exact />
-          <Route path='/register' component={SignUp} />
-          <Route path='/forgot_password' component={ForgotPassword} />
-          <Route path='/requestNewPassword' component={RequestNewPassword} />
-          <Route path='/verification' component={Verify} />
-          <Route path='/login' component={Login} />
-          <Route path='/detail' component={ProductDetail} />
-          <Route path='/cart' component={CartPage} />
-          <Route path='/profile' component={Profile} />
-          <Route path='/history' component={History} />
-          <Route path='/checkout' component={Checkout} />
-          <Route path='/upload_payment' component={PaymentConfirmation} />
-          <Route path='*' component={NotFound} />
-        </Switch>
-        <Footer />
-      </div>
-    )
+    if(role === 2) {
+      return(
+        <div>
+          <Navigation />
+          <Switch>
+            <Route path='/' component={Home} exact />
+            <Route path='/register' component={SignUp} />
+            <Route path='/forgot_password' component={ForgotPassword} />
+            <Route path='/requestNewPassword' component={RequestNewPassword} />
+            <Route path='/verification' component={Verify} />
+            <Route path='/login' component={Login} />
+            <Route path='/detail' component={ProductDetail} />
+            <Route path='/cart' component={CartPage} />
+            <Route path='/profile' component={Profile} />
+            <Route path='/history' component={History} />
+            <Route path='/checkout' component={Checkout} />
+            <Route path='/upload_payment' component={PaymentConfirmation} />
+            <Route path='*' component={NotFound} />
+          </Switch>
+          <Footer />
+        </div>
+      )
+    }
+    else {
+      return (
+        <div>
+          <Navigation />
+          <Switch>
+            <Route path='/' component={Home} exact />
+            <Route path='/register' component={SignUp} />
+            <Route path='/forgot_password' component={ForgotPassword} />
+            <Route path='/requestNewPassword' component={RequestNewPassword} />
+            <Route path='/verification' component={Verify} />
+            <Route path='/login' component={Login} />
+            <Route path='/detail' component={ProductDetail} />
+            <Route path='/cart' component={CartPage} />
+            <Route path='*' component={NotFound} />
+          </Switch>
+          <Footer />
+        </div>
+      )
+    }
   }
   return (
     <div>

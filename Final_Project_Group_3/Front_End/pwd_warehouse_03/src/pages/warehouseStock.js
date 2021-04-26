@@ -159,45 +159,6 @@ const WarehouseStock = () => {
         )
     }
 
-    const renderTableDetail = () => {
-        <Table striped bordered hover>
-            <thead>
-                <tr>
-                    <th>Lokasi</th>
-                    <th>Booked</th>
-                    <th>Available</th>
-                    <th>Total Stock</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Jakarta</td>
-                    <td>{bookedJkt}</td>
-                    <td>{availableJkt}</td>
-                    <td>
-                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyJkt(e)} value={stockJkt} min={0}/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Medan</td>
-                    <td>{bookedMedan}</td>
-                    <td>{availableMedan}</td>
-                    <td>
-                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtyMedan(e)} value={stockMedan} min={0}/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Surabaya</td>
-                    <td>{bookedSurabaya}</td>
-                    <td>{availableSurabaya}</td>
-                    <td>
-                        <Form.Control style={{width: '70px', fontSize: '15px', height: '30px'}} onChange={(e) => changeQtySurabaya(e)} value={stockSurabaya} min={0}/>
-                    </td>
-                </tr>
-            </tbody>
-        </Table>
-    }
-
     const renderModal = () => {
         return(
             <Modal show={modal} onHide={() => setModal(false)}>

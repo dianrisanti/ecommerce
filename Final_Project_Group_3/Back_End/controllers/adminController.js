@@ -120,7 +120,6 @@ module.exports = {
         try {
             const queryPaymentConf = `UPDATE orders SET status = ${db.escape(status)} WHERE (order_number = ${db.escape(order_number)})`
             const result = await asyncQuery(queryPaymentConf)
-            console.log(result)
 
             res.status(200).send(result)
         }
@@ -175,7 +174,6 @@ module.exports = {
         try {
             const queryPaymentConf = `UPDATE orders SET message = ${db.escape(message)} WHERE (order_number = ${db.escape(order_number)})`
             const result = await asyncQuery(queryPaymentConf)
-            console.log(result)
 
             res.status(200).send(result)
         }

@@ -11,15 +11,17 @@ import { useSelector, useDispatch } from 'react-redux'
 import { editProfile } from '../actions'
 
 const Profile = () => {
-    const { id_user, username, email, location, address } = useSelector((state) => {
+    const { id_user, username, email, location, address, status } = useSelector((state) => {
         return{
             id_user: state.user.id_user,
             username: state.user.username,
             email: state.user.email,
             location: state.user.location,
-            address: state.user.address
+            address: state.user.address,
+            status: +state.user.regStatus
         }
     })
+
     const dispatch = useDispatch()
 
     const [dataLoc, setDataLoc] = React.useState([])
@@ -71,14 +73,16 @@ const Profile = () => {
                 <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '70vw', marginLeft: '25px'}}>
                     <div>
                         <h4>Profile</h4>
+                        <p>{status === 1 ? "Verified" : "Not Verified"}</p>
                         <p>Username: {username}</p>
                         <p>Email: {email}</p>
-                        <p>Provinsi: 
+                        <p>Province: 
                             <Form.Control 
                                 as="select" 
                                 value={loc ? loc : ""} 
                                 onChange={(e) => changeLoc(e)}
                             >
+                                <option>Choose province ... </option>
                                 {
                                     dataLoc.map((item, index) => {
                                         return (<option key={index} value={item.province_name}>{item.province_name}</option>)
@@ -86,7 +90,7 @@ const Profile = () => {
                                 }
                             </Form.Control>
                         </p>
-                        <p>Alamat: 
+                        <p>Address: 
                             <FormControl onChange={(e) => changeAddress(e)} value={addressInput}/>
                         </p>
                     </div>
@@ -99,10 +103,11 @@ const Profile = () => {
                 <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '70vw', marginLeft: '25px'}}>
                     <div>
                         <h4>Profile</h4>
+                        <p>{status === 1 ? "Verified" : "Not Verified"}</p>
                         <p>Username: {username}</p>
                         <p>Email: {email}</p>
-                        <p>Provinsi: {loc}</p>
-                        <p>Alamat: {addressInput}</p>
+                        <p>Province: {loc}</p>
+                        <p>Address: {addressInput}</p>
                     </div>
                     <Button style={styles.button} onClick={() => setEdit(true)}><i className="fas fa-edit"></i></Button>
                 </div>

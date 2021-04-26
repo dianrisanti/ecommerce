@@ -119,7 +119,7 @@ const HistoryPage = () => {
                     return (
                         <Card key={index}>
                             <Card.Header>
-                                <Accordion.Toggle as={Card.Header} variant="link" eventKey={index + 1} style={{ backgroundColor: "#cbc0d3" }}>
+                                <Accordion.Toggle as={Card.Header} variant="link" eventKey={index + 1} >
                                     <span style={{ display: "flex", justifyContent: "space-between" }}>
                                         <span>{index + 1}</span>
                                         <span><p onClick={(e) => { handlePaymentCon(e) }}>Invoice: {item.order_number}</p></span>
@@ -186,7 +186,7 @@ const HistoryPage = () => {
     }
 
     return (
-        <div style={{ marginTop: "120px", padding: "0 20px" }}>
+        <div style={{ marginTop: "110px", padding: "0 20px" }}>
             <h1>Order History</h1>
             <Table striped bordered hover style={{ textAlign: "center" }}>
                 {renderTbody()}

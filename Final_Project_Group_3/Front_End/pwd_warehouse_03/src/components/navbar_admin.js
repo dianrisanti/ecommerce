@@ -2,7 +2,6 @@ import React from 'react'
 import {
     Navbar,
     Nav,
-    NavLink,
     Dropdown,
     DropdownButton,
     Image
@@ -33,7 +32,7 @@ function NavigationAdmin() {
 
 
     return (
-        <Navbar fixed='top' style={{ background: '#118ab2' }} expand="lg">
+        <Navbar collapseOnSelect fixed='top' style={styles.navbar} expand="lg">
             <Navbar>
                 <Navbar.Brand as={Link} to='/'>
                     <Image
@@ -46,23 +45,21 @@ function NavigationAdmin() {
                 </Navbar.Brand>
                 <p style={{ fontFamily: 'Sriracha, cursive', fontSize: '28px', marginTop: '12px' }}>ES - Admin</p>
             </Navbar>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav" style={{marginLeft:'50px'}}>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav" style={{marginLeft:'50px'}}>
                 <Nav className="mr-auto">
-                    <NavLink as={Link} to='/get_category' style={{ color: 'black' }}>
+                    <Nav.Link as={Link} to='/get_category'>
                         <strong> Category List</strong>
-                    </NavLink>
-                    <NavLink as={Link} to='/warehouse_stock' style={{ color: 'black' }}>
+                    </Nav.Link>
+                    <Nav.Link as={Link} to='/warehouse_stock'>
                         <strong> Warehouse Stock</strong>
-                    </NavLink>
-                    <NavLink as={Link} to='/order_listing' style={{ color: 'black' }}>
-                        <i className="fas fa-dollar-sign" syle={{ marginRight: '15px' }}></i>
+                    </Nav.Link>
+                    <Nav.Link as={Link} to='/order_listing'>
                         <strong> Order Listing</strong>
-                    </NavLink>
-                    <NavLink as={Link} to='/sales_report' style={{ color: 'black' }}>
-                        <i className="far fa-chart-bar" syle={{ marginRight: '15px' }}></i>
+                    </Nav.Link>
+                    <Nav.Link as={Link} to='/sales_report'>
                         <strong> Sales Report</strong>
-                    </NavLink>
+                    </Nav.Link>
                 </Nav>
 
                 <Dropdown>
@@ -76,5 +73,14 @@ function NavigationAdmin() {
     )
 }
 
+const styles = {
+    navbar: {
+        height: "6rem",
+        backgroundColor: "#118ab2",
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "0 20px"
+    }
+}
 
 export default NavigationAdmin

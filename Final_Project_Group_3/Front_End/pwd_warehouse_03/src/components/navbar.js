@@ -4,27 +4,22 @@ import {
     Nav,
     NavLink,
     Dropdown,
-    DropdownButton,
-    Image
+    Image,
 } from 'react-bootstrap'
-import { Redirect, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { Logo } from '../assets'
 
 import { useSelector, useDispatch } from 'react-redux'
 
-//NOTE import action log out
 import { logout } from "../actions"
 
 function Navigation() {
-    const { username, role } = useSelector((state) => {
+    const { username } = useSelector((state) => {
         return {
-            username: state.user.username,
-            role: state.user.role
+            username: state.user.username
         }
     })
-
-
 
     const dispatch = useDispatch()
     const logoutHandler = () => {
@@ -33,7 +28,7 @@ function Navigation() {
 
 
     return (
-        <Navbar fixed='top' style={{ background: 'rgba(82, 192, 192, 0.7)' }} expand="lg">
+        <Navbar fixed='top' style={styles.navbar} expand="lg">
             <Navbar>
                 <Navbar.Brand as={Link} to='/'>
                     <Image
@@ -49,64 +44,50 @@ function Navigation() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    {role === 1
-                        ?
-                        <>
-                            <NavLink as={Link} to='/' style={{ color: 'black' }}>
-                                <i className="fas fa-home" syle={{ marginRight: '15px' }}></i>
-                                <strong> HOME</strong>
-                            </NavLink>
-                            <NavLink as={Link} to='/order_listing' style={{ color: 'black' }}>
-                                <i className="fas fa-dollar-sign" syle={{ marginRight: '15px' }}></i>
-                                <strong> Order Listing</strong>
-                            </NavLink>
-                            <NavLink as={Link} to='/sales_report' style={{ color: 'black' }}>
-                                <i className="far fa-chart-bar" syle={{ marginRight: '15px' }}></i>
-                                <strong> Sales Report</strong>
-                            </NavLink>
-                        </>
-                        :
-                        <>
-                            <NavLink as={Link} to='/' style={{ color: 'black' }}>
-                                <i className="fas fa-home" syle={{ marginRight: '10px' }}></i>
-                                <strong> HOME</strong>
-                            </NavLink>
-                        </>
-                    }
+                    <NavLink as={Link} to='/' style={{ color: 'black' }}>
+                        <i className="fas fa-home" syle={{ marginRight: '10px' }}></i>
+                        <strong> HOME</strong>
+                    </NavLink>
                 </Nav>
-                <Link to='/cart' style={{ fontSize: '30px', marginRight: '10px', marginBottom: '10px', textDecoration: 'none' }}> 🛒 </Link>
-                <Dropdown>
-                    <DropdownButton title={!username ? 'Username' : username}
-                        variant={username ? 'primary' : 'success'} id="dropdown-button-drop-left" >
-                        {username
-                            ?
-                            <>
-                                {role === 1
-                                    ?
-                                    <>
-                                        <Dropdown.Item as={Link} to ='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
-                                    </>
-                                    :
-                                    <>
-                                        <Dropdown.Item as={Link} to ='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
-                                        <Dropdown.Item as={Link} to='/verification'>Verification</Dropdown.Item>
-                                        <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
-                                        <Dropdown.Item as={Link} to='/history'>History</Dropdown.Item>
-                                    </>
-                                }
-                            </>
-                            :
-                            <>
-                                <Dropdown.Item as={Link} to='/login' >Login</Dropdown.Item>
-                                <Dropdown.Item as={Link} to='/register'>Sign Up</Dropdown.Item>
-                            </>
-                        }
-                    </DropdownButton>
-                </Dropdown>
+                <div style={{display: "flex", width: "16%", justifyContent: "space-between"}}>
+                    <Link to='/cart' style={{ fontSize: '23px', marginRight: '10px', marginBottom: '10px', textDecoration: 'none' }}> 
+                        <i className="fad fa-shopping-cart" style={{color: 'black'}}></i>
+                    </Link>
+                    <Dropdown>
+                        <Dropdown.Toggle style={{backgroundColor: "#2a9d8f", fontFamily: "Dosis", color: '#081c15'}} id="dropdown-basic">
+                            {username ? <i className="far fa-smile" style={{color: '#081c15', fontWeight: '500'}}> {username} </i> : <i className="fas fa-user"> LOG IN</i>}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {username
+                                ?
+                                <>
+                                    <Dropdown.Item as={Link} to ='/login' onClick={logoutHandler}>Log out</Dropdown.Item>
+                                    <Dropdown.Item as={Link} to='/profile'>Profile</Dropdown.Item>
+                                    <Dropdown.Item as={Link} to='/history'>History</Dropdown.Item>
+                                </>
+                                :
+                                <>
+                                    <Dropdown.Item as={Link} to='/login' >Login</Dropdown.Item>
+                                    <Dropdown.Item as={Link} to='/register'>Sign Up</Dropdown.Item>
+                                </>
+                            }
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </div>
             </Navbar.Collapse >
         </Navbar >
     )
 }
 
+const styles = {
+    navbar: {
+        height: "6rem",
+        backgroundColor: "#83c5be",
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "0 20px",
+        opacity: '0.9'
+    }
+}
 
 export default Navigation

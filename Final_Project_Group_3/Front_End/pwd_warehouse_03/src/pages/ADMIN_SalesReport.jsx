@@ -1,12 +1,9 @@
 import React from 'react'
 import Axios from 'axios'
-import { getProductStock } from '../actions'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
     Table,
-    Button,
     Pagination,
-    Modal,
     Form,
     Dropdown,
     Nav
@@ -17,8 +14,6 @@ const SalesReport = () => {
 
     let [data, setData] = React.useState([])
     const [selectedOption, setSelectedOption] = React.useState("")
-
-
 
     React.useEffect(() => {
         async function fetchData() {
@@ -41,15 +36,15 @@ const SalesReport = () => {
         'Total Belanja Terendah',
     ]
 
-    const handleClickListItem = (index) => {
-        const input = options[index]
+    const handleClickListItem = (e) => {
+        const input = e.target.value
         setSelectedOption(input)
 
-        if (index === 0) return data.sort((a, b) => b.total - a.total)
-        if (index === 1) return data.sort((a, b) => a.total - b.total)
+        if (input === 'Total Belanja Tertinggi') return data.sort((a, b) => b.total - a.total)
+        if (input === 'Total Belanja Terendah') return data.sort((a, b) => a.total - b.total)
     }
     // pagination
-    const itemsPerPage = 5
+    const itemsPerPage = 10
     const [page, setPage] = React.useState(1)
     const noOfPages = Math.ceil(data.length / itemsPerPage)
     const listItem = Array(noOfPages).fill(1)
@@ -101,44 +96,45 @@ const SalesReport = () => {
             {
                 data.length !== 0
                     ?
-                    <div style={{ marginTop: '110px', padding: 30 }}>
-                        <div style={{ display: 'flex', flexDirection: 'row', width: "100vw" }}>
-                        <h1>SALES REPORT <i className="far fa-chart-bar" syle={{ marginRight: '15px' }}></i></h1>
-                        <Nav variant="pills" defaultActiveKey="/get_all" style={{marginLeft: "2vw"}}>
-                            <Nav.Item>
-                                <Nav.Link href="/sales_report">Main Sales Report</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link href="/most_buy">Most buy product</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'row', width: "100vw" }}>
-                            <Pagination>
-                                <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
-                                {listItem.map((item, index) => {
-                                    return (
-                                        <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
-                                    )
-                                })}
-                                <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
-                            </Pagination>
-                            <h3 style={{ marginRight: 10, marginLeft: "67vw" }}>Sort By</h3>
-                            <Dropdown style={{ marginRight: "4%" }}>
-                                <Dropdown.Toggle style={{ backgroundColor: "transparent", fontFamily: "Dosis", color: 'black' }} id="dropdown-basic">
-                                    {selectedOption ? selectedOption : "Berdasarkan"}
-                                </Dropdown.Toggle>
-
-                                <Dropdown.Menu>
-                                    {options.map((item, index) => {
-                                        return (
-                                            <Dropdown.Item key={index} onClick={() => handleClickListItem(index)}>{item}</Dropdown.Item>
-                                        )
-                                    })}
-                                </Dropdown.Menu>
-                            </Dropdown>
+                    <div style={{ marginTop: '90px', padding: 30 }}>
+                        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+                            <div style={{ display: 'flex', flexDirection: 'row'}}>
+                                <Nav variant="pills" defaultActiveKey="/get_all" style={{marginLeft: "2vw"}}>
+                                    <Nav.Item>
+                                        <Nav.Link href="/sales_report">Main Sales Report</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item>
+                                        <Nav.Link href="/most_buy">Most buy product</Nav.Link>
+                                    </Nav.Item>
+                                </Nav>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                <h5 style={{ marginRight: 10}}>Sort By</h5>
+                                <Form.Control 
+                                    as="select" 
+                                    value={selectedOption ? selectedOption : ""} 
+                                    onChange={(e) => handleClickListItem(e)}
+                                    style={{width: 250}}
+                                >
+                                    <option>Choose filter ... </option>
+                                    {
+                                        options.map((item, index) => {
+                                            return (<option key={index} value={item}>{item}</option>)
+                                        })
+                                    }
+                                </Form.Control>
+                            </div>
                         </div>
                         {renderTable()}
+                        <Pagination>
+                            <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
+                            {listItem.map((item, index) => {
+                                return (
+                                    <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
+                                )
+                            })}
+                            <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
+                        </Pagination>
                     </div>
                     :
                     <div></div>
