@@ -19,6 +19,7 @@ function PaymentConfirmation() {
     let [data, setData] = React.useState([])
     let [refresh, setRefresh] = React.useState(0)
     const [modal, setModal] = React.useState(false)
+    const [noPicModal, setNoPicModal] = React.useState(false)
     const dispatch = useDispatch()
     const { order_number, username } = useSelector((state) => {
         return {
@@ -47,11 +48,12 @@ function PaymentConfirmation() {
     }, [refresh])
 
     function handleChoose(e) {
-        console.log('e target files', e.target.files)
         setImage(e.target.files[0])
     }
 
     function handleUpload() {
+        if(!image) return setNoPicModal(true)
+
         async function fetchData() {
             try {
                 let useRefresh = refresh
@@ -83,7 +85,7 @@ function PaymentConfirmation() {
                     <Modal.Header closeButton>
                         <Modal.Title>Hi, {username}! </Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Terimakasih telah mengupload bukti pembayaran</Modal.Body>
+                    <Modal.Body>Thank you for uploading your payment slip</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setModal(false)}>
                             Close
@@ -94,8 +96,20 @@ function PaymentConfirmation() {
                     </Modal.Footer>
                 </Modal>
 
+                <Modal show={noPicModal} onHide={() => setNoPicModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Hi, {username}! </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Sorry, you haven't uploaded your payment slip</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setNoPicModal(false)}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: "center"}}>
-                <h2 style={{ color: !paymentCon ? "black" : "blue", marginBottom: "20px", marginTop: "30px" }}>{!paymentCon ? "Mohon upload bukti pembayaran" : "Terimakasih telah mengupload bukti pembayaran"}</h2>
+                <h2 style={{ color: !paymentCon ? "black" : "#264653", marginBottom: "20px", marginTop: "30px" }}>{!paymentCon ? "Please upload your payment slip" : "Thank you for uploading your payment slip"}</h2>
                 </div>
                 <div
                     style={{
@@ -109,10 +123,10 @@ function PaymentConfirmation() {
                 </div>
                 <div style={styles.buttonProfile}>
                     <div style={{ marginBottom: "10px", marginTop: "20px" }}>
-                        <h5>No Invoice :{data.order_number}</h5>
-                        <h5>Tanggal Pembelian :{data.date}</h5>
-                        <h5>Total yang harus dibayarkan :{data.total_IDR}</h5>
-                        <h5>Metode Pembayaran : Transfer Bank {data.payment_method}</h5>
+                        <h5>No Invoice: {data.order_number}</h5>
+                        <h5>Purchasing Date: {data.date}</h5>
+                        <h5>Order Total: {data.total_IDR}</h5>
+                        <h5>Payment Method: Transfer Bank {data.payment_method}</h5>
                     </div>
                     <form encType="multipart/form-data">
                         <input

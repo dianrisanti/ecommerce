@@ -1,6 +1,7 @@
 // NOTE import helpers
 const transporter = require('../helpers/nodemailer')
 const { asyncQuery, generateQuery } = require('../helpers/queryHelp')
+const { createToken } = require('../helpers/jwt')
 const geolib = require('geolib')
 
 const db = require('../database')
@@ -8,7 +9,6 @@ const db = require('../database')
 // NOTE import module
 const handlebars = require('handlebars')
 const fs = require('fs')
-
 
 module.exports = {
     addCart: async(req, res) => {
@@ -54,14 +54,15 @@ module.exports = {
     getCart: async (req, res) => {
         try {
             const id_user = req.params.id ? parseInt(req.params.id) : 0
-            const getCart = `SELECT o.order_number, od.id_product, p.name, od.quantity, 
-            p.price, od.total, pi.image
+            const getCart = `SELECT o.order_number, od.id_product, main.name, od.quantity, main.total_stock,
+            main.price, od.total, pi.image
             FROM orders o
             JOIN order_details od ON o.order_number = od.order_number
-            JOIN products p ON od.id_product = p.id
+            JOIN (SELECT p.id, p.name, p.price, SUM(w.available) total_stock FROM products p 
+            JOIN warehouse w ON p.id = w.product_id  
+            GROUP BY p.id) main ON main.id = od.id_product
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
-            JOIN warehouse w ON w.product_id = od.id_product
             WHERE o.status = 1 AND o.id_user = ${id_user}
             GROUP BY od.id_product`
 
@@ -316,7 +317,7 @@ module.exports = {
             JOIN products p ON od.id_product = p.id
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
-            WHERE (o.status = 2 OR o.status = 3 OR o.status = 4 OR o.status = 5 OR o.status = 6) AND o.id_user = ${id_user}
+            WHERE o.status IN (2, 3, 4, 5, 6, 7) AND o.id_user = ${id_user}
             GROUP BY od.id_product, o.order_number
             ORDER BY o.order_number DESC`
             const historyResult = await asyncQuery(history)
@@ -388,7 +389,7 @@ module.exports = {
         try{
             const id_user = +req.params.id
             console.log('id user ', id_user)
-            const { order_number, payment_method } = req.body
+            const { order_number, payment_method, email } = req.body
 
             const query = `SELECT o.order_number, o.payment_method, sum(od.total) total, p.address, x.username
             FROM orders o
@@ -398,7 +399,6 @@ module.exports = {
             WHERE o.status = 1 AND o.id_user = ${id_user}
             GROUP BY od.order_number`
             const summary = await asyncQuery(query)
-            console.log(summary)
 
             const date = new Date().toDateString()
             
@@ -409,16 +409,12 @@ module.exports = {
             
             var value = summary[0].total.toLocaleString('de-DE', { maximumFractionDigits: currencyFractionDigits });
             
-            console.log(value);
             const total_IDR = ("IDR " + value)
-
-
-            console.log(summary[0])
 
             // send email notification to user
             const option = {
                 from: `admin <cusunliem@gmail.com>`,
-                to: 'finalprojectwarehouse3@gmail.com', // NOTE nanti ganti dengan email sesuai register
+                to: `${email}`,
                 subject: 'YOUR INVOICE',
                 text: '',
             }
@@ -467,8 +463,6 @@ module.exports = {
             WHERE (o.status = 3 OR o.status = 4 OR o.status = 6 OR o.status = 7)
             GROUP BY od.total`
             const historyResult = await asyncQuery(history)
-            console.log(historyResult)
-            
 
             res.status(200).send(historyResult)
         }
@@ -481,8 +475,6 @@ module.exports = {
         try{
             const history = `SELECT order_number, SUM(total) as total_belanja from order_details group by order_number;`
             const historyResult = await asyncQuery(history)
-            console.log(historyResult)
-            
 
             res.status(200).send(historyResult)
         }
@@ -529,10 +521,10 @@ module.exports = {
             JOIN order_status os ON o.status = os.id_status
             JOIN product_img pi ON od.id_product = pi.product_id
             JOIN users x ON o.id_user = x.id 
-            WHERE (o.status = 2 OR o.status = 3 OR o.status = 4 OR o.status = 5 OR o.status = 6 OR o.status = 7)
-            GROUP BY od.id_product, o.order_number`
+            WHERE o.status IN (2, 3, 4, 5, 6, 7)
+            GROUP BY od.id_product, o.order_number
+            ORDER BY o.order_number DESC`
             const historyResult = await asyncQuery(history)
-            console.log(historyResult)
             let output = []
             historyResult.forEach((item, index) => {
                 let temp = {
@@ -555,9 +547,6 @@ module.exports = {
                 }
                 output.push(temp)
             })
-            
-            console.log('output detail order',output)
-            
 
             let out = []
             for(entry of output){
@@ -592,9 +581,7 @@ module.exports = {
             WHERE (o.status = 3 OR o.status = 4 OR o.status = 6 OR o.status = 7)
             GROUP BY od.id_product`
             const historyResult = await asyncQuery(history)
-            console.log(historyResult)
-            
-
+  
             res.status(200).send(historyResult)
         }
         catch(err){

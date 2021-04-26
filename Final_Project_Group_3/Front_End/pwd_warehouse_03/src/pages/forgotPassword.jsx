@@ -15,32 +15,25 @@ import {
 import { useSelector } from 'react-redux'
 
 function ForgotPassword(props) {
-    console.log(props)
-    
-    const { status } = useSelector((state) => {
-        return {
-            status: state.user.regStatus
-        }
-    })
-    
-    let [visible1, setVisible1] = React.useState(false)
-    let [visible2, setVisible2] = React.useState(false)
-    let [passValidErr, setPassValidErr] = React.useState([false, ""])
-    let [regError, setRegError] = React.useState([false, ""])
-    let [toLogin, setToLogin] = React.useState(false)
+    const [id, setId] = React.useState(null)
+    const [expToken, setExpToken] = React.useState(false)
+    const [visible1, setVisible1] = React.useState(false)
+    const [visible2, setVisible2] = React.useState(false)
+    const [passValidErr, setPassValidErr] = React.useState([false, ""])
+    const [regError, setRegError] = React.useState([false, ""])
+    const [toLogin, setToLogin] = React.useState(false)
     
     React.useEffect(() => {
         async function fetchData() {
-
-            // NOTE get token from query url
             let token = props.location.search.substring(1)
 
             try {
-                let res = await Axios.post('http://localhost:2000/user/verification', { token })
-                console.log(res.data)
+                const res = await Axios.post('http://localhost:2000/user/verify_token', { token })
+                setId(res.data.id)
             }
             catch (err) {
                 console.log(err)
+                setExpToken(true)
             }
         }
         fetchData()
@@ -52,10 +45,8 @@ function ForgotPassword(props) {
 
 
     function handleRegister() {
-        let password = passwordRef.current.value
-        let confpass = confpassRef.current.value
-        let id = props.location.search.substring(1)
-        console.log(id)
+        const password = passwordRef.current.value
+        const confpass = confpassRef.current.value
 
         if (confpass !== password) return setRegError([true, "Password doesn't match with Confirm Password"])
 
@@ -94,77 +85,74 @@ function ForgotPassword(props) {
         <div style={styles.container}>
             <div style={styles.center}>
                 {
-                    parseInt(status) === 1
-                        ?
-                        <>
-                            <h3 style={{ marginTop: 50, textAlign: "center" }}> Your account has been verified</h3>
-                            <Button as={Link} to='/' style={{ marginTop: 10 }}>
-                                Go To Home
-            </Button>
-                        </>
-                        :
-
-
-                        <div>
-                            <div style={{marginTop:"6px"}}>
-                                <h1>Forgot Password</h1>
-                            </div>
-                            <div style={{ ...styles.item, textAlign: 'center' }}>
-                                <InputGroup>
-                                    <InputGroup.Prepend style={{ cursor: 'pointer' }}
-                                        onClick={() => setVisible1(!visible1)}>
-                                        <InputGroup.Text id="basic-addon1" style={{ width: "45px", display: 'flex', justifyContent: 'center' }}>
-                                            <i className={visible1 ? "fas fa-eye" : "fas fa-eye-slash"}></i>
-                                        </InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                    <FormControl
-                                        placeholder="New Password"
-                                        aria-label="Password"
-                                        aria-describedby="basic-addon1"
-                                        style={{ height: "45px" }}
-                                        type={visible1 ? "text" : "password"}
-                                        ref={passwordRef}
-                                        onChange={(e) => passValid(e)}
-                                    />
-                                </InputGroup>
-                                <Form.Text className="mb-3" style={{ textAlign: "left", color: "red", fontSize: '10px' }}>
-                                    {passValidErr[1]}
-                                </Form.Text>
-                                <InputGroup className="mb-3">
-                                    <InputGroup.Prepend style={{ cursor: 'pointer' }}
-                                        onClick={() => setVisible2(!visible2)}>
-                                        <InputGroup.Text id="basic-addon1" style={{ width: "45px", display: 'flex', justifyContent: 'center' }}>
-                                            <i className={visible2 ? "fas fa-eye" : "fas fa-eye-slash"}></i>
-                                        </InputGroup.Text>
-                                    </InputGroup.Prepend>
-                                    <FormControl
-                                        placeholder="Confirm New Password"
-                                        aria-label="Password"
-                                        aria-describedby="basic-addon1"
-                                        style={{ height: "45px" }}
-                                        type={visible2 ? "text" : "password"}
-                                        ref={confpassRef}
-                                    />
-                                </InputGroup>
-                                <Form.Text className="mb-3" style={{ textAlign: "left", color: "red", fontSize: '10px' }}>
-                                    {passValidErr[1]}
-                                </Form.Text>
-                                <Button onClick={handleRegister}>
-                                    Confirm
-                                </Button>
-                            </div>
-                            <Modal show={regError[0]} onHide={() => setRegError([false, ""])}>
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Error</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>{regError[1]}</Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="secondary" onClick={() => setRegError([false, ""])}>
-                                        Okay
-                            </Button>
-                                </Modal.Footer>
-                            </Modal>
+                    expToken
+                    ?
+                    <div style={{ ...styles.item, textAlign: 'center', marginTop: 70 }}>
+                        <h3>Your session has ended</h3>
+                        <Button as={Link} to="/">Home</Button>
+                    </div>
+                    :
+                    <div>
+                        <div style={{marginTop:"6px"}}>
+                            <h1>Forgot Password</h1>
                         </div>
+                        <div style={{ ...styles.item, textAlign: 'center' }}>
+                            <InputGroup>
+                                <InputGroup.Prepend 
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => setVisible1(!visible1)}>
+                                    <InputGroup.Text id="basic-addon1" style={{ width: "45px", display: 'flex', justifyContent: 'center' }}>
+                                        <i className={visible1 ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                                    </InputGroup.Text>
+                                </InputGroup.Prepend>
+                                <FormControl
+                                    placeholder="New Password"
+                                    aria-label="Password"
+                                    aria-describedby="basic-addon1"
+                                    style={{ height: "45px" }}
+                                    type={visible1 ? "text" : "password"}
+                                    ref={passwordRef}
+                                    onChange={(e) => passValid(e)}
+                                />
+                            </InputGroup>
+                            <Form.Text className="mb-3" style={{ textAlign: "left", color: "red", fontSize: '10px' }}>
+                                {passValidErr[1]}
+                            </Form.Text>
+                            <InputGroup className="mb-3">
+                                <InputGroup.Prepend style={{ cursor: 'pointer' }}
+                                    onClick={() => setVisible2(!visible2)}>
+                                    <InputGroup.Text id="basic-addon1" style={{ width: "45px", display: 'flex', justifyContent: 'center' }}>
+                                        <i className={visible2 ? "fas fa-eye" : "fas fa-eye-slash"}></i>
+                                    </InputGroup.Text>
+                                </InputGroup.Prepend>
+                                <FormControl
+                                    placeholder="Confirm New Password"
+                                    aria-label="Password"
+                                    aria-describedby="basic-addon1"
+                                    style={{ height: "45px" }}
+                                    type={visible2 ? "text" : "password"}
+                                    ref={confpassRef}
+                                />
+                            </InputGroup>
+                            <Form.Text className="mb-3" style={{ textAlign: "left", color: "red", fontSize: '10px' }}>
+                                {passValidErr[1]}
+                            </Form.Text>
+                            <Button onClick={handleRegister}>
+                                Confirm
+                            </Button>
+                        </div>
+                        <Modal show={regError[0]} onHide={() => setRegError([false, ""])}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Error</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>{regError[1]}</Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={() => setRegError([false, ""])}>
+                                    Okay
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                    </div>
                 }
             </div>
         </div>
@@ -178,7 +166,7 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: "108px"
+        marginTop: "95px"
     },
     center: {
         marginTop: 100,

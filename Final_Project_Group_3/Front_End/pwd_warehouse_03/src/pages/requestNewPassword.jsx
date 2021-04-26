@@ -1,10 +1,6 @@
 import React from 'react'
 import Axios from 'axios'
 import {
-    Redirect,
-    Link
-} from 'react-router-dom'
-import {
     Button,
     InputGroup,
     Form,
@@ -32,7 +28,6 @@ function RequestNewPassword(props) {
     function handleRequestPassword() {
         let email = emailRef.current.value
         async function fetchData() {
-
             try {
                 let res = await Axios.post('http://localhost:2000/user/forgotpassword', { email })
                 console.log(res.data)
@@ -95,7 +90,7 @@ function RequestNewPassword(props) {
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setRegError([false, ""])}>
                             Okay
-                            </Button>
+                        </Button>
                     </Modal.Footer>
                 </Modal>
                 <Modal show={confirmEmail[0]} onHide={() => setConfirmEmail([false, ""])}>
@@ -106,7 +101,7 @@ function RequestNewPassword(props) {
                     <Modal.Footer>
                         <Button variant="success" onClick={() => setConfirmEmail([false, ""])}>
                             Okay
-                            </Button>
+                        </Button>
                     </Modal.Footer>
                 </Modal>
             </div>
@@ -121,7 +116,7 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         height: "100vh",
-        marginTop: "108px"
+        marginTop: "95px"
     },
     center: {
         marginTop: 150,

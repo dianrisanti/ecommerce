@@ -4,7 +4,6 @@ const productController = require('./productController')
 const orderController = require('./orderController')
 const adminController = require('./adminController')
 
-// export controller
 module.exports = {
     userController,
     profileController,

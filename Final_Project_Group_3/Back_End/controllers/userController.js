@@ -6,7 +6,7 @@ const fs = require('fs')
 
 // import helpers
 const { generateQuery, asyncQuery } = require('../helpers/queryHelp')
-const { createToken } = require('../helpers/jwt')
+const { createToken, createTokenExp } = require('../helpers/jwt')
 const transporter = require('../helpers/nodemailer')
 
 // import database connection
@@ -17,18 +17,18 @@ const SECRET_KEY = process.env.CRYPTO_KEY
 
 // export controller
 module.exports = {
-    getAllUser: (req, res) => {
-        const userQuery = 'SELECT * FROM users WHERE username<>"admin"'
-        db.query(userQuery, (err, result) => {
-            if (err) return res.status(500).send(err)
-            Array.prototype.insert = function ( index, item ) {
-                this.splice( index, 0, item );
-            }
-            result.insert(0,{username: "All"})
-
-            res.status(200).send(result)
-        })
+    getAllUser: async(req, res) => {
+        try{
+            const userQuery = 'SELECT * FROM users WHERE role = 2'
+            const allUsers = await asyncQuery(userQuery)
+            res.status(200).send(allUsers)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
     },
+    
     login: (req, res) => {
         const { username, password, email } = req.body
 
@@ -47,26 +47,16 @@ module.exports = {
         db.query(loginQuery, (err, result) => {
             if (err) return res.status(500).send(err)
 
-            // result bentuknya array of object
-            // console.log(result)
-
-            // cek apakah login berhasil
             if (result.length === 0) return res.status(400).send('Username or Password is wrong')
 
-            // create token
             let token = createToken({ id: result[0].id, username: result[0].username })
 
-            // console.log(result[0])
-
-            // input token to result
             result[0].token = token
-
-            // console.log(result[0])
 
             res.status(200).send(result[0])
         })
-        // res.status(200).send('testing login')
     },
+
     register: async (req, res) => {
         const { username, password, email } = req.body
 
@@ -74,13 +64,9 @@ module.exports = {
         const errors = validationResult(req)
         if (!errors.isEmpty()) return res.status(400).send(errors.array()[0].msg)
 
-        // encrypt password with crypto js
-        // data yang sudah di encrypt oleh crypto js, TIDAK BISA di decrypt
         const hashpass = cryptojs.HmacMD5(password, SECRET_KEY)
-        // console.log('password : ', hashpass.toString())
 
         try {
-            // kalau tidak ada error, proses penambahan data user baru berjalan
             const checkUser = `SELECT * FROM users 
                               WHERE username=${db.escape(username)}
                               OR email=${db.escape(email)}`
@@ -101,7 +87,7 @@ module.exports = {
             // send email notification to user
             const option = {
                 from: `admin <cusunliem@gmail.com>`,
-                to: 'finalprojectwarehouse3@gmail.com', // NOTE nanti ganti dengan email sesuai register
+                to: `${email}`,
                 subject: 'EMAIL VERIFICATION',
                 text: '',
             }
@@ -126,26 +112,25 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+
     forgotPassword: async (req, res) => {
         const { email } = req.body
 
         try {
-            // NOTE kalau tidak ada error, proses pengiriman request new password akan berjalan
             const checkUser = `SELECT * FROM users 
                               WHERE email=${db.escape(email)}`
             const resCheck = await asyncQuery(checkUser)
-            console.log(resCheck[0])
 
             if (resCheck.length === 0) return res.status(400).send('Email not yet registered')
             if (parseInt(resCheck[0].status) === 0) return res.status(400).send(`Account with username ${resCheck[0].username} has not been verified, please check your email. Request new password can not be proceed until the account verified`)
 
             // create token
-            const token = createToken({ id: resCheck[0].id, username: resCheck[0].username })
+            const token = createTokenExp({ id: resCheck[0].id, username: resCheck[0].username })
 
             // send email notification to user
             const option = {
                 from: `admin <cusunliem@gmail.com>`,
-                to: 'finalprojectwarehouse3@gmail.com', // NOTE nanti ganti dengan email sesuai req new password
+                to: `${email}`,
                 subject: 'NEW PASSWORD REQUEST',
                 text: '',
             }
@@ -158,7 +143,7 @@ module.exports = {
             const template = handlebars.compile(emailFile)
 
             // menambah properti html di dalam option 
-            option.html = template({ token: token, name: resCheck[0].username, id: resCheck[0].id })
+            option.html = template({ token: token, name: resCheck[0].username })
 
             // send email
             const info = await transporter.sendMail(option)
@@ -170,19 +155,27 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+
+    verifyForgotPass : async(req, res) => {
+        try{
+            res.status(200).send(req.user)
+        }
+        catch(err){
+            console.log(err)
+            res.status(400).send(err)
+        }
+    },
+
     edit: (req, res) => {
         const id = parseInt(req.params.id)
 
         // validation input from user
         const errors = validationResult(req)
-        console.log(errors.errors)
 
         const errUsername = errors.errors.filter(item => item.param === 'username' && item.value !== undefined)
-        console.log(errUsername)
         if (errUsername.length !== 0) return res.status(400).send(errUsername[0].msg)
 
         const errEmail = errors.errors.filter(item => item.param === 'email' && item.value !== undefined)
-        console.log(errEmail)
         if (errEmail.length !== 0) return res.status(400).send(errEmail[0].msg)
 
 
@@ -204,6 +197,7 @@ module.exports = {
             })
         })
     },
+
     editPass: (req, res) => {
         const id = parseInt(req.params.id)
 
@@ -215,7 +209,6 @@ module.exports = {
         // console.log(checkUser)
 
         db.query(checkUser, (err, result) => {
-            console.log("status = ",parseInt(result[0].status))
             if (err) return res.status(500).send(err)
 
             // if id not found
@@ -235,35 +228,13 @@ module.exports = {
             })
         })
     },
-    // delete: (req, res) => {
-    //     const checkUser = `SELECT * FROM users WHERE id=${db.escape(parseInt(req.params.id))}`
 
-    //     db.query(checkUser, (err, result) => {
-    //         if (err) return res.status(500).send(err)
-
-    //         // if id not found
-    //         if (result.length === 0) return res.status(200).send(`User with id : ${parseInt(req.params.id)} is not found`)
-
-    //         const deleteUser = `DELETE FROM users WHERE id=${parseInt(req.params.id)}`
-
-    //         db.query(deleteUser, (err2, result2) => {
-    //             if (err2) return res.status(500).send(err2)
-
-    //             res.status(200).send(result2)
-    //         })
-
-    //     })
-    // },
     emailVerification: async (req, res) => {
-        console.log('req user : ', req.user)
-
         try {
             // query to update status to verified
             const verify = `UPDATE users SET status = 1 
                             WHERE id = ${req.user.id} AND username = ${db.escape(req.user.username)}`
-            console.log(verify)
             const result = await asyncQuery(verify)
-            console.log(result)
 
             res.status(200).send('Email has been verified', result)
         }
@@ -272,10 +243,8 @@ module.exports = {
             res.status(400).send(err)
         }
     },
-    keepLogin: async (req, res) => {
-        console.log(req.user)
-        console.log('keep login')
 
+    keepLogin: async (req, res) => {
         try {
             // query to get data from database
             const getUser = `SELECT u.id, u.username, u.email, u.status, u.role, ul.province_name location, p.address FROM users u 
@@ -293,10 +262,9 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+
     uploadPayment: async (req, res) => {
         const order_number = req.params.order_number
-
-        console.log('req file', req.file)
 
         if (!req.file) return res.status(400).send('NO IMAGE')
 
@@ -312,6 +280,7 @@ module.exports = {
             res.status(400).send(err)
         }
     },
+
     getPaymentConfirmation: async (req, res) => {
         const order_number = req.params.order_number
         try {
@@ -328,10 +297,8 @@ module.exports = {
             
             var value = result[0].total.toLocaleString('de-DE', { maximumFractionDigits: currencyFractionDigits });
             
-            console.log(value);
             const total_IDR = ("IDR " + value)
             result[0].total_IDR = total_IDR
-            console.log(result)
 
             res.status(200).send(result)
         }

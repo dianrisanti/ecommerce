@@ -1,12 +1,9 @@
 import React from 'react'
 import Axios from 'axios'
-import { Redirect } from 'react-router-dom'
 import {
-    Card,
-    Dropdown,
+    Form,
     Pagination,
     Button,
-    Accordion,
     Table,
     Image,
     Modal,
@@ -27,27 +24,19 @@ const OrderListing = () => {
     const dispatch = useDispatch()
 
     // NOTE filter harga dan nama
-    const options = [
-        'Nama A - Z',
-        'Nama Z - A',
-        'Total Belanja Tertinggi',
-        'Total Belanja Terendah',
-    ]
-    const [selectedOption, setSelectedOption] = React.useState("")
     const [dataUser, setDataUser] = React.useState([]) // NOTE data user
     let [refresh, setRefresh] = React.useState(0)
     let [alert, setAlert] = React.useState(false)
     let [orderNumber, setOrderNumber] = React.useState("")
     let Message = React.useRef('')
 
-    console.log("value orderNum :", orderNumber)
-
-
     React.useEffect(() => {
         async function fetchData() {
             try {
                 let res = await Axios.get(`http://localhost:2000/user/getUser`)
-                setDataUser(res.data)
+                const users = ["All"]
+                res.data.map(item => users.push(item.username))
+                setDataUser(users)
                 dispatch(getOrder())
             }
             catch (err) {
@@ -58,39 +47,18 @@ const OrderListing = () => {
         fetchData()
     }, [refresh])
 
-    console.log('data :', data)
-    console.log('data user :', dataUser)
-
-
-    const handleClickListItem = (index) => {
-        const input = options[index]
-        setSelectedOption(input)
-
-        if (index === 0) return data.sort((a, b) => a.username.localeCompare(b.username))
-        if (index === 1) return data.sort((a, b) => -1 * a.username.localeCompare(b.username))
-        if (index === 2) return data.sort((a, b) => b.total_belanja - a.total_belanja)
-        if (index === 3) return data.sort((a, b) => a.total_belanja - b.total_belanja)
-    }
-
     const [selectedUser, setSelectedUser] = React.useState("")
-    const itemsPerPage = 3
+    const itemsPerPage = 10
     const [page, setPage] = React.useState(1)
     const noOfPages = selectedUser ? 1 : Math.ceil(data.length / itemsPerPage)
     const listItem = Array(noOfPages).fill(1)
 
-    const handleClickListUser = (index) => {
-        const input = dataUser[index]
-        setSelectedUser(input.username)
+    const handleClickListUser = (e) => {
+        const input = e.target.value
+        setSelectedUser(input)
 
-        if (input.username === 'All') return setSelectedUser("")
+        if (input === 'All') return setSelectedUser("")
         setPage(1)
-    }
-    console.log('selectedUser :', selectedUser)
-
-
-    const goToDetail = (index) => {
-        console.log(index)
-        return <Redirect to={`/detail?id=${index}`} />
     }
 
     function handlePaymentCon(orderNum) {
@@ -105,7 +73,6 @@ const OrderListing = () => {
             catch (err) {
                 console.log(err)
             }
-
         }
         fetchData()
     }
@@ -146,134 +113,98 @@ const OrderListing = () => {
             })
     }
 
+    const actionHandler = (status, order_number, paymentConf, msg) => {
+        if (status === "Not Paid") {
+            return(
+                <i style={{ color: "#457b9d" }}>Waiting for payment</i>
+            )
+        }
+        if (status === "Paid") {
+            return(
+                <div style={{display: 'flex', justifyContent: 'space-between', width: 200}}>
+                    <Button style={{fontSize: 11}} onClick={() => handlePaymentCon(order_number)}> Confirm Payment </Button>
+                    <Button style={{fontSize: 11}} className="btn btn-danger"  onClick={() => handleCancelOrder(order_number)}> Cancel Order </Button>
+                </div>
+            )
+        }
+        if (status === "On Delivery" || status === "Canceled" || status === "Arrived" ) {
+            return(
+                <i style={{ color: "#457b9d" }}>Completed</i>
+            )
+        }
+    }
+
     return (
-        <div style={{ marginTop: "150px", padding: "0 20px" }}>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '40px' }}>
-                <h3 style={{ marginRight: 10, marginLeft: 50 }}>Order Listing</h3>
-                <div style={{ display: 'flex', flexDirection: 'row', width: 400 }}>
-                    <h3 style={{ marginLeft: 10 }}>Filter by User</h3>
-                    <Dropdown style={{}}>
-                        <Dropdown.Toggle style={{ backgroundColor: "transparent", fontFamily: "Dosis", width: '170px', color: 'black', marginLeft: 10 }} id="dropdown-basic">
-                            {selectedUser ? selectedUser : "Berdasarkan"}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu style={{ height: '200px', overflowY: 'scroll' }}>
-                            {dataUser.map((item, index) => {
-                                return (
-                                    <Dropdown.Item key={index} onClick={() => handleClickListUser(index)}>{item.username}</Dropdown.Item>
-                                )
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', width: 350 }}>
-                    <h3 style={{ marginRight: 10 }}>Sort By</h3>
-                    <Dropdown style={{ marginRight: "4%" }}>
-                        <Dropdown.Toggle style={{ backgroundColor: "transparent", fontFamily: "Dosis", color: 'black' }} id="dropdown-basic">
-                            {selectedOption ? selectedOption : "Berdasarkan"}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                            {options.map((item, index) => {
-                                return (
-                                    <Dropdown.Item key={index} onClick={() => handleClickListItem(index)}>{item}</Dropdown.Item>
-                                )
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </div>
-                <div>
-                    <Pagination>
-                        <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
-                        {listItem.map((item, index) => {
-                            return (
-                                <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
-                            )
-                        })}
-                        <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
-                    </Pagination>
-                </div>
+        <div style={{ marginTop: "120px", padding: "0 20px" }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent:'space-between' , marginBottom: 40, marginLeft: 20, alignItems: 'center' ,width: 350 }}>
+                <h5>Filter User</h5>
+                <Form.Control 
+                    as="select" 
+                    value={selectedUser ? selectedUser : ""} 
+                    onChange={(e) => handleClickListUser(e)}
+                    style={{width: 250}}
+                >
+                    <option>Choose user ... </option>
+                    {
+                        dataUser.map((item, index) => {
+                            return (<option key={index} value={item}>{item}</option>)
+                        })
+                    }
+                </Form.Control>
             </div>
 
-
-            <div style={{ marginTop: "20px", padding: "0 20px", height: 300 }}>
-                <Table striped bordered hover style={{ textAlign: "center" }}>
+            <div style={{ marginTop: "20px", padding: "0 20px"}}>
+                <div>
                     {selectedUser
                         ?
-                        // console.log(data.filter(item => item.username === selectedUser.username))
                         data
                             .filter(item => item.username === selectedUser)
                             .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                             .map((item, index) => {
                                 return (
-                                    <Accordion>
-                                        <Card key={index}>
-                                            <Card.Header>
-                                                <Accordion.Toggle as={Card.Header} variant="link" eventKey={index + 1} style={{ backgroundColor: "#cbc0d3" }}>
-                                                    <span style={{ display: "flex", justifyContent: "space-between" }}>
-                                                        <span>{index + 1}</span>
-                                                        <span>User : {item.username}</span>
-                                                        <span><p onClick={(e) => { handlePaymentCon(e) }}>Invoice: {item.order_number}</p></span>
-                                                        <span>Date: {item.date}</span>
-                                                        <span>Payment Method: {item.payment_method}</span>
-                                                        <span>Status: {item.status}</span>
-                                                        <span>Total Belanja :{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</span>
-                                                    </span>
-                                                </Accordion.Toggle>
-                                                {item.status === "Canceled"
-                                                    ?
-                                                    <i style={{ color: "blue" }}>{item.message}</i>   
-                                                    :
-                                                    item.payment_confirmation === 0
-                                                        ?
-                                                        <i style={{ color: "blue" }}>Waiting for user payment</i>
-                                                        :
-                                                        item.status !== "Paid"
-                                                            ?
-                                                            item.status === "On Delivery"
-                                                                ?
-                                                                <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
-                                                                :
-                                                                <i style={{ color: "blue" }}>{item.message}</i>
-                                                            :
-                                                            <>
-                                                            <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                                            <Button className="btn btn-danger" style={{ marginRight: '5px' }} onClick={() => handleCancelOrder(item.order_number)}> Cancel Order </Button>
-                                                            </>
-                                                }
-                                            </Card.Header>
-                                            <Accordion.Collapse eventKey={index + 1}>
-                                                <Table striped bordered hover>
-                                                    <thead>
+                                    <div style={{border: "1px solid", marginTop: 30}}>
+                                        <div style={{ display: "flex", marginLeft: 20, height: 100}}>
+                                            <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", borderRightColor: "black" }}>
+                                                <p style={{margin: 0}}> <b>User :</b> {item.username}</p>
+                                                <p style={{margin: 0}}> <b>Invoice:</b> {item.order_number}</p>
+                                                <p style={{margin: 0}}> <b>Date:</b> {item.date}</p>
+                                                <p style={{margin: 0}}> <b>Status:</b> {item.status}</p>
+                                            </div>
+                                            <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", marginLeft: 670}}>
+                                                <p style={{margin: 0}}> <b>Payment Method: </b> {item.payment_method}</p>
+                                                <p style={{margin: 0}}> <b>Total Belanja : </b> {new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</p>
+                                                <div style={{margin: 0, display: "flex"}}> <b style={{marginRight: 10}}>Action:</b> {actionHandler(item.status, item.order_number, item.payment_confirmation, item.message)}</div>
+                                            </div>
+                                        </div>
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Name</th>
+                                                    <th>Image</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {item.products.map((item2, index2) => {
+                                                    return (
                                                         <tr>
-                                                            <th>No</th>
-                                                            <th>Name</th>
-                                                            <th>Image</th>
-                                                            <th>Quantity</th>
-                                                            <th>Price</th>
-                                                            <th>Total</th>
+                                                            <td>{index2 + 1}</td>
+                                                            <td>{item2.name}</td>
+                                                            <td>
+                                                                <Image src={item2.image} style={{ height: 100, width: 100 }} rounded />
+                                                            </td>
+                                                            <td>{item2.quantity}</td>
+                                                            <td>IDR {item2.price.toLocaleString()}</td>
+                                                            <td>IDR {item2.total.toLocaleString()}</td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {item.products.map((item2, index2) => {
-                                                            return (
-                                                                <tr>
-                                                                    <td>{index2 + 1}</td>
-                                                                    <td>{item2.name}</td>
-                                                                    <td>
-                                                                        <Image src={item2.image} style={{ height: 100, width: 100 }} rounded />
-                                                                    </td>
-                                                                    <td>{item2.quantity}</td>
-                                                                    <td>IDR {item2.price.toLocaleString()}</td>
-                                                                    <td>IDR {item2.total.toLocaleString()}</td>
-                                                                </tr>
-                                                            )
-                                                        })}
-                                                    </tbody>
-                                                </Table>
-                                            </Accordion.Collapse>
-                                        </Card>
-                                    </Accordion>
+                                                    )
+                                                })}
+                                            </tbody> 
+                                        </Table>
+                                    </div>
                                 )
                             })
                         :
@@ -281,78 +212,53 @@ const OrderListing = () => {
                             .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                             .map((item, index) => {
                                 return (
-                                    <Accordion>
-                                        <Card key={index}>
-                                            <Card.Header>
-                                                <Accordion.Toggle as={Card.Header} variant="link" eventKey={index + 1} style={{ backgroundColor: "#cbc0d3" }}>
-                                                    <span style={{ display: "flex", justifyContent: "space-between" }}>
-                                                        <span>{index + 1}</span>
-                                                        <span>User : {item.username}</span>
-                                                        <span><p onClick={(e) => { handlePaymentCon(e) }}>Invoice: {item.order_number}</p></span>
-                                                        <span>Date: {item.date}</span>
-                                                        <span>Payment Method: {item.payment_method}</span>
-                                                        <span>Status: {item.status}</span>
-                                                        <span>Total Belanja :{new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</span>
-                                                    </span>
-                                                </Accordion.Toggle>
-                                                {item.status === "Canceled"
-                                                    ?
-                                                    <i style={{ color: "blue" }}>{item.message}</i>   
-                                                    :
-                                                    item.payment_confirmation === 0
-                                                        ?
-                                                        <i style={{ color: "blue" }}>Waiting for user payment</i>
-                                                        :
-                                                        item.status !== "Paid"
-                                                            ?
-                                                            item.status === "On Delivery"
-                                                                ?
-                                                                <i style={{ color: "blue" }}>Waiting for item arrival confirmation</i>
-                                                                :
-                                                                <i style={{ color: "blue" }}>{item.message}</i>
-                                                            :
-                                                            <>
-                                                            <Button style={{ marginRight: '5px' }} onClick={() => handlePaymentCon(item.order_number)}> Confirm Payment </Button>
-                                                            <Button className="btn btn-danger" style={{ marginRight: '5px' }} onClick={() => handleCancelOrder(item.order_number)}> Cancel Order </Button>
-                                                            </>
-                                                }
-                                            </Card.Header>
-                                            <Accordion.Collapse eventKey={index + 1}>
-                                                <Table striped bordered hover>
-                                                    <thead>
+                                    <div style={{border: "1px solid", marginTop: 30}}>
+                                        <div style={{ display: "flex", marginLeft: 20, height: 100}}>
+                                            <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", borderRight: "1px solid", width: 550}}>
+                                                <p style={{margin: 0}}> <b>User :</b> {item.username}</p>
+                                                <p style={{margin: 0}}> <b>Invoice:</b> {item.order_number}</p>
+                                                <p style={{margin: 0}}> <b>Date:</b> {item.date}</p>
+                                                <p style={{margin: 0}}> <b>Status:</b> {item.status}</p>
+                                            </div>
+                                            <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", marginLeft: 20}}>
+                                                <p style={{margin: 0}}> <b>Payment Method: </b> {item.payment_method}</p>
+                                                <p style={{margin: 0}}> <b>Total Belanja: </b> {new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'IDR' }).format(item.total_belanja)}</p>
+                                                <div style={{margin: 0, display: "flex"}}> <b style={{marginRight: 10}}>Action:</b> {actionHandler(item.status, item.order_number, item.payment_confirmation, item.message)}</div>
+                                            </div>
+                                        </div>
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Name</th>
+                                                    <th>Image</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {item.products.map((item2, index2) => {
+                                                    return (
                                                         <tr>
-                                                            <th>No</th>
-                                                            <th>Name</th>
-                                                            <th>Image</th>
-                                                            <th>Quantity</th>
-                                                            <th>Price</th>
-                                                            <th>Total</th>
+                                                            <td>{index2 + 1}</td>
+                                                            <td>{item2.name}</td>
+                                                            <td>
+                                                                <Image src={item2.image} style={{ height: 100, width: 100 }} rounded />
+                                                            </td>
+                                                            <td>{item2.quantity}</td>
+                                                            <td>IDR {item2.price.toLocaleString()}</td>
+                                                            <td>IDR {item2.total.toLocaleString()}</td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {item.products.map((item2, index2) => {
-                                                            return (
-                                                                <tr>
-                                                                    <td>{index2 + 1}</td>
-                                                                    <td>{item2.name}</td>
-                                                                    <td>
-                                                                        <Image src={item2.image} style={{ height: 100, width: 100 }} rounded />
-                                                                    </td>
-                                                                    <td>{item2.quantity}</td>
-                                                                    <td>IDR {item2.price.toLocaleString()}</td>
-                                                                    <td>IDR {item2.total.toLocaleString()}</td>
-                                                                </tr>
-                                                            )
-                                                        })}
-                                                    </tbody>
-                                                </Table>
-                                            </Accordion.Collapse>
-                                        </Card>
-                                    </Accordion>
+                                                    )
+                                                })}
+                                            </tbody> 
+                                        </Table>
+                                    </div>
                                 )
                             })
                     }
-                </Table>
+                </div>
                 <Modal show={alert} onHide={() => setAlert(false)}>
                     <Modal.Header closeButton>
                         <Modal.Title>Please insert the cancellation reason</Modal.Title>
@@ -374,9 +280,20 @@ const OrderListing = () => {
                     <Modal.Footer>
                         <Button variant="secondary" data-dismiss="modal" onClick={() => handleCancelMessage()}>
                             Okay
-                            </Button>
+                        </Button>
                     </Modal.Footer>
                 </Modal>
+                <div style={{marginTop: 15}}>
+                    <Pagination>
+                        <Pagination.Prev disabled={page <= 1 ? true : false} onClick={() => setPage(page - 1)} />
+                        {listItem.map((item, index) => {
+                            return (
+                                <Pagination.Item key={index} active={index + 1 === page} onClick={() => setPage(index + 1)}>{index + 1}</Pagination.Item>
+                            )
+                        })}
+                        <Pagination.Next disabled={page >= noOfPages ? true : false} onClick={() => setPage(page + 1)} />
+                    </Pagination>
+                </div>
             </div>
         </div >
     )
